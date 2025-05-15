@@ -1,0 +1,21 @@
+name: hello portfolio
+
+on: 
+ push :
+  branches :
+  - main # main 브랜치에 push될 때만 실행됨
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 실행 환경
+
+    steps:
+      - name : Chackout code
+        uses: actions/checkout@v3
+
+      - name : Deploy to GitHub Pages
+        uses : peaceiris/actions-gh-pages@v3
+
+        with:
+          github_token : ${{secrets.GITHUB_TOKEN}}
+          publish_dir : ./ # 현재 폴더 (html 파일이 있는 곳)
