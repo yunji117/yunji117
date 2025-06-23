@@ -7,6 +7,7 @@ import Encyclopedia from "./components/Encyclopedia";
 import Skill from "./components/Skill";
 import ProjectSection from "./components/ProjectSection";
 import Contact from "./components/Contact";
+import Thanks from "./components/thanks"
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Skill />
         <ProjectSection />
         <Contact />
+        <Thanks/>
       </main>
     </div>
   );
