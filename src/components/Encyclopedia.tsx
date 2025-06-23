@@ -2,7 +2,7 @@
 const Encyclopedia = () => (
   <section id="encyclopedia" className="min-h-screen flex items-center justify-center px-10">
     <div>
-      <h2 className="text-2xl font-bold">KIM HELLO 백과사전</h2>
+      <h2 className="text-2xl font-bold">KIM YUNJI 백과사전</h2>
       <div className="mt-4 flex gap-4 items-center">
         <img src="./img/yunjicharacternobg.png" alt="character" className="w-40" />
         <p>

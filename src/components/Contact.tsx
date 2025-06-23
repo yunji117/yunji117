@@ -5,7 +5,7 @@ const Contact = () => (
       <h2 className="text-xl sm:text-2xl font-bold">KIM HELLO Contact</h2>
       <div className="mt-6 space-y-2">
         <p>Email: yunw0117@gmail.com</p>
-        <p>Instagram: abc_123</p>
+        <p>Instagram: </p>
         <p>Github: yunji117</p>
       </div>
     </div>

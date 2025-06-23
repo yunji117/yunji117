@@ -8,7 +8,7 @@ const Sidebar = () => (
         <nav className="flex sm:flex-col flex-row sm:space-y-4 space-x-2 sm:space-x-0 text-[10px] sm:text-base font-semibold sm:mt-6">
           <a href="#warning">주의사항</a>
           <a href="#about">ABOUT</a>
-          <a href="#encyclopedia">백과사전</a>
+          <a href="#encyclopedia">yun과사전</a>
           <a href="#skill">SKILL</a>
           <a href="#project">PROJECT</a>
           <a href="#contact">CONTACT</a>

@@ -6,7 +6,7 @@ import ProjectModal from "./ProjectModal";
 const projects = [
   {
     title: "오늘 하루",
-    imgSrc: "./img/write.png",
+    imgSrc: "./img/FirstWrite.svg",
     description: "CRUD를 활용한 글쓰기 웹 서비스",
     stack: "HTML5/CSS3, JavaScript, Github, VS Code, npm, express",
     modal: {
@@ -40,7 +40,7 @@ const projects = [
 },
 {
   title: "풉타임(POOP TIME)",
-  imgSrc: "./img/pooptime.png",
+  imgSrc: "./img/Pooptime.svg",
   description: "짧은 시간에 의미있는 시간을 보내고 싶은 분들을 위한 웹 플랫폼",
   stack: "React 18, Vite, Tailwind CSS, Figma, Node.js, Express.js, MySQL, Git, GitHub, VS Code, REST API",
   modal: {
@@ -70,7 +70,7 @@ const projects = [
 },
 {
   title: "모투슛(Motoshoot)",
-  imgSrc: "./img/motoshoot.png",
+  imgSrc: "./img/Motoshoot.svg",
   description: "주식 초보자도 쉽게 가상 투자 경험을 쌓을 수 있는 실전형 모의투자 웹앱",
   stack: "Next.js, Tailwind CSS, React, TypeScript, NestJS, PostgreSQL, Supabase, Figma, Git, GitHub, Docker, 공공데이터포털 API",
   modal: {
@@ -168,18 +168,22 @@ const projects = [
       "React", "TypeScript", "Vite", "Canvas API", "Git", "GitHub", "VS Code", "Figma", "AWS"
     ],
     difficulties: [
-      "Canvas API를 활용해 직접 2D 그래픽, 충돌 판정, 애니메이션 루프를 구현하는 과정에서 다양한 시행착오를 겪었음.",
-      "React의 상태 관리와 Canvas의 직접적인 렌더링 사이에서 게임 성능과 UI 업데이트 타이밍을 조율하는 것이 어려웠음.",
-      "난이도 조절(속도 증가, 장애물 생성 빈도 등) 및 점수 시스템 구현에서 버그가 발생했지만, 게임 개발 관련 문서와 오픈소스 예제를 참고해 해결함."
+      "2D 게임 그래픽 및 애니메이션을 직접 구현하는 데 어려움이 있었습니다.",
+      "인터넷 검색과 GPT를 통해 PIXI.js를 알게 되었고, 이를 활용해 2D 게임을 성공적으로 구현했습니다.",
+      "캐릭터가 달린 시간을 초 단위로 기록하고 싶었으나, 기본적으로 ms 단위로 기록되어 원하는 대로 동작하지 않았습니다.",
+      "ms 누적용 변수를 만들어, 1초(1000ms)마다 score를 1씩 증가시키는 방식으로 개선했습니다.",
+      "장애물 등장 타이밍을 점프 가능한 간격으로 랜덤하게 제어하는 부분이 어려웠습니다.",
+      "이미지와 위치를 랜덤으로 지정하고, 장애물 배열과 상태를 관리하여 Pixi 무대에 동적으로 추가하는 로직으로 해결했습니다."
     ],
     outputs: [
-      "키보드(또는 터치) 입력 기반 캐릭터 이동/점프",
-      "실시간 장애물 생성 및 충돌 판정 기능",
-      "점수 집계, 최고 기록 저장 기능",
+      "/img/RunnerFirst.svg",
+      "/img/running.svg",
+      "/img/gameover.svg",
     ],
     codes: [
-      "Canvas 게임 루프 및 렌더링 함수",
-      "충돌 판정 및 점수 계산 로직"
+      "/img/UsepixiJS.svg",
+      "/img/Mss.svg",
+      "/img/Obj.svg",
     ]
   }
 }
