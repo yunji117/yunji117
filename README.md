@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## Hi there 👋
 
 <!--
@@ -15,7 +14,6 @@ Here are some ideas to get you started:
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
 -->
-=======
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
@@ -70,4 +68,75 @@ export default tseslint.config({
   },
 })
 ```
->>>>>>> origin/gh-pages
+
+```
+yunji117
+├─ .nojekyll
+├─ eslint.config.js
+├─ firstpopol.html
+├─ img
+│  ├─ banpick.png
+│  ├─ Create.svg
+│  ├─ Dayjscode.svg
+│  ├─ DayTime.svg
+│  ├─ DayTimeQRcode.svg
+│  ├─ Delete.svg
+│  ├─ Elcode.svg
+│  ├─ firstDayTime.svg
+│  ├─ firstmealpicker.svg
+│  ├─ FirstWrite.svg
+│  ├─ gameover.svg
+│  ├─ ingDayTime.svg
+│  ├─ Mealpicker.svg
+│  ├─ Mealpickerinsert.svg
+│  ├─ MealpickerQRcode.svg
+│  ├─ modal.svg
+│  ├─ Motoshoot.svg
+│  ├─ Mss.svg
+│  ├─ Obj.svg
+│  ├─ OutPutDayTime.svg
+│  ├─ pooptime.png
+│  ├─ Pooptime.svg
+│  ├─ react-custom-roulettecode.svg
+│  ├─ RunnerFirst.svg
+│  ├─ Runnergame.svg
+│  ├─ running.svg
+│  ├─ Update.svg
+│  ├─ UsepixiJS.svg
+│  ├─ write.png
+│  ├─ Writing.svg
+│  ├─ writingcut.png
+│  └─ yunjicharacternobg.png
+├─ index.html
+├─ package-lock.json
+├─ package.json
+├─ postcss.config.js
+├─ public
+│  └─ vite.svg
+├─ README.md
+├─ src
+│  ├─ App.css
+│  ├─ App.tsx
+│  ├─ assets
+│  │  └─ react.svg
+│  ├─ components
+│  │  ├─ About.tsx
+│  │  ├─ Contact.tsx
+│  │  ├─ Encyclopedia.tsx
+│  │  ├─ Hero.tsx
+│  │  ├─ ProjectCard.tsx
+│  │  ├─ ProjectModal.tsx
+│  │  ├─ ProjectSection.tsx
+│  │  ├─ Sidebar.tsx
+│  │  ├─ Skill.tsx
+│  │  └─ Warning.tsx
+│  ├─ index.css
+│  ├─ main.tsx
+│  └─ vite-env.d.ts
+├─ tailwind.config.js
+├─ tsconfig.app.json
+├─ tsconfig.json
+├─ tsconfig.node.json
+└─ vite.config.ts
+
+```
