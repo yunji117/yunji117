@@ -20,11 +20,22 @@ const ProjectCard = ({
   const baseBg = isPersonal ? "bg-[#C4E1E6]" : "bg-orange-100";
   const hoverBg = isPersonal ? "hover:bg-[#A4CCD9]" : "hover:bg-[#FFD09B]";
 
+  const badgeText = isPersonal ? "Personal Project" : "Team Project";
+  const badgeBg = isPersonal ? "bg-[#81b9cb]" : "bg-orange-400";
+
   return (
     <div
-      className={`p-4 rounded-[1vw] cursor-pointer ${baseBg} ${hoverBg} transition duration-200`}
+      className={`relative p-4 rounded-[1vw] cursor-pointer ${baseBg} ${hoverBg} transition duration-200`}
       onClick={onClick}
     >
+      {/* 뱃지 표시 */}
+      <span
+        className={`absolute left-3 top-3 px-3 py-1 text-xs font-semibold rounded-full text-white shadow ${badgeBg}`}
+      >
+        {badgeText}
+      </span>
+      <br />
+      <br />
       <div className="h-40 mb-4 flex justify-center items-center">
         <img src={imgSrc} alt={`${title} 이미지`} className="h-40" />
       </div>
@@ -35,6 +46,7 @@ const ProjectCard = ({
         <br />
         <br />
         stack: {stack}
+        
       </p>
     </div>
   );
