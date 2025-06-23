@@ -215,7 +215,11 @@ const ProjectSection = () => {
             title={projects[modalIdx].title}
             overview={projects[modalIdx].modal.overview}
             goal={projects[modalIdx].modal.goal}
-            skill={projects[modalIdx].modal.skill}
+            skill={
+              Array.isArray(projects[modalIdx].modal.skill)
+                ? projects[modalIdx].modal.skill
+                : [projects[modalIdx].modal.skill] // string이면 배열로 감싸서 전달
+            }
             difficulties={projects[modalIdx].modal.difficulties}
             outputs={projects[modalIdx].modal.outputs}
             codes={projects[modalIdx].modal.codes}
