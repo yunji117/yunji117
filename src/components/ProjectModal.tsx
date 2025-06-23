@@ -7,7 +7,7 @@ interface ProjectModalProps {
   title: string;
   overview: string;
   goal: string;
-  skill: string;
+  skill: string[];
   difficulties: string[];
   outputs?: string[];
   codes?: string[];
