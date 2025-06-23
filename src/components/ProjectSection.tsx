@@ -6,7 +6,7 @@ import ProjectModal from "./ProjectModal";
 const projects = [
   {
     title: "오늘 하루",
-    imgSrc: "./img/FirstWrite.svg",
+    imgSrc: "/img/FirstWrite.svg",
     description: "CRUD를 활용한 글쓰기 웹 서비스",
     stack: "HTML5/CSS3, JavaScript, Github, VS Code, npm, express",
     modal: {
@@ -23,7 +23,7 @@ const projects = [
   },
   {
   title: "리그오브레전드 벤픽",
-  imgSrc: "./img/banpick.png",
+  imgSrc: "/img/banpick.png",
   description: "게임 리그오브레전드의 챔피언 선택 과정을 실제처럼 체험할 수 있는 모의 벤픽 웹앱",
   stack: "HTML, Tailwind CSS, Git, Github, React, Vite, Figma, SQLite3, Nodemon, VS Code, Express.js, Node.js, npm, REST API",
   modal: {
@@ -40,7 +40,7 @@ const projects = [
 },
 {
   title: "풉타임(POOP TIME)",
-  imgSrc: "./img/Pooptime.svg",
+  imgSrc: "/img/Pooptime.svg",
   description: "짧은 시간에 의미있는 시간을 보내고 싶은 분들을 위한 웹 플랫폼",
   stack: "React 18, Vite, Tailwind CSS, Figma, Node.js, Express.js, MySQL, Git, GitHub, VS Code, REST API",
   modal: {
@@ -70,7 +70,7 @@ const projects = [
 },
 {
   title: "모투슛(Motoshoot)",
-  imgSrc: "./img/Motoshoot.svg",
+  imgSrc: "/img/Motoshoot.svg",
   description: "주식 초보자도 쉽게 가상 투자 경험을 쌓을 수 있는 실전형 모의투자 웹앱",
   stack: "Next.js, Tailwind CSS, React, TypeScript, NestJS, PostgreSQL, Supabase, Figma, Git, GitHub, Docker, 공공데이터포털 API",
   modal: {
@@ -100,7 +100,7 @@ const projects = [
 },
 {
   title: "DayTime",
-  imgSrc: "./img/DayTime.svg",
+  imgSrc: "/img/DayTime.svg",
   description: "일상에서 자주 사용하는 날짜와 시간 계산을 쉽고 빠르게 도와주는 웹앱",
   stack: "React, TypeScript, Vite, Tailwind CSS, dayjs, Git, GitHub, VS Code, Figma, Github Actions",
   isPersonal: true,
@@ -129,7 +129,7 @@ const projects = [
 },
 {
   title: "Meal Picker",
-  imgSrc: "./img/Mealpicker.svg",
+  imgSrc: "/img/Mealpicker.svg",
   description: "오늘 메뉴 고민을 한 번에 해결하는 랜덤 식사 추천 웹앱",
   stack: "React, TypeScript, Vite, Tailwind CSS, Git, GitHub, VS Code, Figma, framer-motion, react-custom-roulette, Vercel",
   isPersonal: true,
@@ -157,7 +157,7 @@ const projects = [
 },
 {
   title: "Runner Game",
-  imgSrc: "./img/Runnergame.svg",
+  imgSrc: "/img/Runnergame.svg",
   description: "실시간으로 달리고 점프하며 장애물을 피하는 2D 러너 웹 게임",
   stack: "React, TypeScript, Vite, Canvas API, Git, GitHub, VS Code, Figma, AWS",
   isPersonal: true,
