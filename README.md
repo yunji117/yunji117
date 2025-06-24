@@ -69,49 +69,50 @@ export default tseslint.config({
 })
 ```
 
+
 ```
 yunji117
 ├─ .nojekyll
 ├─ eslint.config.js
 ├─ firstpopol.html
-├─ img
-│  ├─ banpick.png
-│  ├─ Create.svg
-│  ├─ Dayjscode.svg
-│  ├─ DayTime.svg
-│  ├─ DayTimeQRcode.svg
-│  ├─ Delete.svg
-│  ├─ Elcode.svg
-│  ├─ firstDayTime.svg
-│  ├─ firstmealpicker.svg
-│  ├─ FirstWrite.svg
-│  ├─ gameover.svg
-│  ├─ ingDayTime.svg
-│  ├─ Mealpicker.svg
-│  ├─ Mealpickerinsert.svg
-│  ├─ MealpickerQRcode.svg
-│  ├─ modal.svg
-│  ├─ Motoshoot.svg
-│  ├─ Mss.svg
-│  ├─ Obj.svg
-│  ├─ OutPutDayTime.svg
-│  ├─ pooptime.png
-│  ├─ Pooptime.svg
-│  ├─ react-custom-roulettecode.svg
-│  ├─ RunnerFirst.svg
-│  ├─ Runnergame.svg
-│  ├─ running.svg
-│  ├─ Update.svg
-│  ├─ UsepixiJS.svg
-│  ├─ write.png
-│  ├─ Writing.svg
-│  ├─ writingcut.png
-│  └─ yunjicharacternobg.png
 ├─ index.html
 ├─ package-lock.json
 ├─ package.json
 ├─ postcss.config.js
 ├─ public
+│  ├─ img
+│  │  ├─ banpick.png
+│  │  ├─ Create.svg
+│  │  ├─ Dayjscode.svg
+│  │  ├─ DayTime.svg
+│  │  ├─ DayTimeQRcode.svg
+│  │  ├─ Delete.svg
+│  │  ├─ Elcode.svg
+│  │  ├─ firstDayTime.svg
+│  │  ├─ firstmealpicker.svg
+│  │  ├─ FirstWrite.svg
+│  │  ├─ gameover.svg
+│  │  ├─ ingDayTime.svg
+│  │  ├─ Mealpicker.svg
+│  │  ├─ Mealpickerinsert.svg
+│  │  ├─ MealpickerQRcode.svg
+│  │  ├─ modal.svg
+│  │  ├─ Motoshoot.svg
+│  │  ├─ Mss.svg
+│  │  ├─ Obj.svg
+│  │  ├─ OutPutDayTime.svg
+│  │  ├─ pooptime.png
+│  │  ├─ Pooptime.svg
+│  │  ├─ react-custom-roulettecode.svg
+│  │  ├─ RunnerFirst.svg
+│  │  ├─ Runnergame.svg
+│  │  ├─ running.svg
+│  │  ├─ Update.svg
+│  │  ├─ UsepixiJS.svg
+│  │  ├─ write.png
+│  │  ├─ Writing.svg
+│  │  ├─ writingcut.png
+│  │  └─ yunjicharacternobg.png
 │  └─ vite.svg
 ├─ README.md
 ├─ src
@@ -129,6 +130,7 @@ yunji117
 │  │  ├─ ProjectSection.tsx
 │  │  ├─ Sidebar.tsx
 │  │  ├─ Skill.tsx
+│  │  ├─ thanks.tsx
 │  │  └─ Warning.tsx
 │  ├─ index.css
 │  ├─ main.tsx
