@@ -6,7 +6,7 @@ import ProjectModal from "./ProjectModal";
 const projects = [
   {
     title: "오늘 하루",
-    imgSrc: "/img/FirstWrite.svg",
+    imgSrc: `${import.meta.env.BASE_URL}/img/FirstWrite.svg`,
     description: "CRUD를 활용한 글쓰기 웹 서비스",
     stack: "HTML5/CSS3, JavaScript, Github, VS Code, npm, express",
     modal: {
@@ -17,13 +17,13 @@ const projects = [
         "CRUD를 처음 다뤄봐서 데이터 저장/수정/삭제 로직이 헷갈렸다",
         "예제 코드와 문서 참고, 팀원들과 함께 코드 리뷰하며 해결했다"
       ],
-      outputs: ["/img/FirstWrite.svg", "/img/Writing.svg", "/img/modal.svg"],
-      codes: ["/img/Create.svg", "/img/Update.svg", "/img/Delete.svg"]
+      outputs: [`${import.meta.env.BASE_URL}/img/FirstWrite.svg`, `${import.meta.env.BASE_URL}/img/Writing.svg`, `${import.meta.env.BASE_URL}/img/modal.svg`],
+      codes: [`${import.meta.env.BASE_URL}/img/Create.svg`, `${import.meta.env.BASE_URL}/img/Update.svg`, `${import.meta.env.BASE_URL}/img/Delete.svg`]
     }
   },
   {
   title: "리그오브레전드 벤픽",
-  imgSrc: "/img/banpick.png",
+  imgSrc: `${import.meta.env.BASE_URL}/img/banpick.png`,
   description: "게임 리그오브레전드의 챔피언 선택 과정을 실제처럼 체험할 수 있는 모의 벤픽 웹앱",
   stack: "HTML, Tailwind CSS, Git, Github, React, Vite, Figma, SQLite3, Nodemon, VS Code, Express.js, Node.js, npm, REST API",
   modal: {
@@ -40,7 +40,7 @@ const projects = [
 },
 {
   title: "풉타임(POOP TIME)",
-  imgSrc: "/img/Pooptime.svg",
+  imgSrc: `${import.meta.env.BASE_URL}/img/Pooptime.svg`,
   description: "짧은 시간에 의미있는 시간을 보내고 싶은 분들을 위한 웹 플랫폼",
   stack: "React 18, Vite, Tailwind CSS, Figma, Node.js, Express.js, MySQL, Git, GitHub, VS Code, REST API",
   modal: {
@@ -70,7 +70,7 @@ const projects = [
 },
 {
   title: "모투슛(Motoshoot)",
-  imgSrc: "/img/Motoshoot.svg",
+  imgSrc: `${import.meta.env.BASE_URL}/img/Motoshoot.svg`,
   description: "주식 초보자도 쉽게 가상 투자 경험을 쌓을 수 있는 실전형 모의투자 웹앱",
   stack: "Next.js, Tailwind CSS, React, TypeScript, NestJS, PostgreSQL, Supabase, Figma, Git, GitHub, Docker, 공공데이터포털 API",
   modal: {
@@ -100,7 +100,7 @@ const projects = [
 },
 {
   title: "DayTime",
-  imgSrc: "/img/DayTime.svg",
+  imgSrc: `${import.meta.env.BASE_URL}/img/DayTime.svg`,
   description: "일상에서 자주 사용하는 날짜와 시간 계산을 쉽고 빠르게 도와주는 웹앱",
   stack: "React, TypeScript, Vite, Tailwind CSS, dayjs, Git, GitHub, VS Code, Figma, Github Actions",
   isPersonal: true,
@@ -117,19 +117,19 @@ const projects = [
       "Copilot 추천 코드와 배열, 기준일 적용으로 문제를 해결했다."
       ],
     outputs: [
-      "/img/firstDayTime.svg",
-      "/img/ingDayTime.svg",
-      "/img/DayTimeQRcode.svg",
+      `${import.meta.env.BASE_URL}/img/firstDayTime.svg`,
+      `${import.meta.env.BASE_URL}/img/ingDayTime.svg`,
+      `${import.meta.env.BASE_URL}/img/DayTimeQRcode.svg`,
     ],
     codes: [
-      "/img/Dayjscode.svg",
-      "/img/Elcode.svg"
+      `${import.meta.env.BASE_URL}/img/Dayjscode.svg`,
+      `${import.meta.env.BASE_URL}/img/Elcode.svg`
     ]
   }
 },
 {
   title: "Meal Picker",
-  imgSrc: "/img/Mealpicker.svg",
+  imgSrc: `${import.meta.env.BASE_URL}/img/Mealpicker.svg`,
   description: "오늘 메뉴 고민을 한 번에 해결하는 랜덤 식사 추천 웹앱",
   stack: "React, TypeScript, Vite, Tailwind CSS, Git, GitHub, VS Code, Figma, framer-motion, react-custom-roulette, Vercel",
   isPersonal: true,
@@ -146,18 +146,18 @@ const projects = [
       "VSCode에 내장된 Copilot에 여러 번 물어보며, 추천 코드를 참고하고 CSS 속성(writing-mode, transform 등)을 조합해가며 문제를 해결했다."
     ],
     outputs: [
-      "/img/firstmealpicker.svg",
-      "/img/Mealpickerinsert.svg",
-      "/img/MealpickerQRcode.svg",
+      `${import.meta.env.BASE_URL}/img/firstmealpicker.svg`,
+      `${import.meta.env.BASE_URL}/img/Mealpickerinsert.svg`,
+      `${import.meta.env.BASE_URL}/img/MealpickerQRcode.svg`,
     ],
     codes: [
-      "/img/react-custom-roulettecode.svg",
+      `${import.meta.env.BASE_URL}/img/react-custom-roulettecode.svg`,
     ]
   }
 },
 {
   title: "Runner Game",
-  imgSrc: "/img/Runnergame.svg",
+  imgSrc: `${import.meta.env.BASE_URL}/img/Runnergame.svg`,
   description: "실시간으로 달리고 점프하며 장애물을 피하는 2D 러너 웹 게임",
   stack: "React, TypeScript, Vite, Canvas API, Git, GitHub, VS Code, Figma, AWS",
   isPersonal: true,
@@ -176,14 +176,14 @@ const projects = [
       "이미지와 위치를 랜덤으로 지정하고, 장애물 배열과 상태를 관리하여 Pixi 무대에 동적으로 추가하는 로직으로 해결했습니다."
     ],
     outputs: [
-      "/img/RunnerFirst.svg",
-      "/img/running.svg",
-      "/img/gameover.svg",
+      `${import.meta.env.BASE_URL}/img/RunnerFirst.svg`,
+      `${import.meta.env.BASE_URL}/img/running.svg`,
+      `${import.meta.env.BASE_URL}/img/gameover.svg`,
     ],
     codes: [
-      "/img/UsepixiJS.svg",
-      "/img/Mss.svg",
-      "/img/Obj.svg",
+      `${import.meta.env.BASE_URL}/img/UsepixiJS.svg`,
+      `${import.meta.env.BASE_URL}/img/Mss.svg`,
+      `${import.meta.env.BASE_URL}/img/Obj.svg`,
     ]
   }
 }
