@@ -119,7 +119,7 @@ const projects = [
     outputs: [
       `${import.meta.env.BASE_URL}/img/firstDayTime.svg`,
       `${import.meta.env.BASE_URL}/img/ingDayTime.svg`,
-      `${import.meta.env.BASE_URL}/img/DayTimeQRcode.svg`,
+      `${import.meta.env.BASE_URL}/img/DayTimeQR.svg`,
     ],
     codes: [
       `${import.meta.env.BASE_URL}/img/Dayjscode.svg`,
@@ -148,7 +148,7 @@ const projects = [
     outputs: [
       `${import.meta.env.BASE_URL}/img/firstmealpicker.svg`,
       `${import.meta.env.BASE_URL}/img/Mealpickerinsert.svg`,
-      `${import.meta.env.BASE_URL}/img/MealpickerQRcode.svg`,
+      `${import.meta.env.BASE_URL}/img/MealPickerQRCode.svg`,
     ],
     codes: [
       `${import.meta.env.BASE_URL}/img/react-custom-roulettecode.svg`,
