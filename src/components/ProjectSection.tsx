@@ -148,7 +148,7 @@ const projects = [
     outputs: [
       `${import.meta.env.BASE_URL}/img/firstmealpicker.svg`,
       `${import.meta.env.BASE_URL}/img/Mealpickerinsert.svg`,
-      `${import.meta.env.BASE_URL}/img/MealPickerQRCode.svg`,
+      `${import.meta.env.BASE_URL}/img/MealpickerQRcode.svg`,
     ],
     codes: [
       `${import.meta.env.BASE_URL}/img/react-custom-roulettecode.svg`,
