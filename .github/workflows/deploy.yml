@@ -21,4 +21,4 @@ jobs:
 
         with:
           github_token : ${{secrets.GITHUB_TOKEN}}
-          publish_dir : ./ # 현재 폴더 (html 파일이 있는 곳)
+          publish_dir : ./docs
