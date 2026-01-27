@@ -2,11 +2,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// 깃헙아이디/레포명/ 으로 설정!
 export default defineConfig({
   plugins: [react()],
-  base: '/yunji117/',
+  base: '/', // Vercel 배포용 루트 경로
   build: {
-    outDir: 'dist', // 빌드 결과물을 dist 폴더에 생성
+    outDir: 'dist',
   },
 })
