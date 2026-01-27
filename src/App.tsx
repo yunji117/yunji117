@@ -1,27 +1,33 @@
-// src/App.tsx
-import Sidebar from "./components/Sidebar";
-import Hero from "./components/Hero";
-import Warning from "./components/Warning";
-import About from "./components/About";
-import Encyclopedia from "./components/Encyclopedia";
-import Skill from "./components/Skill";
-import ProjectSection from "./components/ProjectSection";
-import Contact from "./components/Contact";
-import Thanks from "./components/thanks"
+import { useEffect } from 'react';
+import { useThemeStore } from './store/themeStore';
+import Header from './components/Header';
+import Hero from './components/Hero';
+import About from './components/About';
+import Skill from './components/Skill';
+import ProjectSection from './components/ProjectSection';
+import Contact from './components/Contact';
 
 function App() {
+  const { theme } = useThemeStore();
+
+  useEffect(() => {
+    const html = document.documentElement;
+    if (theme === 'dark') {
+      html.classList.add('dark');
+    } else {
+      html.classList.remove('dark');
+    }
+  }, [theme]);
+
   return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <main className="mt-20 sm:mt-0 sm:ml-40 w-full">
+    <div className="w-full min-h-screen bg-white dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <Header />
+      <main className="pt-20">
         <Hero />
-        <Warning />
         <About />
-        <Encyclopedia />
         <Skill />
         <ProjectSection />
         <Contact />
-        <Thanks/>
       </main>
     </div>
   );
