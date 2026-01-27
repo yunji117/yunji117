@@ -7,6 +7,6 @@ export default defineConfig({
   plugins: [react()],
   base: '/yunji117/',
   build: {
-    outDir: 'docs', // 빌드 결과물을 docs 폴더에 생성
+    outDir: 'dist', // 빌드 결과물을 dist 폴더에 생성
   },
 })
