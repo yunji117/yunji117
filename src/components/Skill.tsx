@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import {
   Code2,
@@ -9,23 +9,23 @@ import {
 const Skill = () => {
   const { ref, inView } = useInView({
     threshold: 0.2,
-    triggerOnce: true,
+    triggerOnce: false,
   });
 
   const skills = [
     {
-      category: 'Frontend',
-      icon: Code2,
-      color: 'from-blue-500 to-cyan-500',
+      category: 'DevOps & Tools',
+      icon: GitBranch,
+      color: 'from-green-500 to-emerald-500',
       items: [
-        'HTML / CSS / Tailwind CSS',
-        'React',
-        'Next.js',
-        'Vite',
-        'JavaScript / TypeScript',
-        'Electron',
-        'Jest (Testing)',
-        'Figma (UI/UX Design)',
+        'Git / Github',
+        'Notion',
+        'Postman',
+        'npm / yarn',
+        'VS Code',
+        'Slack',
+        'AWS / Vercel / Github Action',
+        'Ubuntu / PowerShell',
       ],
     },
     {
@@ -44,48 +44,43 @@ const Skill = () => {
       ],
     },
     {
-      category: 'DevOps & Tools',
-      icon: GitBranch,
-      color: 'from-green-500 to-emerald-500',
+      category: 'Frontend',
+      icon: Code2,
+      color: 'from-blue-500 to-cyan-500',
       items: [
-        'Git / Github',
-        'Notion',
-        'Postman',
-        'npm / yarn',
-        'VS Code',
-        'Slack',
-        'AWS / Vercel / Github Action',
-        'Ubuntu / PowerShell',
+        'HTML / CSS / Tailwind CSS',
+        'React',
+        'Next.js',
+        'Vite',
+        'JavaScript / TypeScript',
+        'Electron',
+        'Jest (Testing)',
+        'Figma (UI/UX Design)',
       ],
     },
   ];
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
+        staggerChildren: 0.15,
+        delayChildren: 0.1,
       },
     },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, rotateY: -90, x: -50 },
     visible: {
       opacity: 1,
-      y: 0,
-      transition: { duration: 0.8 },
-    },
-  };
-
-  const skillItemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
+      rotateY: 0,
       x: 0,
-      transition: { duration: 0.5 },
+      transition: { 
+        duration: 0.7,
+        ease: [0.22, 0.61, 0.36, 1],
+      },
     },
   };
 
@@ -111,6 +106,7 @@ const Skill = () => {
           <motion.div
             variants={containerVariants}
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            style={{ perspective: 1200 }}
           >
             {skills.map((skillGroup, index) => {
               const Icon = skillGroup.icon;
@@ -119,6 +115,10 @@ const Skill = () => {
                   key={index}
                   variants={itemVariants}
                   className="group glass p-8 rounded-2xl hover:shadow-2xl dark:hover:shadow-cyan-500/20 transition-all duration-300 hover:-translate-y-2"
+                  style={{ 
+                    transformStyle: 'preserve-3d',
+                    transformOrigin: 'center center',
+                  }}
                 >
                   {/* 아이콘 */}
                   <div
@@ -133,25 +133,19 @@ const Skill = () => {
                   </h3>
 
                   {/* 스킬 목록 */}
-                  <motion.ul
-                    className="space-y-3"
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate={inView ? 'visible' : 'hidden'}
-                  >
+                  <ul className="space-y-3">
                     {skillGroup.items.map((skill, skillIndex) => (
-                      <motion.li
+                      <li
                         key={skillIndex}
-                        variants={skillItemVariants}
                         className="flex items-start gap-3 text-gray-700 dark:text-gray-300"
                       >
                         <span
                           className={`w-1.5 h-1.5 rounded-full mt-2 bg-gradient-to-r ${skillGroup.color} flex-shrink-0`}
                         />
                         <span className="text-sm">{skill}</span>
-                      </motion.li>
+                      </li>
                     ))}
-                  </motion.ul>
+                  </ul>
                 </motion.div>
               );
             })}
