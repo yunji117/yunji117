@@ -131,6 +131,7 @@ const projects: Project[] = [
       `${import.meta.env.BASE_URL}img/Dayjscode.svg`,
       `${import.meta.env.BASE_URL}img/Elcode.svg`,
     ],
+    link: 'https://getdaytimes.com',
   },
   {
     id: 6,
@@ -156,6 +157,7 @@ const projects: Project[] = [
     challengeImages: [
       `${import.meta.env.BASE_URL}img/react-custom-roulettecode.svg`,
     ],
+    link: 'https://whatlunch.getdaytimes.com/lunch',
   },
   {
     id: 7,
@@ -177,8 +179,8 @@ const projects: Project[] = [
     ],
     outputs: [
       `${import.meta.env.BASE_URL}public/img/Runnergame.svg`,
-      `${import.meta.env.BASE_URL}public/img/Runnergameinsert.svg`,
-      `${import.meta.env.BASE_URL}public/img/RunnergameQRcode.svg`,
+      `${import.meta.env.BASE_URL}public/img/RunnerFirst.svg`,
+      `${import.meta.env.BASE_URL}public/img/running.svg`,
     ],
     challengeImages: [
       `${import.meta.env.BASE_URL}img/UsepixiJS.svg`,
