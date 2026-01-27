@@ -138,7 +138,7 @@ const projects: Project[] = [
     title: 'Meal Picker',
     shortDesc: '식사 메뉴 추천 웹앱',
     description: '매일 반복되는 메뉴 고민을 덜어주는 식사 메뉴 추천 웹앱입니다.',
-    image: `${import.meta.env.BASE_URL}public/img/Mealpicker.svg`, 
+    image: `${import.meta.env.BASE_URL}img/Mealpicker.svg`, 
     category: 'personal',
     stack: ['React', 'TypeScript', 'Vite', 'Tailwind CSS', 'Git', 'GitHub', 'VS Code', 'Figma', 'framer-motion', 'react-custom-roulette', 'Vercel'],
     overview: 'Meal Picker는 매일 반복되는 메뉴 고민을 덜어주는 식사 메뉴 추천 웹앱입니다. 한식, 중식, 양식 등 다양한 카테고리와 사용자 취향에 맞춘 필터링, 완전히 랜덤 추천 등 여러 방식으로 메뉴를 제안하여 일상 속 작은 결정을 쉽게 만들어 줍니다.',
@@ -150,9 +150,9 @@ const projects: Project[] = [
       'VSCode에 내장된 Copilot에 여러 번 물어보며, 추천 코드를 참고하고 CSS 속성(writing-mode, transform 등)을 조합해가며 문제를 해결했다.',
     ],
     outputs: [
-      `${import.meta.env.BASE_URL}public/img/Mealpicker.svg`,
-      `${import.meta.env.BASE_URL}public/img/Mealpickerinsert.svg`,
-      `${import.meta.env.BASE_URL}public/img/MealpickerQRcode.svg`,
+      `${import.meta.env.BASE_URL}img/Mealpicker.svg`,
+      `${import.meta.env.BASE_URL}img/Mealpickerinsert.svg`,
+      `${import.meta.env.BASE_URL}img/MealpickerQRcode.svg`,
     ],
     challengeImages: [
       `${import.meta.env.BASE_URL}img/react-custom-roulettecode.svg`,
@@ -178,9 +178,9 @@ const projects: Project[] = [
       '이미지와 위치를 랜덤으로 지정하고, 장애물 배열과 상태를 관리하여 Pixi 무대에 동적으로 추가하는 로직으로 해결했습니다.',
     ],
     outputs: [
-      `${import.meta.env.BASE_URL}public/img/Runnergame.svg`,
-      `${import.meta.env.BASE_URL}public/img/RunnerFirst.svg`,
-      `${import.meta.env.BASE_URL}public/img/running.svg`,
+      `${import.meta.env.BASE_URL}img/Runnergame.svg`,
+      `${import.meta.env.BASE_URL}img/RunnerFirst.svg`,
+      `${import.meta.env.BASE_URL}img/running.svg`,
     ],
     challengeImages: [
       `${import.meta.env.BASE_URL}img/UsepixiJS.svg`,
