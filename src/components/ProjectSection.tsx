@@ -164,7 +164,7 @@ const projects: Project[] = [
     title: 'Runner Game',
     shortDesc: '식사 메뉴 추천 웹앱',
     description: '매일 반복되는 메뉴 고민을 덜어주는 식사 메뉴 추천 웹앱입니다.',
-    image: `${import.meta.env.BASE_URL}public/img/Runnergame.svg`, 
+    image: `${import.meta.env.BASE_URL}img/Runnergame.svg`, 
     category: 'personal',
     stack: ['React', 'TypeScript', 'Vite', 'Canvas API', 'Git', 'GitHub', 'VS Code', 'Figma', 'AWS'],
     overview: 'Runner Game은 사용자가 키보드(또는 터치)로 캐릭터를 조작하여 장애물을 피하며 최대한 멀리 달리는 간단한 2D 러너 게임입니다. 실시간 게임 로직과 Canvas API 기반 애니메이션을 React 환경에서 직접 구현하며, 웹 프론트엔드에서 인터랙티브한 콘텐츠 제작 경험을 쌓았습니다.',
