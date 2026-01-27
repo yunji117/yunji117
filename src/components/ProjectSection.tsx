@@ -294,7 +294,7 @@ const ProjectSection = () => {
             variants={containerVariants}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8"
           >
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               {filteredProjects.map((project) => (
                 <motion.div
                   key={project.id}
