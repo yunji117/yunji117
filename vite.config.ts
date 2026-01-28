@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/', // Vercel 배포용 루트 경로
+  base: '/yunji117/', // GitHub Pages 배포용 경로
   build: {
     outDir: 'dist',
   },
