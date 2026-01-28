@@ -39,7 +39,7 @@ const Header = () => {
 
           {/* 네비게이션 링크 */}
           <div className="hidden md:flex items-center gap-8">
-            {['hero', 'about', 'projects', 'skills', 'contact'].map((item) => (
+            {['hero', 'about', 'skills', 'projects', 'contact'].map((item) => (
               <motion.button
                 key={item}
                 onClick={() => handleNavClick(item)}
