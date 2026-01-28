@@ -3,6 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { X, ExternalLink, Github } from 'lucide-react';
 
+// 이미지 경로 helper
+const getImagePath = (imageName: string) => {
+  return new URL(`../assets/img/${imageName}`, import.meta.url).href;
+};
+
 interface Project {
   id: number;
   title: string;
@@ -26,7 +31,7 @@ const projects: Project[] = [
     title: '오늘 하루',
     shortDesc: 'CRUD를 활용한 글쓰기 웹 서비스',
     description: '간단한 글쓰기를 할 수 있는 웹 서비스로 CRUD 기능을 직접 구현한 개인 프로젝트',
-    image: `${import.meta.env.BASE_URL}img/FirstWrite.svg`,
+    image: getImagePath("FirstWrite.svg"),
     category: 'team',
     stack: ['HTML5', 'CSS3', 'JavaScript', 'Express', 'GitHub'],
     overview: '간단한 글쓰기를 할 수 있는 웹 서비스입니다. CRUD 기능을 처음으로 직접 구현해본 프로젝트입니다.',
@@ -36,16 +41,16 @@ const projects: Project[] = [
       '예제 코드와 문서 참고, 팀원들과 함께 코드 리뷰하며 해결했습니다.'
     ],
     outputs: [
-      `${import.meta.env.BASE_URL}img/FirstWrite.svg`,
-      `${import.meta.env.BASE_URL}img/modal.svg`,
-      `${import.meta.env.BASE_URL}img/write.png`,
-      `${import.meta.env.BASE_URL}img/Writing.svg`,
-      `${import.meta.env.BASE_URL}img/writingcut.png`,
+      getImagePath("FirstWrite.svg"),
+      getImagePath("modal.svg"),
+      getImagePath("write.png"),
+      getImagePath("Writing.svg"),
+      getImagePath("writingcut.png"),
     ],
     challengeImages: [
-      `${import.meta.env.BASE_URL}img/Create.svg`,
-      `${import.meta.env.BASE_URL}img/Update.svg`,
-      `${import.meta.env.BASE_URL}img/Delete.svg`,
+      getImagePath("Create.svg"),
+      getImagePath("Update.svg"),
+      getImagePath("Delete.svg"),
     ],
   },
   {
@@ -53,7 +58,7 @@ const projects: Project[] = [
     title: '리그오브레전드 벤픽',
     shortDesc: '게임 벤픽 과정을 실제처럼 체험할 수 있는 모의 벤픽 웹앱',
     description: '리그오브레전드의 챔피언 선택 과정을 실제처럼 체험할 수 있는 모의 벤픽 웹앱',
-    image: `${import.meta.env.BASE_URL}img/banpick.png`,
+    image: getImagePath("banpick.png"),
     category: 'team',
     stack: ['React', 'Vite', 'Tailwind CSS', 'Node.js', 'Express', 'SQLite3', 'Figma'],
     overview:
@@ -63,14 +68,14 @@ const projects: Project[] = [
       'Figma를 처음 사용하면서 단축키와 UI 기능에 익숙하지 않아 디자인 협업에 초반 어려움이 있었습니다.',
       '검색과 동료 피드백을 통해 Figma 기능과 워크플로우를 빠르게 습득하고 해결했습니다.',
     ],
-    outputs: [`${import.meta.env.BASE_URL}img/banpick.png`],
+    outputs: [getImagePath("banpick.png")],
   },
   {
     id: 3,
     title: '풉타임 (POOP TIME)',
     shortDesc: '짧은 시간에 의미있는 시간을 보내는 웹 플랫폼',
     description: '퀴즈, 커뮤니티 등 다양한 콘텐츠로 짧은 시간을 알차게 보낼 수 있는 웹 플랫폼',
-    image: `${import.meta.env.BASE_URL}img/Pooptime.svg`,
+    image: getImagePath("Pooptime.svg"),
     category: 'team',
     stack: ['React', 'Vite', 'Tailwind CSS', 'Node.js', 'Express', 'MySQL', 'TypeScript'],
     overview:
@@ -83,8 +88,8 @@ const projects: Project[] = [
       'Nodemailer와 SMTP를 활용해 기능을 완성하며 실무 경험을 쌓았습니다.',
     ],
     outputs: [
-      `${import.meta.env.BASE_URL}img/pooptime.png`,
-      `${import.meta.env.BASE_URL}img/Pooptime.svg`,
+      getImagePath("pooptime.png"),
+      getImagePath("Pooptime.svg"),
     ],
   },
   {
@@ -92,7 +97,7 @@ const projects: Project[] = [
     title: '모투슛 (Motoshoot)',
     shortDesc: '주식 초보자도 쉽게 가상 투자 경험을 쌓을 수 있는 모의투자 웹앱',
     description: '실제 주식 시장과 유사한 환경에서 가상으로 주식 매매를 연습할 수 있는 모의투자 웹 플랫폼',
-    image: `${import.meta.env.BASE_URL}img/Motoshoot.svg`,
+    image: getImagePath("Motoshoot.svg"),
     category: 'team',
     stack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'NestJS', 'PostgreSQL', 'Supabase', 'Docker'],
     overview:
@@ -104,14 +109,14 @@ const projects: Project[] = [
       'API 데이터를 설계된 UI 구조에 정확히 맵핑하는 과정에서 데이터 구조, 상태관리 등에 많은 시행착오가 있었습니다.',
       '페어프로그래밍 및 코드리뷰를 통해 문제를 해결했습니다.',
     ],
-    outputs: [`${import.meta.env.BASE_URL}img/Motoshoot.svg`],
+    outputs: [getImagePath("Motoshoot.svg")],
   },
   {
     id: 5,
     title: 'DayTime',
     shortDesc: '날짜 계산 및 시간 관련 기능을 제공하는 올인원 웹 도구',
     description: '날짜 계산, 시간 차이, 나이 계산, D-day 등 다양한 시간/날짜 관련 기능을 제공하는 개인 웹 프로젝트',
-    image: `${import.meta.env.BASE_URL}img/DayTime.svg`, 
+    image: getImagePath("DayTime.svg"), 
     category: 'personal',
     stack: ['React', 'Vite', 'TypeScript', 'Tailwind CSS', 'dayjs', 'Git', 'GitHub', 'VS Code', 'Figma', 'Actions'],
     overview: 'DayTime은 날짜 계산, 시간 차이, 나이 계산, D-day 등 다양한 시간/날짜 관련 기능을 제공하는 개인 웹 프로젝트입니다. 복잡한 날짜 계산을 누구나 간편하게 사용할 수 있도록 직관적인 UI와 실용적인 기능에 집중했습니다.',
@@ -123,13 +128,13 @@ const projects: Project[] = [
       'Copilot 추천 코드와 배열, 기준일 적용으로 문제를 해결했다.',
     ],
     outputs: [
-      `${import.meta.env.BASE_URL}img/firstDayTime.svg`,
-      `${import.meta.env.BASE_URL}img/ingDayTime.svg`,
-      `${import.meta.env.BASE_URL}img/DayTimeQR.svg`,
+      getImagePath("firstDayTime.svg"),
+      getImagePath("ingDayTime.svg"),
+      getImagePath("DayTimeQR.svg"),
     ],
     challengeImages: [
-      `${import.meta.env.BASE_URL}img/Dayjscode.svg`,
-      `${import.meta.env.BASE_URL}img/Elcode.svg`,
+      getImagePath("Dayjscode.svg"),
+      getImagePath("Elcode.svg"),
     ],
     link: 'https://getdaytimes.com',
   },
@@ -138,7 +143,7 @@ const projects: Project[] = [
     title: 'Meal Picker',
     shortDesc: '식사 메뉴 추천 웹앱',
     description: '매일 반복되는 메뉴 고민을 덜어주는 식사 메뉴 추천 웹앱입니다.',
-    image: `${import.meta.env.BASE_URL}img/Mealpicker.svg`, 
+    image: getImagePath("Mealpicker.svg"), 
     category: 'personal',
     stack: ['React', 'TypeScript', 'Vite', 'Tailwind CSS', 'Git', 'GitHub', 'VS Code', 'Figma', 'framer-motion', 'react-custom-roulette', 'Vercel'],
     overview: 'Meal Picker는 매일 반복되는 메뉴 고민을 덜어주는 식사 메뉴 추천 웹앱입니다. 한식, 중식, 양식 등 다양한 카테고리와 사용자 취향에 맞춘 필터링, 완전히 랜덤 추천 등 여러 방식으로 메뉴를 제안하여 일상 속 작은 결정을 쉽게 만들어 줍니다.',
@@ -150,12 +155,12 @@ const projects: Project[] = [
       'VSCode에 내장된 Copilot에 여러 번 물어보며, 추천 코드를 참고하고 CSS 속성(writing-mode, transform 등)을 조합해가며 문제를 해결했다.',
     ],
     outputs: [
-      `${import.meta.env.BASE_URL}img/Mealpicker.svg`,
-      `${import.meta.env.BASE_URL}img/Mealpickerinsert.svg`,
-      `${import.meta.env.BASE_URL}img/MealpickerQRcode.svg`,
+      getImagePath("Mealpicker.svg"),
+      getImagePath("Mealpickerinsert.svg"),
+      getImagePath("MealpickerQRcode.svg"),
     ],
     challengeImages: [
-      `${import.meta.env.BASE_URL}img/react-custom-roulettecode.svg`,
+      getImagePath("react-custom-roulettecode.svg"),
     ],
     link: 'https://whatlunch.getdaytimes.com/lunch',
   },
@@ -164,7 +169,7 @@ const projects: Project[] = [
     title: 'Runner Game',
     shortDesc: '식사 메뉴 추천 웹앱',
     description: '매일 반복되는 메뉴 고민을 덜어주는 식사 메뉴 추천 웹앱입니다.',
-    image: `${import.meta.env.BASE_URL}img/Runnergame.svg`, 
+    image: getImagePath("Runnergame.svg"), 
     category: 'personal',
     stack: ['React', 'TypeScript', 'Vite', 'Canvas API', 'Git', 'GitHub', 'VS Code', 'Figma', 'AWS'],
     overview: 'Runner Game은 사용자가 키보드(또는 터치)로 캐릭터를 조작하여 장애물을 피하며 최대한 멀리 달리는 간단한 2D 러너 게임입니다. 실시간 게임 로직과 Canvas API 기반 애니메이션을 React 환경에서 직접 구현하며, 웹 프론트엔드에서 인터랙티브한 콘텐츠 제작 경험을 쌓았습니다.',
@@ -178,14 +183,14 @@ const projects: Project[] = [
       '이미지와 위치를 랜덤으로 지정하고, 장애물 배열과 상태를 관리하여 Pixi 무대에 동적으로 추가하는 로직으로 해결했습니다.',
     ],
     outputs: [
-      `${import.meta.env.BASE_URL}img/Runnergame.svg`,
-      `${import.meta.env.BASE_URL}img/RunnerFirst.svg`,
-      `${import.meta.env.BASE_URL}img/running.svg`,
+      getImagePath("Runnergame.svg"),
+      getImagePath("RunnerFirst.svg"),
+      getImagePath("running.svg"),
     ],
     challengeImages: [
-      `${import.meta.env.BASE_URL}img/UsepixiJS.svg`,
-      `${import.meta.env.BASE_URL}img/Mss.svg`,
-      `${import.meta.env.BASE_URL}img/Obj.svg`,
+      getImagePath("UsepixiJS.svg"),
+      getImagePath("Mss.svg"),
+      getImagePath("Obj.svg"),
     ],
   },
 ];
