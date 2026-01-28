@@ -1,6 +1,7 @@
 // src/components/Hero.tsx
 import { motion, type Variants } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import yunjiAvatar from '../assets/img/yunjicharacternobg.png';
 
 const Hero = () => {
   const handleScroll = () => {
@@ -54,7 +55,7 @@ const Hero = () => {
           <div className="relative w-20 h-20 rounded-full glass flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-500 opacity-80" />
             <img
-              src={`${import.meta.env.BASE_URL}img/yunjicharacternobg.png`}
+              src={yunjiAvatar}
               alt="Yunji avatar"
               className="relative w-full h-full object-contain"
             />
