@@ -15,7 +15,6 @@ interface Project {
   shortDesc: string;
   image: string;
   category: 'personal' | 'team';
-  isLive?: boolean;
   stack: string[];
   overview: string;
   goal: string;
@@ -137,7 +136,6 @@ const projects: Project[] = [
       getImagePath("Dayjscode.svg"),
       getImagePath("Elcode.svg"),
     ],
-    isLive: true,
     link: 'https://getdaytimes.com',
   },
   {
@@ -164,14 +162,13 @@ const projects: Project[] = [
     challengeImages: [
       getImagePath("react-custom-roulettecode.svg"),
     ],
-    isLive: true,
     link: 'https://whatlunch.getdaytimes.com/lunch',
   },
   {
     id: 7,
     title: 'Runner Game',
-    shortDesc: '식사 메뉴 추천 웹앱',
-    description: '매일 반복되는 메뉴 고민을 덜어주는 식사 메뉴 추천 웹앱입니다.',
+    shortDesc: '장애물을 피하며 달리는 2D 러너 게임 웹앱',
+    description: '키보드 또는 터치 조작으로 캐릭터를 움직이며 장애물을 피하고 점수를 쌓는 2D 러너 게임 웹앱입니다.',
     image: getImagePath("Runnergame.svg"), 
     category: 'personal',
     stack: ['React', 'TypeScript', 'Vite', 'Canvas API', 'Git', 'GitHub', 'VS Code', 'Figma', 'AWS'],
@@ -228,7 +225,6 @@ const projects: Project[] = [
       getImagePath("transaction-type-merge-and-sort.svg"),
       getImagePath("transaction-price-query-mapping.svg"),
     ],
-    isLive: true,
   },
 ];
 
@@ -375,7 +371,7 @@ const ProjectSection = () => {
 
                   {/* 카테고리 배지 */}
                   <div className="p-6">
-                    <div className="flex items-center gap-2 mb-3 flex-wrap">
+                    <div className="flex items-center justify-between mb-3">
                       <span
                         className={`text-xs font-bold px-3 py-1 rounded-full ${
                           project.category === 'personal'
@@ -385,11 +381,6 @@ const ProjectSection = () => {
                       >
                         {project.category === 'personal' ? '개인 프로젝트' : '팀 프로젝트'}
                       </span>
-                      {project.isLive && (
-                        <span className="text-xs font-bold px-3 py-1 rounded-full border bg-emerald-500/15 text-emerald-700 border-emerald-500/30 dark:bg-emerald-400/15 dark:text-emerald-300 dark:border-emerald-400/30">
-                          실제 운영중
-                        </span>
-                      )}
                     </div>
 
                     {/* 프로젝트 제목 */}
@@ -461,26 +452,19 @@ const ProjectSection = () => {
                     className="w-full h-64 object-cover rounded-xl mb-6"
                   />
                 )}
-                <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="flex items-center justify-between mb-4">
                   <h2 className="text-4xl font-bold text-gray-900 dark:text-white">
                     {selectedProject.title}
                   </h2>
-                  <div className="flex items-center gap-2 flex-wrap justify-end">
-                    <span
-                      className={`text-sm font-bold px-4 py-2 rounded-full ${
-                        selectedProject.category === 'personal'
-                          ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
-                          : 'bg-purple-500/20 text-purple-600 dark:text-purple-400'
-                      }`}
-                    >
-                      {selectedProject.category === 'personal' ? '개인 프로젝트' : '팀 프로젝트'}
-                    </span>
-                    {selectedProject.isLive && (
-                      <span className="text-sm font-bold px-4 py-2 rounded-full border bg-emerald-500/15 text-emerald-700 border-emerald-500/30 dark:bg-emerald-400/15 dark:text-emerald-300 dark:border-emerald-400/30">
-                        실제 운영중
-                      </span>
-                    )}
-                  </div>
+                  <span
+                    className={`text-sm font-bold px-4 py-2 rounded-full ${
+                      selectedProject.category === 'personal'
+                        ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                        : 'bg-purple-500/20 text-purple-600 dark:text-purple-400'
+                    }`}
+                  >
+                    {selectedProject.category === 'personal' ? '개인 프로젝트' : '팀 프로젝트'}
+                  </span>
                 </div>
               </div>
 
