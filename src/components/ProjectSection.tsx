@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { X, ExternalLink, Github } from 'lucide-react';
@@ -203,6 +203,20 @@ const ProjectSection = () => {
     threshold: 0.1,
     triggerOnce: true,
   });
+
+  useEffect(() => {
+    const shouldLockScroll = selectedProject !== null || selectedImage !== null;
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+
+    if (shouldLockScroll) {
+      body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      body.style.overflow = previousOverflow;
+    };
+  }, [selectedProject, selectedImage]);
 
   const filteredProjects =
     activeCategory === 'all'
