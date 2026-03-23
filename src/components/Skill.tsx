@@ -56,6 +56,7 @@ const Skill = () => {
         'Electron',
         'Jest (Testing)',
         'Figma (UI/UX Design)',
+        'Blender (3D Modeling)',
       ],
     },
   ];
