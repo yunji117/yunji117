@@ -373,7 +373,7 @@ const ProjectSection = () => {
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-3">
                       <span
-                        className={`text-xs font-bold px-3 py-1 rounded-full ${
+                        className={`inline-flex shrink-0 text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap ${
                           project.category === 'personal'
                             ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
                             : 'bg-purple-500/20 text-purple-600 dark:text-purple-400'
@@ -452,12 +452,12 @@ const ProjectSection = () => {
                     className="w-full h-64 object-cover rounded-xl mb-6"
                   />
                 )}
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col items-start gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
                   <h2 className="text-4xl font-bold text-gray-900 dark:text-white">
                     {selectedProject.title}
                   </h2>
                   <span
-                    className={`text-sm font-bold px-4 py-2 rounded-full ${
+                    className={`inline-flex shrink-0 text-sm font-bold px-4 py-2 rounded-full whitespace-nowrap ${
                       selectedProject.category === 'personal'
                         ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
                         : 'bg-purple-500/20 text-purple-600 dark:text-purple-400'
