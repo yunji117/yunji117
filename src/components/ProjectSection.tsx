@@ -15,6 +15,7 @@ interface Project {
   shortDesc: string;
   image: string;
   category: 'personal' | 'team';
+  isLive?: boolean;
   stack: string[];
   overview: string;
   goal: string;
@@ -136,6 +137,7 @@ const projects: Project[] = [
       getImagePath("Dayjscode.svg"),
       getImagePath("Elcode.svg"),
     ],
+    isLive: true,
     link: 'https://getdaytimes.com',
   },
   {
@@ -162,6 +164,7 @@ const projects: Project[] = [
     challengeImages: [
       getImagePath("react-custom-roulettecode.svg"),
     ],
+    isLive: true,
     link: 'https://whatlunch.getdaytimes.com/lunch',
   },
   {
@@ -182,6 +185,7 @@ const projects: Project[] = [
       '장애물 등장 타이밍을 점프 가능한 간격으로 랜덤하게 제어하는 부분이 어려웠습니다.',
       '이미지와 위치를 랜덤으로 지정하고, 장애물 배열과 상태를 관리하여 Pixi 무대에 동적으로 추가하는 로직으로 해결했습니다.',
     ],
+    
     outputs: [
       getImagePath("Runnergame.svg"),
       getImagePath("RunnerFirst.svg"),
@@ -192,6 +196,39 @@ const projects: Project[] = [
       getImagePath("Mss.svg"),
       getImagePath("Obj.svg"),
     ],
+  },
+  {
+    id: 8,
+    title: '부동산 매물 플랫폼',
+    shortDesc: '논산 지역 중심의 부동산 매물 조회 및 상담 웹서비스',
+    description: '논산 지역을 중심으로 원룸, 투룸, 아파트, 빌라, 상가, 토지 등 다양한 매물을 탐색하고 상담 문의까지 연결할 수 있는 부동산 웹 플랫폼입니다.',
+    image: getImagePath("01-home-page.svg"),
+    category: 'personal',
+    stack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Supabase', 'Solapi', 'Git', 'GitHub', 'VS Code','Figma', 'aws', 'solapi'],
+    overview: '논산 부동산 매물 플랫폼은 사용자가 다양한 부동산 매물을 조건별로 검색하고, 상세 정보를 확인한 뒤 바로 상담 문의까지 남길 수 있도록 만든 웹서비스입니다. 메인 매물 목록, 카테고리별 페이지, 상세 페이지, 최근 본 매물, 관심 매물, 관리자 등록/수정 기능까지 포함해 실제 운영을 고려한 흐름으로 구현했습니다.',
+    goal: '부동산 중개 서비스에 필요한 매물 탐색, 상세 조회, 빠른 상담 연결, 관리자 중심의 매물 관리 기능을 하나의 웹서비스로 구현하는 것이 목표였습니다. 사용자는 원하는 조건의 매물을 쉽게 찾고, 관리자는 매물 정보와 커스텀 항목을 유연하게 운영할 수 있도록 구성해 실서비스에 가까운 구조를 만드는 데 집중했습니다.',
+    difficulties: [
+      '매물 종류와 거래 방식이 다양해지면서 목록 조회, 필터링, 상세 정보 구조를 일관되게 설계하는 과정이 쉽지 않았습니다.',
+      '카테고리, 지역, 거래 유형, 가격 조건 등을 조합해 검색할 수 있도록 쿼리와 상태 구조를 분리해 관리하며 복잡도를 줄였습니다.',
+      '초기 로딩 속도와 사용자 경험을 함께 챙기기 위해 서버 측 데이터 조회와 클라이언트 상호작용의 역할을 구분할 필요가 있었습니다.',
+      'Next.js App Router 환경에서 서버 데이터 패칭과 클라이언트 컴포넌트를 분리하고, 일부 영역은 지연 로딩 방식으로 구성해 화면 응답성을 개선했습니다.',
+      '실제 운영 환경에서는 매물 기본 정보 외에도 추가 입력 항목이 계속 바뀔 수 있어 관리자 화면의 확장성이 중요했습니다.',
+      'Supabase와 커스텀 필드 구조를 활용해 관리자 페이지에서 동적으로 항목을 추가·수정할 수 있도록 설계하여 운영 편의성을 높였습니다.',
+      '사용자가 바로 상담으로 이어질 수 있도록 간단한 문의 흐름과 데이터 저장 기능을 안정적으로 연결하는 과정도 필요했습니다.',
+      '문자 상담 폼, 개인정보 동의, 문의 저장 로직을 구현해 매물 탐색에서 상담 접수까지 자연스럽게 이어지도록 구성했습니다.',
+    ],
+    
+    outputs: [
+      getImagePath("02-admin-login-page.svg"),
+      getImagePath("03-property-create-page.svg"),
+      getImagePath("04-property-detail-page.svg"),
+    ],
+    challengeImages: [
+      getImagePath("custom-transaction-type-merge.svg"),
+      getImagePath("transaction-type-merge-and-sort.svg"),
+      getImagePath("transaction-price-query-mapping.svg"),
+    ],
+    isLive: true,
   },
 ];
 
@@ -338,7 +375,7 @@ const ProjectSection = () => {
 
                   {/* 카테고리 배지 */}
                   <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2 mb-3 flex-wrap">
                       <span
                         className={`text-xs font-bold px-3 py-1 rounded-full ${
                           project.category === 'personal'
@@ -348,6 +385,11 @@ const ProjectSection = () => {
                       >
                         {project.category === 'personal' ? '개인 프로젝트' : '팀 프로젝트'}
                       </span>
+                      {project.isLive && (
+                        <span className="text-xs font-bold px-3 py-1 rounded-full border bg-emerald-500/15 text-emerald-700 border-emerald-500/30 dark:bg-emerald-400/15 dark:text-emerald-300 dark:border-emerald-400/30">
+                          실제 운영중
+                        </span>
+                      )}
                     </div>
 
                     {/* 프로젝트 제목 */}
@@ -419,19 +461,26 @@ const ProjectSection = () => {
                     className="w-full h-64 object-cover rounded-xl mb-6"
                   />
                 )}
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-start justify-between gap-4 mb-4">
                   <h2 className="text-4xl font-bold text-gray-900 dark:text-white">
                     {selectedProject.title}
                   </h2>
-                  <span
-                    className={`text-sm font-bold px-4 py-2 rounded-full ${
-                      selectedProject.category === 'personal'
-                        ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
-                        : 'bg-purple-500/20 text-purple-600 dark:text-purple-400'
-                    }`}
-                  >
-                    {selectedProject.category === 'personal' ? '개인 프로젝트' : '팀 프로젝트'}
-                  </span>
+                  <div className="flex items-center gap-2 flex-wrap justify-end">
+                    <span
+                      className={`text-sm font-bold px-4 py-2 rounded-full ${
+                        selectedProject.category === 'personal'
+                          ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                          : 'bg-purple-500/20 text-purple-600 dark:text-purple-400'
+                      }`}
+                    >
+                      {selectedProject.category === 'personal' ? '개인 프로젝트' : '팀 프로젝트'}
+                    </span>
+                    {selectedProject.isLive && (
+                      <span className="text-sm font-bold px-4 py-2 rounded-full border bg-emerald-500/15 text-emerald-700 border-emerald-500/30 dark:bg-emerald-400/15 dark:text-emerald-300 dark:border-emerald-400/30">
+                        실제 운영중
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
