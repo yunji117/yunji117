@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { X, ExternalLink, Github } from 'lucide-react';
@@ -232,6 +232,7 @@ const ProjectSection = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<'all' | 'personal' | 'team'>('all');
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true,
@@ -301,6 +302,28 @@ const ProjectSection = () => {
       scale: 0.95,
       transition: { duration: 0.2 },
     },
+  };
+
+  const handleModalTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.changedTouches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleModalTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStartRef.current) return;
+
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = touch.clientY - touchStartRef.current.y;
+    const startedNearLeftEdge = touchStartRef.current.x <= 80;
+    const isRightSwipe = deltaX > 90;
+    const isMostlyHorizontal = Math.abs(deltaX) > Math.abs(deltaY) * 1.5;
+
+    touchStartRef.current = null;
+
+    if (startedNearLeftEdge && isRightSwipe && isMostlyHorizontal) {
+      setSelectedProject(null);
+    }
   };
 
   return (
@@ -433,6 +456,8 @@ const ProjectSection = () => {
               animate="visible"
               exit="exit"
               onClick={(e) => e.stopPropagation()}
+              onTouchStart={handleModalTouchStart}
+              onTouchEnd={handleModalTouchEnd}
               className="max-w-3xl w-full max-h-[90vh] overflow-y-auto rounded-2xl p-8 backdrop-blur-xl bg-[rgba(255,253,248,0.75)] border border-[rgba(222,206,182,0.85)] shadow-[0_28px_80px_rgba(94,72,47,0.20)] dark:bg-slate-900/30 dark:border-white/10 dark:shadow-none"
             >
               {/* 닫기 버튼 */}
