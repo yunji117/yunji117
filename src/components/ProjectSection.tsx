@@ -286,7 +286,7 @@ const ProjectSection = () => {
                 className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 ${
                   activeCategory === tab
                     ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
-                    : 'glass text-gray-700 dark:text-gray-300 hover:bg-white/20 dark:hover:bg-white/10'
+                    : 'glass bg-white/85 text-gray-800 border border-slate-200/80 shadow-sm shadow-slate-200/60 hover:bg-white dark:bg-transparent dark:text-gray-300 dark:border-white/10 dark:shadow-none dark:hover:bg-white/10'
                 }`}
               >
                 {tab === 'all' ? 'All Projects' : tab === 'personal' ? 'Personal' : 'Team'}
@@ -306,7 +306,7 @@ const ProjectSection = () => {
                   variants={projectCardVariants}
                   whileHover="hover"
                   onClick={() => setSelectedProject(project)}
-                  className="cursor-pointer glass rounded-2xl overflow-hidden hover:shadow-2xl dark:hover:shadow-cyan-500/30 transition-all duration-300"
+                  className="cursor-pointer glass rounded-2xl overflow-hidden bg-white/85 border border-slate-200/80 shadow-lg shadow-slate-200/60 hover:shadow-2xl dark:bg-transparent dark:border-white/10 dark:shadow-none dark:hover:shadow-cyan-500/30 transition-all duration-300"
                 >
                   {/* 프로젝트 이미지 */}
                   <div className="relative h-56 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 overflow-hidden group">
@@ -386,7 +386,7 @@ const ProjectSection = () => {
               animate="visible"
               exit="exit"
               onClick={(e) => e.stopPropagation()}
-              className="glass max-w-3xl w-full max-h-[90vh] overflow-y-auto rounded-2xl p-8"
+              className="max-w-3xl w-full max-h-[90vh] overflow-y-auto rounded-2xl p-8 backdrop-blur-xl bg-[rgba(255,253,248,0.75)] border border-[rgba(222,206,182,0.85)] shadow-[0_28px_80px_rgba(94,72,47,0.20)] dark:bg-slate-900/30 dark:border-white/10 dark:shadow-none"
             >
               {/* 닫기 버튼 */}
               <button
