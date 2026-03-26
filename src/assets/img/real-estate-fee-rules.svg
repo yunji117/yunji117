@@ -1,0 +1,23 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" rx="36" fill="#082F49"/>
+  <rect x="70" y="62" width="1060" height="596" rx="30" fill="#F8FAFC"/>
+  <text x="118" y="136" fill="#0F172A" font-family="Arial, sans-serif" font-size="40" font-weight="700">법정 상한 요율 구조화</text>
+  <text x="118" y="186" fill="#475569" font-family="Arial, sans-serif" font-size="24">주택 매매/임대차 구간, 한도액, 유형별 상한 요율을 분리해 계산 로직에 반영</text>
+  <rect x="118" y="230" width="452" height="172" rx="22" fill="#E0F2FE"/>
+  <rect x="630" y="230" width="452" height="172" rx="22" fill="#ECFEFF"/>
+  <rect x="118" y="432" width="964" height="164" rx="22" fill="#F0F9FF"/>
+  <text x="148" y="282" fill="#0369A1" font-family="Arial, sans-serif" font-size="30" font-weight="700">주택 매매 · 교환</text>
+  <text x="148" y="328" fill="#0F172A" font-family="Arial, sans-serif" font-size="24">5천만원 미만 0.6% / 한도 25만원</text>
+  <text x="148" y="364" fill="#0F172A" font-family="Arial, sans-serif" font-size="24">2억원 미만 0.5% / 한도 80만원</text>
+  <text x="148" y="400" fill="#0F172A" font-family="Arial, sans-serif" font-size="24">9억, 12억, 15억 구간별 상한 요율 분기</text>
+  <text x="660" y="282" fill="#0F766E" font-family="Arial, sans-serif" font-size="30" font-weight="700">주택 임대차</text>
+  <text x="660" y="328" fill="#0F172A" font-family="Arial, sans-serif" font-size="24">5천만원 미만 0.5%</text>
+  <text x="660" y="364" fill="#0F172A" font-family="Arial, sans-serif" font-size="24">1억원 미만 0.4% / 6억원 미만 0.3%</text>
+  <text x="660" y="400" fill="#0F172A" font-family="Arial, sans-serif" font-size="24">12억, 15억 구간별 상한 요율 분기</text>
+  <text x="148" y="484" fill="#0F172A" font-family="Arial, sans-serif" font-size="30" font-weight="700">기타 유형 분리</text>
+  <text x="148" y="532" fill="#334155" font-family="Arial, sans-serif" font-size="24">오피스텔: 매매 0.5%, 임대차 0.4%</text>
+  <text x="148" y="568" fill="#334155" font-family="Arial, sans-serif" font-size="24">주택 외 부동산: 0.9%</text>
+  <text x="620" y="484" fill="#0F172A" font-family="Arial, sans-serif" font-size="30" font-weight="700">사용자 가치</text>
+  <text x="620" y="532" fill="#334155" font-family="Arial, sans-serif" font-size="24">상한 요율과 실제 협의 금액을 구분해 혼란 감소</text>
+  <text x="620" y="568" fill="#334155" font-family="Arial, sans-serif" font-size="24">구간별 기준을 코드로 명확히 구조화해 신뢰도 향상</text>
+</svg>

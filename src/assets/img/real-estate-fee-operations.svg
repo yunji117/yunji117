@@ -1,0 +1,24 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" rx="36" fill="#164E63"/>
+  <rect x="72" y="60" width="1056" height="600" rx="30" fill="#F8FAFC"/>
+  <text x="118" y="136" fill="#0F172A" font-family="Arial, sans-serif" font-size="40" font-weight="700">운영형 서비스 확장</text>
+  <text x="118" y="186" fill="#475569" font-family="Arial, sans-serif" font-size="24">계산기 기능을 넘어 문의, 정책, SEO 구조까지 갖춘 실제 공개 서비스</text>
+  <rect x="118" y="234" width="286" height="306" rx="24" fill="#E0F2FE"/>
+  <rect x="456" y="234" width="286" height="306" rx="24" fill="#ECFEFF"/>
+  <rect x="794" y="234" width="286" height="306" rx="24" fill="#F0F9FF"/>
+  <text x="146" y="292" fill="#0369A1" font-family="Arial, sans-serif" font-size="30" font-weight="700">문의 대응</text>
+  <text x="146" y="344" fill="#0F172A" font-family="Arial, sans-serif" font-size="22">문의 페이지</text>
+  <text x="146" y="378" fill="#0F172A" font-family="Arial, sans-serif" font-size="22">오류 제보 / 정보 수정 요청</text>
+  <text x="146" y="412" fill="#0F172A" font-family="Arial, sans-serif" font-size="22">광고 및 제휴 문의</text>
+  <text x="146" y="460" fill="#334155" font-family="Arial, sans-serif" font-size="22">프론트 폼 + API + Resend 메일 연동</text>
+  <text x="484" y="292" fill="#0F766E" font-family="Arial, sans-serif" font-size="30" font-weight="700">정책 페이지</text>
+  <text x="484" y="344" fill="#0F172A" font-family="Arial, sans-serif" font-size="22">개인정보처리방침 포함</text>
+  <text x="484" y="378" fill="#0F172A" font-family="Arial, sans-serif" font-size="22">공개 서비스 운영을 위한 기본 구조</text>
+  <text x="484" y="460" fill="#334155" font-family="Arial, sans-serif" font-size="22">서비스 신뢰성과 운영 대응력 강화</text>
+  <text x="822" y="292" fill="#0284C7" font-family="Arial, sans-serif" font-size="30" font-weight="700">SEO 설계</text>
+  <text x="822" y="344" fill="#0F172A" font-family="Arial, sans-serif" font-size="22">메타 태그 / canonical / OG</text>
+  <text x="822" y="378" fill="#0F172A" font-family="Arial, sans-serif" font-size="22">Twitter 카드 / keywords</text>
+  <text x="822" y="412" fill="#0F172A" font-family="Arial, sans-serif" font-size="22">WebApplication / FAQPage</text>
+  <text x="822" y="446" fill="#0F172A" font-family="Arial, sans-serif" font-size="22">sitemap 설정</text>
+  <text x="118" y="604" fill="#334155" font-family="Arial, sans-serif" font-size="24">운영 관점까지 고려한 웹서비스 제작 역량을 포트폴리오에서 명확하게 보여주는 프로젝트</text>
+</svg>

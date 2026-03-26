@@ -1,0 +1,25 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" rx="36" fill="#0F172A"/>
+  <rect x="66" y="58" width="1068" height="604" rx="28" fill="#F8FAFC"/>
+  <rect x="108" y="108" width="348" height="504" rx="22" fill="#E0F2FE"/>
+  <rect x="490" y="108" width="600" height="160" rx="22" fill="#ECFEFF"/>
+  <rect x="490" y="292" width="600" height="146" rx="22" fill="#F0F9FF"/>
+  <rect x="490" y="462" width="600" height="150" rx="22" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="4"/>
+  <text x="136" y="158" fill="#0F172A" font-family="Arial, sans-serif" font-size="32" font-weight="700">입력 흐름</text>
+  <text x="136" y="214" fill="#0F172A" font-family="Arial, sans-serif" font-size="24">1. 부동산 유형 선택</text>
+  <text x="136" y="258" fill="#0F172A" font-family="Arial, sans-serif" font-size="24">2. 거래 유형 선택</text>
+  <text x="136" y="302" fill="#0F172A" font-family="Arial, sans-serif" font-size="24">3. 금액 입력 및 보수율 조정</text>
+  <text x="136" y="346" fill="#0F172A" font-family="Arial, sans-serif" font-size="24">4. 중개보수 · VAT 확인</text>
+  <text x="136" y="430" fill="#0369A1" font-family="Arial, sans-serif" font-size="28" font-weight="700">월세 환산보증금 특례 반영</text>
+  <text x="136" y="474" fill="#334155" font-family="Arial, sans-serif" font-size="22">기본: 보증금 + 월세 × 100</text>
+  <text x="136" y="510" fill="#334155" font-family="Arial, sans-serif" font-size="22">5천만원 미만: 보증금 + 월세 × 70</text>
+  <text x="518" y="154" fill="#0F172A" font-family="Arial, sans-serif" font-size="34" font-weight="700">핵심 계산 로직</text>
+  <text x="518" y="204" fill="#334155" font-family="Arial, sans-serif" font-size="22">주택 / 오피스텔 / 주택 외 유형별 상한 요율 분리</text>
+  <text x="518" y="236" fill="#334155" font-family="Arial, sans-serif" font-size="22">구간별 상한액 및 한도액 구조화</text>
+  <text x="518" y="338" fill="#0F172A" font-family="Arial, sans-serif" font-size="34" font-weight="700">운영형 서비스 구성</text>
+  <text x="518" y="388" fill="#334155" font-family="Arial, sans-serif" font-size="22">문의 폼 + Resend 메일 API</text>
+  <text x="518" y="420" fill="#334155" font-family="Arial, sans-serif" font-size="22">개인정보처리방침 / SEO 메타 / 구조화 데이터 / sitemap</text>
+  <text x="518" y="508" fill="#0F172A" font-family="Arial, sans-serif" font-size="34" font-weight="700">포트폴리오 포인트</text>
+  <text x="518" y="558" fill="#334155" font-family="Arial, sans-serif" font-size="22">계산기 기능을 넘어서 실제 공개 서비스로 운영 중</text>
+  <text x="518" y="590" fill="#334155" font-family="Arial, sans-serif" font-size="22">실용성, 정책, 문의, 검색 유입까지 고려한 서비스 설계</text>
+</svg>
