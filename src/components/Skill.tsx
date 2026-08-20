@@ -4,6 +4,7 @@ import {
   Code2,
   Database,
   GitBranch,
+  Palette,
 } from 'lucide-react';
 
 const Skill = () => {
@@ -55,7 +56,17 @@ const Skill = () => {
         'JavaScript / TypeScript',
         'Electron',
         'Jest (Testing)',
+      ],
+    },
+    {
+      category: 'Design & Content',
+      icon: Palette,
+      color: 'from-amber-500 to-rose-500',
+      items: [
         'Figma (UI/UX Design)',
+        'Adobe Photoshop',
+        'CapCut',
+        'VLLO',
         'Blender (3D Modeling)',
       ],
     },
@@ -98,7 +109,7 @@ const Skill = () => {
           {/* 섹션 제목 */}
           <motion.div variants={itemVariants} className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
-              Technical <span className="text-gradient">Skills</span>
+              Skills <span className="text-gradient">& Tools</span>
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mx-auto" />
           </motion.div>
@@ -106,7 +117,7 @@ const Skill = () => {
           {/* 스킬 카드 그리드 */}
           <motion.div
             variants={containerVariants}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8"
             style={{ perspective: 1200 }}
           >
             {skills.map((skillGroup, index) => {
