@@ -300,6 +300,29 @@ const projects: Project[] = [
       getImagePath("commerce-detail-page-design.svg"),
     ],
   },
+  {
+    id: 11,
+    title: 'Typing in Sheets',
+    shortDesc: '스프레드시트 화면에서 한글 단어를 입력하는 타자 연습 웹앱',
+    description: 'Google Sheets처럼 익숙한 화면 안에서 한글 단어를 입력하며 점수, 콤보, WPM, 정확도를 확인할 수 있는 개인 프로젝트입니다.',
+    image: getImagePath("typing-in-sheets.svg"),
+    category: 'personal',
+    stack: ['React', 'Vite', 'JavaScript', 'CSS', 'localStorage', 'Vercel', 'lucide-react'],
+    overview:
+      'Typing in Sheets는 스프레드시트 화면을 타자 연습 게임으로 재해석한 개인 프로젝트입니다. 셀 곳곳에 나타나는 한글 단어를 하단 입력창에 정확히 입력하면 점수와 콤보가 올라가고, WPM과 정확도, 남은 시간을 함께 확인할 수 있습니다. 회사 업무와 병행하며 짬짬이 개발해 약 2일 정도 걸렸고, 현재는 Vercel 배포 링크로 먼저 공개한 뒤 추후 커스텀 도메인을 연결할 예정입니다.',
+    goal:
+      '업무 도구처럼 익숙한 스프레드시트 UI와 타자 게임을 결합해, 단순한 입력 연습도 재미있고 몰입감 있게 느껴지도록 만드는 것이 목표였습니다. 실제 스프레드시트처럼 보이는 메뉴, 툴바, 수식 입력줄, 셀 그리드, 시트 탭을 구성하고 그 안에 게임 시작, 난이도 선택, 시간 선택, 결과 확인, 기록 저장 흐름을 자연스럽게 녹였습니다.',
+    difficulties: [
+      '스프레드시트처럼 보이는 화면을 만들기 위해 상단 메뉴, 툴바, 수식 입력줄, 고정 행/열 헤더, 셀 선택 상태까지 작은 UI 요소를 촘촘하게 맞춰야 했습니다.',
+      '셀에 랜덤 단어가 나타나고 사라지는 게임 흐름을 구현하면서 타이머, 단어 생성 간격, 난이도별 최대 단어 수, 점수 계산을 상태로 안정적으로 관리했습니다.',
+      '한글 입력은 조합 중인 글자가 바로 판정되면 오답처럼 보일 수 있어, IME 조합 이벤트를 고려해 입력이 완성된 뒤 단어 매칭이 되도록 처리했습니다.',
+      '결과 화면에서 완료 단어 수, 최고 콤보, WPM, 정확도를 보여주고, 최근 기록 저장과 CSV 다운로드까지 연결해 짧은 게임이어도 완성된 서비스처럼 느껴지게 했습니다.',
+    ],
+    outputs: [
+      getImagePath("typing-in-sheets.svg"),
+    ],
+    link: 'https://typing-in-sheets.vercel.app',
+  },
 ];
 
 const ProjectSection = () => {
