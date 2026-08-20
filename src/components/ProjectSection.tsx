@@ -14,7 +14,7 @@ interface Project {
   description: string;
   shortDesc: string;
   image: string;
-  category: 'personal' | 'team';
+  category: ProjectCategory;
   stack: string[];
   overview: string;
   goal: string;
@@ -24,6 +24,29 @@ interface Project {
   link?: string;
   github?: string;
 }
+
+type ProjectCategory = 'personal' | 'team' | 'design';
+type ProjectFilter = 'all' | ProjectCategory;
+
+const projectFilters: ProjectFilter[] = ['all', 'personal', 'team', 'design'];
+
+const categoryMeta: Record<ProjectCategory, { label: string; tabLabel: string; badgeClass: string }> = {
+  personal: {
+    label: '개인 프로젝트',
+    tabLabel: 'Personal',
+    badgeClass: 'bg-blue-500/20 text-blue-600 dark:text-blue-400',
+  },
+  team: {
+    label: '팀 프로젝트',
+    tabLabel: 'Team',
+    badgeClass: 'bg-purple-500/20 text-purple-600 dark:text-purple-400',
+  },
+  design: {
+    label: '디자인 작업',
+    tabLabel: 'Design',
+    badgeClass: 'bg-amber-500/20 text-amber-700 dark:text-amber-300',
+  },
+};
 
 const projects: Project[] = [
   {
@@ -255,12 +278,34 @@ const projects: Project[] = [
       getImagePath("bclogic.svg")    
     ],
   },
+  {
+    id: 10,
+    title: '커머스 상세페이지 디자인',
+    shortDesc: 'AI와 Figma를 활용해 제품 판매 흐름을 설계한 상세페이지 디자인 작업',
+    description: '필터, 힘펠, 하츠 제품 판매를 위한 상세페이지 기획 및 디자인 포트폴리오입니다.',
+    image: getImagePath("commerce-detail-page-design.svg"),
+    category: 'design',
+    stack: ['Figma', 'AI 활용', '상세페이지 기획', '제품 USP 구성', '커머스 디자인', '카피라이팅'],
+    overview:
+      '필터 제품과 힘펠, 하츠 제품을 판매하기 위한 상세페이지 디자인 작업입니다. 코딩 구현보다는 제품의 장점, 구매 이유, 사용 장면, 신뢰 요소를 한 페이지 안에서 설득력 있게 전달하는 데 집중했습니다. AI를 활용해 초기 아이디어와 카피 방향을 빠르게 정리하고, Figma에서 정보 구조와 시각 흐름을 구체화했습니다.',
+    goal:
+      '단순히 예쁜 화면을 만드는 것이 아니라, 사용자가 제품을 이해하고 구매까지 자연스럽게 이동할 수 있는 상세페이지를 설계하는 것이 목표였습니다. 제품별 핵심 장점, 문제 제기, 해결 메시지, 비교 포인트, CTA 흐름을 구성해 판매 목적에 맞는 디자인 결과물을 만드는 데 집중했습니다.',
+    difficulties: [
+      '개발 프로젝트와 달리 기능 구현보다 제품의 매력과 구매 설득 흐름을 먼저 잡아야 해서 정보 구조를 정리하는 과정이 중요했습니다.',
+      'AI로 상세페이지 문구와 섹션 아이디어를 빠르게 도출한 뒤, 실제 제품에 맞는 표현만 선별해 Figma 화면 구조에 반영했습니다.',
+      '필터, 힘펠, 하츠처럼 제품군이 다르기 때문에 같은 템플릿을 반복하기보다 제품별 장점과 사용 맥락이 드러나도록 섹션 흐름을 다르게 구성했습니다.',
+      '상세페이지가 길어질수록 사용자가 핵심 정보를 놓치기 쉬워서, 제목-근거-이미지-구매 행동으로 이어지는 리듬을 유지하려고 했습니다.',
+    ],
+    outputs: [
+      getImagePath("commerce-detail-page-design.svg"),
+    ],
+  },
 ];
 
 const ProjectSection = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<'all' | 'personal' | 'team'>('all');
+  const [activeCategory, setActiveCategory] = useState<ProjectFilter>('all');
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const { ref, inView } = useInView({
     threshold: 0.1,
@@ -372,23 +417,23 @@ const ProjectSection = () => {
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mx-auto mb-8" />
             <p className="text-gray-600 dark:text-gray-400 text-lg">
-              개인 프로젝트와 팀 프로젝트를 통해 실무 경험을 쌓아왔습니다
+              개발 프로젝트와 디자인 작업을 통해 실무에 가까운 경험을 쌓아왔습니다
             </p>
           </motion.div>
 
           {/* 필터 탭 */}
           <motion.div variants={itemVariants} className="flex justify-center gap-4 flex-wrap">
-            {['all', 'personal', 'team'].map((tab) => (
+            {projectFilters.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveCategory(tab as typeof activeCategory)}
+                onClick={() => setActiveCategory(tab)}
                 className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 ${
                   activeCategory === tab
                     ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
                     : 'glass bg-white/85 text-gray-800 border border-slate-200/80 shadow-sm shadow-slate-200/60 hover:bg-white dark:bg-transparent dark:text-gray-300 dark:border-white/10 dark:shadow-none dark:hover:bg-white/10'
                 }`}
               >
-                {tab === 'all' ? 'All Projects' : tab === 'personal' ? 'Personal' : 'Team'}
+                {tab === 'all' ? 'All Projects' : categoryMeta[tab].tabLabel}
               </button>
             ))}
           </motion.div>
@@ -426,12 +471,10 @@ const ProjectSection = () => {
                     <div className="flex items-center justify-between mb-3">
                       <span
                         className={`inline-flex shrink-0 text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap ${
-                          project.category === 'personal'
-                            ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
-                            : 'bg-purple-500/20 text-purple-600 dark:text-purple-400'
+                          categoryMeta[project.category].badgeClass
                         }`}
                       >
-                        {project.category === 'personal' ? '개인 프로젝트' : '팀 프로젝트'}
+                        {categoryMeta[project.category].label}
                       </span>
                     </div>
 
@@ -512,12 +555,10 @@ const ProjectSection = () => {
                   </h2>
                   <span
                     className={`inline-flex shrink-0 text-sm font-bold px-4 py-2 rounded-full whitespace-nowrap ${
-                      selectedProject.category === 'personal'
-                        ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
-                        : 'bg-purple-500/20 text-purple-600 dark:text-purple-400'
+                      categoryMeta[selectedProject.category].badgeClass
                     }`}
                   >
-                    {selectedProject.category === 'personal' ? '개인 프로젝트' : '팀 프로젝트'}
+                    {categoryMeta[selectedProject.category].label}
                   </span>
                 </div>
               </div>
@@ -569,7 +610,7 @@ const ProjectSection = () => {
                 {/* Stack */}
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                    Tech Stack
+                    {selectedProject.category === 'design' ? 'Tools & Process' : 'Tech Stack'}
                   </h3>
                   <div className="flex flex-wrap gap-3">
                     {selectedProject.stack.map((tech, idx) => (
