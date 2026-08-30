@@ -40,6 +40,11 @@ interface Project {
   detailImages?: string[];
   fullPageImages?: string[];
   challengeImages?: string[];
+  projectLinks?: {
+    title: string;
+    description: string;
+    url: string;
+  }[];
   link?: string;
   github?: string;
 }
@@ -300,25 +305,53 @@ const projects: Project[] = [
   {
     id: 10,
     title: '커머스 상세페이지 디자인',
-    shortDesc: 'AI와 Figma를 활용해 제품 판매 흐름을 설계한 상세페이지 디자인 작업',
-    description: '필터, 힘펠, 하츠 제품 판매를 위한 상세페이지 기획 및 디자인 포트폴리오입니다.',
+    shortDesc: 'AI와 Figma를 활용해 126개 제품의 판매 흐름을 설계한 상세페이지 디자인 작업',
+    description: '쿠쿠, 힘펠, 하츠 제품 판매를 위한 상세페이지 기획 및 디자인 포트폴리오입니다.',
     image: cuckooBidetDetailImage,
     thumbnailFit: 'cover',
     thumbnailPosition: 'center 6.5%',
     category: 'design',
-    stack: ['Figma', 'AI 활용', '상세페이지 기획', '제품 USP 구성', '커머스 디자인', '카피라이팅'],
+    stack: ['Figma', 'AI 활용', '상세페이지 기획', '제품 USP 구성', '커머스 디자인', '카피라이팅', 'Smart Store', 'Coupang'],
     overview:
-      '필터 제품과 힘펠, 하츠 제품을 판매하기 위한 상세페이지 디자인 작업입니다. 코딩 구현보다는 제품의 장점, 구매 이유, 사용 장면, 신뢰 요소를 한 페이지 안에서 설득력 있게 전달하는 데 집중했습니다. AI를 활용해 초기 아이디어와 카피 방향을 빠르게 정리하고, Figma에서 정보 구조와 시각 흐름을 구체화했습니다.',
+      '쿠쿠 비데, 환풍기 필터, 힘펠, 하츠 제품을 판매하기 위한 커머스 상세페이지 디자인 작업입니다. 힘펠 75개, 하츠 51개까지 총 126개의 제품 상세페이지를 제작했으며, 제품별 상세페이지 안에서도 설치 전 확인사항, 배송 안내, 리모컨 구분, 제품 비교 등 여러 보조 안내 이미지를 함께 구성했습니다. AI를 활용해 초기 가이드와 카피 방향을 빠르게 잡고, Figma에서 제품별 정보 구조와 시각 흐름을 직접 설계했습니다.',
     goal:
-      '단순히 예쁜 화면을 만드는 것이 아니라, 사용자가 제품을 이해하고 구매까지 자연스럽게 이동할 수 있는 상세페이지를 설계하는 것이 목표였습니다. 제품별 핵심 장점, 문제 제기, 해결 메시지, 비교 포인트, CTA 흐름을 구성해 판매 목적에 맞는 디자인 결과물을 만드는 데 집중했습니다.',
+      '단순히 예쁜 화면을 만드는 것이 아니라, 사용자가 제품을 이해하고 구매까지 자연스럽게 이동할 수 있는 상세페이지를 설계하는 것이 목표였습니다. 제품별 핵심 장점, 문제 제기, 해결 메시지, 비교 포인트, CTA 흐름을 구성하고, 실제 스마트스토어와 쿠팡 판매 페이지에 적용 가능한 실무형 디자인 결과물을 만드는 데 집중했습니다.',
     difficulties: [
-      '개발 프로젝트와 달리 기능 구현보다 제품의 매력과 구매 설득 흐름을 먼저 잡아야 해서 정보 구조를 정리하는 과정이 중요했습니다.',
-      'AI로 상세페이지 문구와 섹션 아이디어를 빠르게 도출한 뒤, 실제 제품에 맞는 표현만 선별해 Figma 화면 구조에 반영했습니다.',
-      '필터, 힘펠, 하츠처럼 제품군이 다르기 때문에 같은 템플릿을 반복하기보다 제품별 장점과 사용 맥락이 드러나도록 섹션 흐름을 다르게 구성했습니다.',
+      '상세페이지 제작은 처음이었지만 AI로 페이지 구성 가이드와 카피 초안을 먼저 잡고, Figma에서 직접 편집하며 짧은 시간 안에 제작 흐름을 익혔습니다.',
+      '제품 수가 많아질수록 같은 템플릿을 반복하는 것만으로는 설득력이 떨어질 수 있어, 제품별 USP와 사용 맥락이 드러나도록 섹션 흐름을 다르게 구성했습니다.',
+      '126개의 제품 상세페이지를 제작하면서도 설치 안내, 배송 안내, 리모컨 구분, 제품 비교처럼 구매 전 문의를 줄일 수 있는 보조 상세 이미지까지 함께 설계했습니다.',
       '상세페이지가 길어질수록 사용자가 핵심 정보를 놓치기 쉬워서, 제목-근거-이미지-구매 행동으로 이어지는 리듬을 유지하려고 했습니다.',
+      '사내 리뷰 과정에서 상세페이지의 완성도와 제작 속도에 대해 긍정적인 피드백을 받으며, 처음 맡은 디자인 업무도 빠르게 학습해 실무 산출물로 만들 수 있음을 확인했습니다.',
     ],
     outputs: designGalleryImages,
     fullPageImages: designGalleryImages,
+    projectLinks: [
+      {
+        title: '쿠쿠 도기&노즐 자동살균 방수비데',
+        description: '네이버 스마트스토어 상세페이지',
+        url: 'https://smartstore.naver.com/wlsl890303/products/12706785617',
+      },
+      {
+        title: '환풍기 에코필터+청소솔 세트',
+        description: '힘펠 제로크, 하츠 호환 필터 상세페이지',
+        url: 'https://smartstore.naver.com/mealux/products/13623518731',
+      },
+      {
+        title: '힘펠 스마트스토어',
+        description: '힘펠 제품 상세페이지 작업 채널',
+        url: 'https://smartstore.naver.com/himpel',
+      },
+      {
+        title: '하츠 스마트스토어',
+        description: '하츠 제품 상세페이지 작업 채널',
+        url: 'https://smartstore.naver.com/flwps',
+      },
+      {
+        title: '힘펠 쿠팡 상세페이지',
+        description: '쿠팡 판매 상세페이지',
+        url: 'https://www.coupang.com/vp/products/9675019694?vendorItemId=95860227818',
+      },
+    ],
   },
   {
     id: 11,
@@ -642,6 +675,36 @@ const ProjectSection = () => {
                     {selectedProject.goal}
                   </p>
                 </div>
+
+                {/* Published Links */}
+                {selectedProject.projectLinks && selectedProject.projectLinks.length > 0 && (
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                      Published Pages
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {selectedProject.projectLinks.map((projectLink, idx) => (
+                        <a
+                          key={idx}
+                          href={projectLink.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group rounded-lg border border-slate-200/80 bg-white/70 p-4 text-left shadow-sm transition-all hover:border-cyan-400 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                        >
+                          <div className="mb-2 flex items-start justify-between gap-3">
+                            <p className="text-sm font-bold leading-snug text-gray-900 dark:text-white">
+                              {projectLink.title}
+                            </p>
+                            <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-cyan-500 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                          </div>
+                          <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-400">
+                            {projectLink.description}
+                          </p>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Gallery */}
                 {selectedProject.outputs && selectedProject.outputs.length > 0 && (
