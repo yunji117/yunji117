@@ -8,18 +8,24 @@ const getImagePath = (imageName: string) => {
   return new URL(`../assets/img/${imageName}`, import.meta.url).href;
 };
 
+const cuckooBidetDetailImage = getImagePath("Dogi Nojeul Jadong Bangsu Bide.png");
+
 interface Project {
   id: number;
   title: string;
   description: string;
   shortDesc: string;
   image: string;
+  thumbnailFit?: 'cover' | 'contain';
+  thumbnailPosition?: string;
   category: ProjectCategory;
   stack: string[];
   overview: string;
   goal: string;
   difficulties: string[];
   outputs?: string[];
+  detailImages?: string[];
+  fullPageImages?: string[];
   challengeImages?: string[];
   link?: string;
   github?: string;
@@ -283,7 +289,9 @@ const projects: Project[] = [
     title: '커머스 상세페이지 디자인',
     shortDesc: 'AI와 Figma를 활용해 제품 판매 흐름을 설계한 상세페이지 디자인 작업',
     description: '필터, 힘펠, 하츠 제품 판매를 위한 상세페이지 기획 및 디자인 포트폴리오입니다.',
-    image: getImagePath("commerce-detail-page-design.svg"),
+    image: cuckooBidetDetailImage,
+    thumbnailFit: 'cover',
+    thumbnailPosition: 'center 6.5%',
     category: 'design',
     stack: ['Figma', 'AI 활용', '상세페이지 기획', '제품 USP 구성', '커머스 디자인', '카피라이팅'],
     overview:
@@ -297,7 +305,13 @@ const projects: Project[] = [
       '상세페이지가 길어질수록 사용자가 핵심 정보를 놓치기 쉬워서, 제목-근거-이미지-구매 행동으로 이어지는 리듬을 유지하려고 했습니다.',
     ],
     outputs: [
-      getImagePath("commerce-detail-page-design.svg"),
+      cuckooBidetDetailImage,
+    ],
+    detailImages: [
+      cuckooBidetDetailImage,
+    ],
+    fullPageImages: [
+      cuckooBidetDetailImage,
     ],
   },
   {
@@ -353,6 +367,14 @@ const ProjectSection = () => {
     activeCategory === 'all'
       ? projects
       : projects.filter((p) => p.category === activeCategory);
+
+  const openImageViewer = (image: string) => {
+    setSelectedImage(image);
+  };
+
+  const isFullPageImage = (project: Project, image: string) => {
+    return project.fullPageImages?.includes(image) ?? false;
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -482,6 +504,10 @@ const ProjectSection = () => {
                         src={project.image}
                         alt={project.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        style={{
+                          objectFit: project.thumbnailFit ?? 'cover',
+                          objectPosition: project.thumbnailPosition ?? 'center',
+                        }}
                       />
                     )}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
@@ -569,7 +595,12 @@ const ProjectSection = () => {
                   <img
                     src={selectedProject.image}
                     alt={selectedProject.title}
-                    className="w-full h-64 object-cover rounded-xl mb-6"
+                    className="w-full h-64 object-cover rounded-xl mb-6 cursor-zoom-in"
+                    style={{
+                      objectFit: selectedProject.thumbnailFit ?? 'cover',
+                      objectPosition: selectedProject.thumbnailPosition ?? 'center',
+                    }}
+                    onClick={() => openImageViewer(selectedProject.image)}
                   />
                 )}
                 <div className="flex flex-col items-start gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -613,19 +644,34 @@ const ProjectSection = () => {
                       Project Gallery
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {selectedProject.outputs.map((img, idx) => (
+                      {selectedProject.outputs.map((img, idx) => {
+                        const isLongPage = isFullPageImage(selectedProject, img);
+
+                        return (
                         <div
                           key={idx}
-                          className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl dark:hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-105 cursor-zoom-in"
-                          onClick={() => setSelectedImage(img)}
+                          className={`rounded-lg overflow-hidden shadow-lg hover:shadow-xl dark:hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-105 cursor-zoom-in ${
+                            isLongPage ? 'col-span-2 md:col-span-1' : ''
+                          }`}
+                          onClick={() => openImageViewer(img)}
                         >
                           <img
                             src={img}
                             alt={`Gallery ${idx + 1}`}
-                            className="w-full h-48 object-contain bg-gray-100 dark:bg-gray-800 p-2"
+                            className={`w-full bg-gray-100 dark:bg-gray-800 ${
+                              isLongPage
+                                ? 'h-48 object-cover object-top p-0'
+                                : 'h-48 object-contain p-2'
+                            }`}
+                            style={
+                              isLongPage
+                                ? { objectPosition: selectedProject.thumbnailPosition ?? 'top center' }
+                                : undefined
+                            }
                           />
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -669,7 +715,7 @@ const ProjectSection = () => {
                           <div
                             key={idx}
                             className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl dark:hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-105 cursor-zoom-in"
-                            onClick={() => setSelectedImage(img)}
+                            onClick={() => openImageViewer(img)}
                           >
                             <img
                               src={img}
@@ -681,6 +727,43 @@ const ProjectSection = () => {
                       </div>
                     )}
                 </div>
+
+                {/* Additional Images */}
+                {selectedProject.detailImages && selectedProject.detailImages.length > 0 && (
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                      Detail Images
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {selectedProject.detailImages.map((img, idx) => {
+                        const isLongPage = isFullPageImage(selectedProject, img);
+
+                        return (
+                          <div
+                            key={idx}
+                            className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl dark:hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-[1.02] cursor-zoom-in"
+                            onClick={() => openImageViewer(img)}
+                          >
+                            <img
+                              src={img}
+                              alt={`Detail ${idx + 1}`}
+                              className={`w-full bg-gray-100 dark:bg-gray-800 ${
+                                isLongPage
+                                  ? 'h-72 object-cover object-top p-0'
+                                  : 'h-56 object-contain p-2'
+                              }`}
+                              style={
+                                isLongPage
+                                  ? { objectPosition: selectedProject.thumbnailPosition ?? 'top center' }
+                                  : undefined
+                              }
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {/* 하단 버튼 */}
                 <div className="flex gap-4 pt-6 border-t border-white/10">
@@ -720,7 +803,7 @@ const ProjectSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6"
             onClick={() => setSelectedImage(null)}
           >
             <motion.div
@@ -728,18 +811,18 @@ const ProjectSection = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative max-w-5xl w-full"
+              className="relative max-w-5xl w-full max-h-[88vh] overflow-y-auto rounded-2xl bg-gray-950 p-3 shadow-2xl"
             >
               <button
-                className="absolute -top-10 right-0 text-white hover:text-gray-200"
+                className="sticky top-0 z-10 ml-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg hover:bg-white"
                 onClick={() => setSelectedImage(null)}
               >
-                <X className="w-8 h-8" />
+                <X className="w-6 h-6" />
               </button>
               <img
                 src={selectedImage}
                 alt="Selected"
-                className="w-full max-h-[80vh] object-contain rounded-xl bg-gray-900"
+                className="mx-auto h-auto w-full rounded-xl bg-gray-900 object-contain"
               />
             </motion.div>
           </motion.div>
