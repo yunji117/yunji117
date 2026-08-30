@@ -9,6 +9,19 @@ const getImagePath = (imageName: string) => {
 };
 
 const cuckooBidetDetailImage = getImagePath("Dogi Nojeul Jadong Bangsu Bide.png");
+const designGalleryImages = [
+  cuckooBidetDetailImage,
+  getImagePath("JerokeuBogangmokAnnae.png"),
+  getImagePath("SeolchiJeonHwaginSahang.png"),
+  getImagePath("Turbo747RenewalAnnae.png"),
+  getImagePath("HyundaiQumingFilterBaesongAnnae.png"),
+  getImagePath("TioramMiniRenewalAnnae.png"),
+  getImagePath("JeondongDamperAnnae.png"),
+  getImagePath("HubenMuseonYuseonRimokeonAnnae.png"),
+  getImagePath("HubenWJwauGubunAnnae.png"),
+  getImagePath("HubenAJwauGubun.png"),
+  getImagePath("TioramXSmartSmartThingsAnnae.png"),
+];
 
 interface Project {
   id: number;
@@ -304,15 +317,8 @@ const projects: Project[] = [
       '필터, 힘펠, 하츠처럼 제품군이 다르기 때문에 같은 템플릿을 반복하기보다 제품별 장점과 사용 맥락이 드러나도록 섹션 흐름을 다르게 구성했습니다.',
       '상세페이지가 길어질수록 사용자가 핵심 정보를 놓치기 쉬워서, 제목-근거-이미지-구매 행동으로 이어지는 리듬을 유지하려고 했습니다.',
     ],
-    outputs: [
-      cuckooBidetDetailImage,
-    ],
-    detailImages: [
-      cuckooBidetDetailImage,
-    ],
-    fullPageImages: [
-      cuckooBidetDetailImage,
-    ],
+    outputs: designGalleryImages,
+    fullPageImages: designGalleryImages,
   },
   {
     id: 11,
