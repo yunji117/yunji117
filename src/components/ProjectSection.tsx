@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { X, ExternalLink, Github } from 'lucide-react';
+import { fetchPublishedProjects } from '../lib/portfolioApi';
+import type { PortfolioProject, ProjectCategory, ProjectFilter } from '../types/portfolio';
 
 // 이미지 경로 helper
 const getImagePath = (imageName: string) => {
@@ -23,35 +25,6 @@ const designGalleryImages = [
   getImagePath("TioramXSmartSmartThingsAnnae.png"),
 ];
 
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  shortDesc: string;
-  image: string;
-  thumbnailFit?: 'cover' | 'contain';
-  thumbnailPosition?: string;
-  category: ProjectCategory;
-  stack: string[];
-  overview: string;
-  goal: string;
-  difficulties: string[];
-  outputs?: string[];
-  detailImages?: string[];
-  fullPageImages?: string[];
-  challengeImages?: string[];
-  projectLinks?: {
-    title: string;
-    description: string;
-    url: string;
-  }[];
-  link?: string;
-  github?: string;
-}
-
-type ProjectCategory = 'personal' | 'team' | 'design';
-type ProjectFilter = 'all' | ProjectCategory;
-
 const projectFilters: ProjectFilter[] = ['all', 'personal', 'team', 'design'];
 
 const categoryMeta: Record<ProjectCategory, { label: string; tabLabel: string; badgeClass: string }> = {
@@ -72,9 +45,9 @@ const categoryMeta: Record<ProjectCategory, { label: string; tabLabel: string; b
   },
 };
 
-const projects: Project[] = [
+const fallbackProjects: PortfolioProject[] = [
   {
-    id: 1,
+    id: '1',
     title: '오늘 하루',
     shortDesc: 'CRUD를 활용한 글쓰기 웹 서비스',
     description: '간단한 글쓰기를 할 수 있는 웹 서비스로 CRUD 기능을 직접 구현한 개인 프로젝트',
@@ -101,7 +74,7 @@ const projects: Project[] = [
     ],
   },
   {
-    id: 2,
+    id: '2',
     title: '리그오브레전드 벤픽',
     shortDesc: '게임 벤픽 과정을 실제처럼 체험할 수 있는 모의 벤픽 웹앱',
     description: '리그오브레전드의 챔피언 선택 과정을 실제처럼 체험할 수 있는 모의 벤픽 웹앱',
@@ -118,7 +91,7 @@ const projects: Project[] = [
     outputs: [getImagePath("banpick.png")],
   },
   {
-    id: 3,
+    id: '3',
     title: '풉타임 (POOP TIME)',
     shortDesc: '짧은 시간에 의미있는 시간을 보내는 웹 플랫폼',
     description: '퀴즈, 커뮤니티 등 다양한 콘텐츠로 짧은 시간을 알차게 보낼 수 있는 웹 플랫폼',
@@ -140,7 +113,7 @@ const projects: Project[] = [
     ],
   },
   {
-    id: 4,
+    id: '4',
     title: '모투슛 (Motoshoot)',
     shortDesc: '주식 초보자도 쉽게 가상 투자 경험을 쌓을 수 있는 모의투자 웹앱',
     description: '실제 주식 시장과 유사한 환경에서 가상으로 주식 매매를 연습할 수 있는 모의투자 웹 플랫폼',
@@ -159,7 +132,7 @@ const projects: Project[] = [
     outputs: [getImagePath("Motoshoot.svg")],
   },
   {
-    id: 5,
+    id: '5',
     title: 'DayTime',
     shortDesc: '날짜 계산 및 시간 관련 기능을 제공하는 올인원 웹 도구',
     description: '날짜 계산, 시간 차이, 나이 계산, D-day 등 다양한 시간/날짜 관련 기능을 제공하는 개인 웹 프로젝트',
@@ -186,7 +159,7 @@ const projects: Project[] = [
     link: 'https://getdaytimes.com',
   },
   {
-    id: 6,
+    id: '6',
     title: 'Meal Picker',
     shortDesc: '식사 메뉴 추천 웹앱',
     description: '매일 반복되는 메뉴 고민을 덜어주는 식사 메뉴 추천 웹앱입니다.',
@@ -212,7 +185,7 @@ const projects: Project[] = [
     link: 'https://whatlunch.getdaytimes.com/lunch',
   },
   {
-    id: 7,
+    id: '7',
     title: 'Runner Game',
     shortDesc: '장애물을 피하며 달리는 2D 러너 게임 웹앱',
     description: '키보드 또는 터치 조작으로 캐릭터를 움직이며 장애물을 피하고 점수를 쌓는 2D 러너 게임 웹앱입니다.',
@@ -242,7 +215,7 @@ const projects: Project[] = [
     ],
   },
   {
-    id: 8,
+    id: '8',
     title: '부동산 매물 플랫폼',
     shortDesc: '논산 지역 중심의 부동산 매물 조회 및 상담 웹서비스',
     description: '논산 지역을 중심으로 원룸, 투룸, 아파트, 빌라, 상가, 토지 등 다양한 매물을 탐색하고 상담 문의까지 연결할 수 있는 부동산 웹 플랫폼입니다.',
@@ -274,7 +247,7 @@ const projects: Project[] = [
     ],
   },
   {
-    id: 9,
+    id: '9',
     title: '부동산 중개보수 계산기',
     shortDesc: '매매, 전세, 월세의 예상 중개 수수료와 VAT를 빠르게 계산해주는 운영형 웹앱',
     description: '한국 부동산 거래에서 자주 헷갈리는 중개보수 상한 요율을 기준으로 예상 수수료를 계산해주는 개인 프로젝트입니다.',
@@ -303,7 +276,7 @@ const projects: Project[] = [
     ],
   },
   {
-    id: 10,
+    id: '10',
     title: '커머스 상세페이지 디자인',
     shortDesc: 'AI와 Figma를 활용해 126개 제품의 판매 흐름을 설계한 상세페이지 디자인 작업',
     description: '쿠쿠, 힘펠, 하츠 제품 판매를 위한 상세페이지 기획 및 디자인 포트폴리오입니다.',
@@ -354,7 +327,7 @@ const projects: Project[] = [
     ],
   },
   {
-    id: 11,
+    id: '11',
     title: 'Typing in Sheets',
     shortDesc: '스프레드시트 화면에서 한글 단어를 입력하는 타자 연습 웹앱',
     description: 'Google Sheets처럼 익숙한 화면 안에서 한글 단어를 입력하며 점수, 콤보, WPM, 정확도를 확인할 수 있는 개인 프로젝트입니다.',
@@ -379,7 +352,8 @@ const projects: Project[] = [
 ];
 
 const ProjectSection = () => {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [databaseProjects, setDatabaseProjects] = useState<PortfolioProject[] | null>(null);
+  const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<ProjectFilter>('all');
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
@@ -402,16 +376,39 @@ const ProjectSection = () => {
     };
   }, [selectedProject, selectedImage]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchPublishedProjects().then((nextProjects) => {
+      if (isMounted && nextProjects.length > 0) {
+        setDatabaseProjects(nextProjects);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const visibleProjects = databaseProjects
+    ? [
+        ...fallbackProjects.filter(
+          (fallbackProject) =>
+            !databaseProjects.some((databaseProject) => databaseProject.id === fallbackProject.id),
+        ),
+        ...databaseProjects,
+      ].sort((a, b) => (a.sortOrder ?? Number(a.id)) - (b.sortOrder ?? Number(b.id)))
+    : fallbackProjects;
   const filteredProjects =
     activeCategory === 'all'
-      ? projects
-      : projects.filter((p) => p.category === activeCategory);
+      ? visibleProjects
+      : visibleProjects.filter((p) => p.category === activeCategory);
 
   const openImageViewer = (image: string) => {
     setSelectedImage(image);
   };
 
-  const isFullPageImage = (project: Project, image: string) => {
+  const isFullPageImage = (project: PortfolioProject, image: string) => {
     return project.fullPageImages?.includes(image) ?? false;
   };
 

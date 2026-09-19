@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import {
@@ -6,71 +7,38 @@ import {
   GitBranch,
   Palette,
 } from 'lucide-react';
+import { defaultSkillGroups, defaultSiteContent } from '../lib/defaultPortfolio';
+import { fetchSiteContent, fetchSkillGroups } from '../lib/portfolioApi';
+import type { SkillIconName } from '../types/portfolio';
+
+const skillIconMap = {
+  GitBranch,
+  Database,
+  Code2,
+  Palette,
+} satisfies Record<SkillIconName, typeof Code2>;
 
 const Skill = () => {
+  const [skills, setSkills] = useState(defaultSkillGroups);
+  const [footerText, setFooterText] = useState(defaultSiteContent.skillsFooter);
   const { ref, inView } = useInView({
     threshold: 0.2,
     triggerOnce: false,
   });
 
-  const skills = [
-    {
-      category: 'DevOps & Tools',
-      icon: GitBranch,
-      color: 'from-green-500 to-emerald-500',
-      items: [
-        'Git / Github',
-        'Notion',
-        'Postman',
-        'npm / yarn',
-        'VS Code',
-        'Slack',
-        'AWS / Vercel / Github Action',
-        'Ubuntu / PowerShell',
-      ],
-    },
-    {
-      category: 'Backend & Database',
-      icon: Database,
-      color: 'from-purple-500 to-pink-500',
-      items: [
-        'Node.js',
-        'Express',
-        'NestJS',
-        'MongoDB / MySQL / PostgreSQL',
-        'Firebase',
-        'Supabase',
-        'REST API',
-        'Docker',
-      ],
-    },
-    {
-      category: 'Frontend',
-      icon: Code2,
-      color: 'from-blue-500 to-cyan-500',
-      items: [
-        'HTML / CSS / Tailwind CSS',
-        'React',
-        'Next.js',
-        'Vite',
-        'JavaScript / TypeScript',
-        'Electron',
-        'Jest (Testing)',
-      ],
-    },
-    {
-      category: 'Design & Content',
-      icon: Palette,
-      color: 'from-amber-500 to-rose-500',
-      items: [
-        'Figma (UI/UX Design)',
-        'Adobe Photoshop',
-        'CapCut',
-        'VLLO',
-        'Blender (3D Modeling)',
-      ],
-    },
-  ];
+  useEffect(() => {
+    let isMounted = true;
+
+    Promise.all([fetchSkillGroups(), fetchSiteContent()]).then(([nextSkills, nextContent]) => {
+      if (!isMounted) return;
+      if (nextSkills.length > 0) setSkills(nextSkills);
+      if (nextContent?.skillsFooter) setFooterText(nextContent.skillsFooter);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -121,7 +89,7 @@ const Skill = () => {
             style={{ perspective: 1200 }}
           >
             {skills.map((skillGroup, index) => {
-              const Icon = skillGroup.icon;
+              const Icon = skillIconMap[skillGroup.iconName] ?? Code2;
               return (
                 <motion.div
                   key={index}
@@ -166,7 +134,7 @@ const Skill = () => {
           {/* 추가 정보 */}
           <motion.div variants={itemVariants} className="text-center">
             <p className="text-gray-600 dark:text-gray-400 text-lg">
-              지속적으로 학습하고 새로운 기술을 탐구하는 개발자입니다 🚀
+              {footerText}
             </p>
           </motion.div>
         </motion.div>

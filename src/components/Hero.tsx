@@ -1,9 +1,28 @@
 // src/components/Hero.tsx
+import { useEffect, useState } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import yunjiAvatar from '../assets/img/yunjicharacternobg.png';
+import { defaultSiteContent } from '../lib/defaultPortfolio';
+import { fetchSiteContent } from '../lib/portfolioApi';
 
 const Hero = () => {
+  const [content, setContent] = useState(defaultSiteContent);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchSiteContent().then((nextContent) => {
+      if (isMounted && nextContent) {
+        setContent({ ...defaultSiteContent, ...nextContent });
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleScroll = () => {
     const aboutSection = document.getElementById('about');
     aboutSection?.scrollIntoView({ behavior: 'smooth' });
@@ -55,7 +74,7 @@ const Hero = () => {
           <div className="relative w-20 h-20 rounded-full glass flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-500 opacity-80" />
             <img
-              src={yunjiAvatar}
+              src={content.heroAvatarUrl || yunjiAvatar}
               alt="Yunji avatar"
               className="relative w-full h-full object-contain"
             />
@@ -66,17 +85,15 @@ const Hero = () => {
           variants={itemVariants}
           className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6"
         >
-          <span className="text-gray-900 dark:text-white">Hi, I'm </span>
-          <span className="text-gradient">Yunji</span>
+          <span className="text-gray-900 dark:text-white">{content.heroGreeting} </span>
+          <span className="text-gradient">{content.heroName}</span>
         </motion.h1>
 
         <motion.p
           variants={itemVariants}
           className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed"
         >
-          아름답고
-          <span className="font-semibold text-blue-500 dark:text-cyan-400"> 모던한 인터페이스</span>와
-          <span className="font-semibold text-purple-500 dark:text-purple-400"> 견고한 애플리케이션</span>을 만드는 것을 좋아하는 풀스택 개발자입니다.
+          {content.heroDescription}
         </motion.p>
 
         <motion.div
