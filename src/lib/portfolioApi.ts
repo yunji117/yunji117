@@ -1,7 +1,8 @@
 import { supabase } from './supabase';
-import { ADMIN_AUTH_EMAIL, ADMIN_GOOGLE_EMAIL } from './adminCredentials';
 import type {
   AboutHighlight,
+  CategoryOption,
+  ProjectSectionContent,
   ContactItem,
   PortfolioProject,
   ProjectCategory,
@@ -65,7 +66,7 @@ const asContactItems = (value: unknown): ContactItem[] => {
 };
 
 const toProjectCategory = (value: unknown): ProjectCategory => {
-  return value === 'team' || value === 'design' || value === 'personal' ? value : 'personal';
+  return typeof value === 'string' && value ? value : 'personal';
 };
 
 const toThumbnailFit = (value: unknown): ThumbnailFit | undefined => {
@@ -90,6 +91,7 @@ interface ProjectRow {
   full_page_images: string[] | null;
   challenge_images: string[] | null;
   project_links: unknown;
+  sections?: ProjectSectionContent[];
   link_url: string | null;
   github_url: string | null;
   is_published: boolean | null;
@@ -142,6 +144,7 @@ const rowToProject = (row: ProjectRow): PortfolioProject => ({
   fullPageImages: row.full_page_images ?? [],
   challengeImages: row.challenge_images ?? [],
   projectLinks: asProjectLinks(row.project_links),
+  sections: row.sections ?? [],
   link: row.link_url ?? undefined,
   github: row.github_url ?? undefined,
   isPublished: row.is_published ?? true,
@@ -166,6 +169,7 @@ const projectToRow = (project: PortfolioProject) => ({
   full_page_images: project.fullPageImages ?? [],
   challenge_images: project.challengeImages ?? [],
   project_links: project.projectLinks ?? [],
+  sections: project.sections ?? [],
   link_url: project.link ?? '',
   github_url: project.github ?? '',
   is_published: project.isPublished ?? true,
@@ -365,16 +369,9 @@ export const fetchAdminEmail = async (): Promise<string | null> => {
   if (authError) throw authError;
 
   if (!user) return null;
-  if (user.email === ADMIN_AUTH_EMAIL || user.email === ADMIN_GOOGLE_EMAIL) return user.email;
-
-  const { data, error } = await supabase
-    .from('portfolio_admins')
-    .select('email')
-    .eq('user_id', user.id)
-    .maybeSingle();
-
-  if (error) return null;
-  return typeof data?.email === 'string' ? data.email : null;
+  const { data, error } = await supabase.rpc('is_portfolio_admin');
+  if (error) throw error;
+  return data === true ? user.email ?? null : null;
 };
 
 export const uploadPortfolioImage = async (file: File, folder: string): Promise<string> => {
@@ -391,4 +388,27 @@ export const uploadPortfolioImage = async (file: File, folder: string): Promise<
 
   const { data } = supabase.storage.from('portfolio-images').getPublicUrl(path);
   return data.publicUrl;
+};
+
+export const defaultCategories: CategoryOption[] = [
+  { value: 'personal', label: '개인 프로젝트' },
+  { value: 'team', label: '팀 프로젝트' },
+  { value: 'design', label: '디자인 작업' },
+];
+
+export const fetchProjectCategories = async (): Promise<CategoryOption[]> => {
+  if (!supabase) return defaultCategories;
+  const { data, error } = await supabase.from('project_categories').select('id, name').order('created_at');
+  if (error) throw error;
+  return (data ?? []).map((row) => ({ value: row.id, label: row.name }));
+};
+
+export const addProjectCategory = async (name: string): Promise<CategoryOption> => {
+  if (!supabase) throw new Error('Supabase 환경변수가 설정되지 않았습니다.');
+  const label = name.trim();
+  if (!label) throw new Error('대주제 이름을 입력해 주세요.');
+  const { data, error } = await supabase.from('project_categories')
+    .insert({ id: crypto.randomUUID(), name: label }).select('id, name').single();
+  if (error) throw error;
+  return { value: data.id, label: data.name };
 };

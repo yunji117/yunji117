@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Chrome, Lock, X } from 'lucide-react';
-import { isSupabaseConfigured, supabase } from '../../lib/supabase';
+import { isSupabaseConfigured, supabase, supabaseConfigurationError } from '../../lib/supabase';
 
 interface AdminLoginProps {
   onClose: () => void;
@@ -19,16 +19,21 @@ const AdminLogin = ({ onClose }: AdminLoginProps) => {
     setIsLoading(true);
     setMessage('');
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin,
-      },
-    });
+    sessionStorage.setItem('portfolio-open-admin', 'true');
 
-    if (error) {
-      console.warn('Google admin sign-in failed:', error.message);
-      setMessage(error.message);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: new URL(import.meta.env.BASE_URL, window.location.origin).href,
+          queryParams: { prompt: 'select_account' },
+        },
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      sessionStorage.removeItem('portfolio-open-admin');
+      setMessage(error instanceof Error ? error.message : '로그인을 시작하지 못했습니다. 다시 시도해 주세요.');
       setIsLoading(false);
     }
   };
@@ -65,7 +70,7 @@ const AdminLogin = ({ onClose }: AdminLoginProps) => {
 
         {!isSupabaseConfigured && (
           <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            `.env.local`에 `VITE_SUPABASE_URL`과 `VITE_SUPABASE_ANON_KEY`를 넣어야 로그인할 수 있어요.
+            {supabaseConfigurationError}
           </div>
         )}
 

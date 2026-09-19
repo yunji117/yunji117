@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, type Variants } from 'framer-motion';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import {
   Code2,
@@ -19,11 +19,12 @@ const skillIconMap = {
 } satisfies Record<SkillIconName, typeof Code2>;
 
 const Skill = () => {
+  const reduceMotion = useReducedMotion();
   const [skills, setSkills] = useState(defaultSkillGroups);
   const [footerText, setFooterText] = useState(defaultSiteContent.skillsFooter);
   const { ref, inView } = useInView({
-    threshold: 0.2,
-    triggerOnce: false,
+    threshold: 0.05,
+    triggerOnce: true,
   });
 
   useEffect(() => {
@@ -45,20 +46,20 @@ const Skill = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
+        staggerChildren: 0.08,
         delayChildren: 0.1,
       },
     },
   };
 
   const itemVariants: Variants = {
-    hidden: { opacity: 0, rotateY: -90, x: -50 },
+    hidden: { opacity: reduceMotion ? 1 : 0, rotateY: reduceMotion ? 0 : -55, x: 0 },
     visible: {
       opacity: 1,
       rotateY: 0,
       x: 0,
       transition: { 
-        duration: 0.7,
+        duration: reduceMotion ? 0 : 0.65,
         ease: [0.22, 0.61, 0.36, 1],
       },
     },
@@ -94,9 +95,9 @@ const Skill = () => {
                 <motion.div
                   key={index}
                   variants={itemVariants}
-                  className="group glass p-8 rounded-2xl hover:shadow-2xl dark:hover:shadow-cyan-500/20 transition-all duration-300 hover:-translate-y-2"
+                  className="group glass p-8 rounded-2xl hover:shadow-2xl dark:hover:shadow-cyan-500/20 transition-shadow duration-300"
                   style={{ 
-                    transformStyle: 'preserve-3d',
+                    backfaceVisibility: 'hidden',
                     transformOrigin: 'center center',
                   }}
                 >

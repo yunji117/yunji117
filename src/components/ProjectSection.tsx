@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { X, ExternalLink, Github } from 'lucide-react';
-import { fetchPublishedProjects } from '../lib/portfolioApi';
+import { fetchPublishedProjects, fetchProjectCategories, defaultCategories } from '../lib/portfolioApi';
 import type { PortfolioProject, ProjectCategory, ProjectFilter } from '../types/portfolio';
 
 // 이미지 경로 helper
@@ -25,9 +25,8 @@ const designGalleryImages = [
   getImagePath("TioramXSmartSmartThingsAnnae.png"),
 ];
 
-const projectFilters: ProjectFilter[] = ['all', 'personal', 'team', 'design'];
 
-const categoryMeta: Record<ProjectCategory, { label: string; tabLabel: string; badgeClass: string }> = {
+const defaultCategoryMeta: Record<ProjectCategory, { label: string; tabLabel: string; badgeClass: string }> = {
   personal: {
     label: '개인 프로젝트',
     tabLabel: 'Personal',
@@ -351,7 +350,17 @@ const fallbackProjects: PortfolioProject[] = [
   },
 ];
 
-const ProjectSection = () => {
+interface ProjectSectionProps {
+  isAdmin: boolean;
+  onCreateProject: () => void;
+}
+
+const ProjectSection = ({ isAdmin, onCreateProject }: ProjectSectionProps) => {
+  const [categories, setCategories] = useState(defaultCategories);
+  const categoryMeta = { ...defaultCategoryMeta };
+  categories.forEach(({ value, label }) => {
+    if (!categoryMeta[value]) categoryMeta[value] = { label, tabLabel: label, badgeClass: 'bg-blue-500/20 text-blue-600 dark:text-blue-400' };
+  });
   const [databaseProjects, setDatabaseProjects] = useState<PortfolioProject[] | null>(null);
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -379,6 +388,8 @@ const ProjectSection = () => {
   useEffect(() => {
     let isMounted = true;
 
+    fetchProjectCategories().then((items) => { if (isMounted) setCategories(items); }).catch(console.warn);
+
     fetchPublishedProjects().then((nextProjects) => {
       if (isMounted && nextProjects.length > 0) {
         setDatabaseProjects(nextProjects);
@@ -399,6 +410,10 @@ const ProjectSection = () => {
         ...databaseProjects,
       ].sort((a, b) => (a.sortOrder ?? Number(a.id)) - (b.sortOrder ?? Number(b.id)))
     : fallbackProjects;
+  visibleProjects.forEach(({ category }) => {
+    if (!categoryMeta[category]) categoryMeta[category] = { label: category, tabLabel: category, badgeClass: 'bg-blue-500/20 text-blue-600 dark:text-blue-400' };
+  });
+  const projectFilters = ['all', ...Object.keys(categoryMeta)];
   const filteredProjects =
     activeCategory === 'all'
       ? visibleProjects
@@ -592,6 +607,20 @@ const ProjectSection = () => {
                   </div>
                 </motion.div>
               ))}
+              {isAdmin && (
+                <motion.button
+                  type="button"
+                  variants={projectCardVariants}
+                  whileHover="hover"
+                  onClick={onCreateProject}
+                  className="flex min-h-[23rem] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-300/70 bg-cyan-50/50 text-cyan-600 transition-colors hover:bg-cyan-100/70 dark:border-cyan-400/30 dark:bg-cyan-500/5 dark:text-cyan-300 dark:hover:bg-cyan-500/10"
+                >
+                  <span className="flex h-16 w-16 items-center justify-center rounded-full bg-cyan-500 text-4xl font-light text-white shadow-lg shadow-cyan-500/25">
+                    +
+                  </span>
+                  <span className="mt-4 text-sm font-semibold">프로젝트 추가</span>
+                </motion.button>
+              )}
             </AnimatePresence>
           </motion.div>
         </motion.div>
@@ -655,6 +684,13 @@ const ProjectSection = () => {
 
               {/* 모달 콘텐츠 */}
               <div className="space-y-8">
+                {selectedProject.description && <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">{selectedProject.description}</p>}
+                {(selectedProject.sections ?? []).map((section) => (
+                  <section key={section.id}>
+                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">{section.title}</h3>
+                    <p className="whitespace-pre-wrap leading-relaxed text-gray-700 dark:text-gray-300">{section.content}</p>
+                  </section>
+                ))}
                 {/* Overview */}
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">

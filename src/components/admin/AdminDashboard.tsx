@@ -15,6 +15,9 @@ import { ADMIN_USERNAME } from '../../lib/adminCredentials';
 import { defaultSiteContent, defaultSkillGroups } from '../../lib/defaultPortfolio';
 import {
   deleteProject,
+  defaultCategories,
+  fetchProjectCategories,
+  addProjectCategory,
   fetchAdminEmail,
   fetchAdminProjects,
   fetchSiteContent,
@@ -52,12 +55,6 @@ const skillColorOptions = [
   'from-amber-500 to-rose-500',
 ];
 
-const categoryOptions: { value: ProjectCategory; label: string }[] = [
-  { value: 'personal', label: '개인 프로젝트' },
-  { value: 'design', label: '디자인 작업' },
-  { value: 'team', label: '팀 프로젝트' },
-];
-
 const linesToArray = (value: string) =>
   value
     .split('\n')
@@ -90,9 +87,14 @@ const makeBlankProject = (): PortfolioProject => ({
 
 interface AdminDashboardProps {
   onExit: () => void;
+  startWithNewProject?: boolean;
 }
 
-const AdminDashboard = ({ onExit }: AdminDashboardProps) => {
+const AdminDashboard = ({ onExit, startWithNewProject = false }: AdminDashboardProps) => {
+  const [categoryOptions, setCategoryOptions] = useState(defaultCategories);
+  const [categoryName, setCategoryName] = useState('');
+  const [addingCategory, setAddingCategory] = useState(false);
+  const [categoryBusy, setCategoryBusy] = useState(false);
   const [activeTab, setActiveTab] = useState<AdminTab>('projects');
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(true);
@@ -119,14 +121,20 @@ const AdminDashboard = ({ onExit }: AdminDashboardProps) => {
 
         if (!email) return;
 
-        const [nextProjects, nextContent, nextSkills] = await Promise.all([
+        const [nextProjects, nextContent, nextSkills, nextCategories] = await Promise.all([
           fetchAdminProjects(),
           fetchSiteContent(),
           fetchSkillGroups(),
+          fetchProjectCategories(),
         ]);
 
+        setCategoryOptions(nextCategories);
         setProjects(nextProjects);
-        if (nextProjects[0]) setProjectDraft(nextProjects[0]);
+        if (startWithNewProject) {
+          setProjectDraft(makeBlankProject());
+        } else if (nextProjects[0]) {
+          setProjectDraft(nextProjects[0]);
+        }
         if (nextContent) setContentDraft({ ...defaultSiteContent, ...nextContent });
         if (nextSkills.length > 0) setSkillDrafts(nextSkills);
       } catch (error) {
@@ -138,7 +146,7 @@ const AdminDashboard = ({ onExit }: AdminDashboardProps) => {
     };
 
     void loadAdminData();
-  }, []);
+  }, [startWithNewProject]);
 
   const updateProjectDraft = <Key extends keyof PortfolioProject>(
     key: Key,
@@ -158,11 +166,15 @@ const AdminDashboard = ({ onExit }: AdminDashboardProps) => {
   };
 
   const handleSaveProject = async () => {
+    if (!projectDraft.title.trim() || !projectDraft.image.trim()) {
+      setStatusMessage('프로젝트 제목과 대표 이미지를 입력해 주세요.');
+      return;
+    }
     setSavingTarget('project');
     setStatusMessage('');
 
     try {
-      await saveProject(projectDraft);
+      await saveProject({ ...projectDraft, difficulties: projectDraft.difficulties.map((item) => item.trim()).filter(Boolean) });
       const nextProjects = await refreshProjects();
       setProjectDraft(nextProjects.find((project) => project.id === projectDraft.id) ?? projectDraft);
       setStatusMessage('프로젝트가 저장됐어요.');
@@ -288,7 +300,7 @@ const AdminDashboard = ({ onExit }: AdminDashboardProps) => {
           <p className="mt-3 break-words text-sm text-red-200">{loadError}</p>
           <button
             type="button"
-            onClick={handleSignOut}
+            onClick={onExit}
             className="mt-6 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-slate-950"
           >
             포트폴리오로 돌아가기
@@ -308,7 +320,7 @@ const AdminDashboard = ({ onExit }: AdminDashboardProps) => {
           </p>
           <button
             type="button"
-            onClick={handleSignOut}
+            onClick={onExit}
             className="mt-6 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-slate-950"
           >
             포트폴리오로 돌아가기
@@ -440,7 +452,7 @@ const AdminDashboard = ({ onExit }: AdminDashboardProps) => {
                     <button
                       type="button"
                       onClick={handleSaveProject}
-                      disabled={savingTarget === 'project'}
+                      disabled={savingTarget === 'project' || Boolean(uploadingTarget) || Boolean(loadError)}
                       className="inline-flex items-center gap-2 rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
                     >
                       <Save className="h-4 w-4" />
@@ -460,7 +472,8 @@ const AdminDashboard = ({ onExit }: AdminDashboardProps) => {
                     />
                   </label>
                   <label className="block">
-                    <span className={labelClass}>분류</span>
+                    <span className={labelClass}>대주제</span>
+                    <div className="flex items-center gap-2">
                     <select
                       value={projectDraft.category}
                       onChange={(event) =>
@@ -474,7 +487,23 @@ const AdminDashboard = ({ onExit }: AdminDashboardProps) => {
                         </option>
                       ))}
                     </select>
+                    <button type="button" aria-label="대주제 추가" className="shrink-0 rounded-lg border px-4 py-3" onClick={() => setAddingCategory(!addingCategory)}>+</button>
+                    </div>
                   </label>
+                  {addingCategory && <div className="md:col-span-2 flex gap-2">
+                    <input aria-label="새 대주제 이름" className={inputClass} value={categoryName} onChange={(event) => setCategoryName(event.target.value)} placeholder="새 대주제 이름" />
+                    <button type="button" disabled={categoryBusy || !categoryName.trim()} className="shrink-0 rounded-lg bg-cyan-500 px-4 text-white disabled:opacity-50" onClick={async () => {
+                      setCategoryBusy(true);
+                      try {
+                        const existing = categoryOptions.find((item) => item.label.toLowerCase() === categoryName.trim().toLowerCase());
+                        const category = existing ?? await addProjectCategory(categoryName);
+                        if (!existing) setCategoryOptions((items) => [...items, category]);
+                        updateProjectDraft('category', category.value);
+                        setCategoryName(''); setAddingCategory(false);
+                      } catch { setStatusMessage('대주제를 저장하지 못했습니다. 같은 이름이 있는지, 연결 상태와 데이터베이스 설정을 확인해 주세요.'); }
+                      finally { setCategoryBusy(false); }
+                    }}>대주제 저장</button>
+                  </div>}
                   <label className="block">
                     <span className={labelClass}>짧은 설명</span>
                     <input
@@ -592,10 +621,11 @@ const AdminDashboard = ({ onExit }: AdminDashboardProps) => {
                   </label>
                   <div className="md:col-span-2">
                     <TagInput
-                      label="스택"
+                      label="스킬"
+                      hashtags
                       value={projectDraft.stack}
                       onChange={(nextValue) => updateProjectDraft('stack', nextValue)}
-                      placeholder="React 입력 후 Enter"
+                      placeholder="#React #TypeScript 입력 후 Enter 또는 공백"
                     />
                   </div>
                   <label className="md:col-span-2">
@@ -603,12 +633,27 @@ const AdminDashboard = ({ onExit }: AdminDashboardProps) => {
                     <textarea
                       value={(projectDraft.difficulties ?? []).join('\n')}
                       onChange={(event) =>
-                        updateProjectDraft('difficulties', linesToArray(event.target.value))
+                        updateProjectDraft('difficulties', event.target.value.split('\n'))
                       }
                       className={`${inputClass} min-h-32 resize-y`}
                       placeholder="한 줄에 하나씩 입력하세요"
                     />
                   </label>
+                  <div className="md:col-span-2 space-y-4">
+                    <span className={labelClass}>중주제</span>
+                    {(projectDraft.sections ?? []).map((section, index) => (
+                      <div key={section.id} className="space-y-3 rounded-xl border border-slate-200 p-4 dark:border-white/10">
+                        <input aria-label={`중주제 ${index + 1} 제목`} placeholder="중주제 제목" className={inputClass} value={section.title} onChange={(event) => updateProjectDraft('sections', projectDraft.sections?.map((item) => item.id === section.id ? { ...item, title: event.target.value } : item))} />
+                        <textarea aria-label={`중주제 ${index + 1} 내용`} placeholder="내용" className={`${inputClass} min-h-28`} value={section.content} onChange={(event) => updateProjectDraft('sections', projectDraft.sections?.map((item) => item.id === section.id ? { ...item, content: event.target.value } : item))} />
+                        <button type="button" className="text-sm text-red-500" onClick={() => updateProjectDraft('sections', projectDraft.sections?.filter((item) => item.id !== section.id))}>중주제 삭제</button>
+                      </div>
+                    ))}
+                    <button type="button" className="rounded-lg border border-dashed border-cyan-400 px-4 py-3 text-sm text-cyan-600" onClick={() => updateProjectDraft('sections', [...(projectDraft.sections ?? []), { id: crypto.randomUUID(), title: '', content: '' }])}>+ 중주제 추가하기</button>
+                  </div>
+                  <div className="md:col-span-2">
+                    <span className={labelClass}>상세 이미지 업로드</span>
+                    <input aria-label="상세 이미지 업로드" type="file" accept="image/*" multiple disabled={Boolean(uploadingTarget)} className={inputClass} onChange={(event) => void handleImageUpload(event, 'project-details', (urls) => setProjectDraft((current) => ({ ...current, detailImages: [...(current.detailImages ?? []), ...urls] })))} />
+                  </div>
                   <div className="md:col-span-2">
                     <span className={labelClass}>프로젝트 갤러리 이미지 업로드</span>
                     <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm font-semibold text-gray-700 dark:border-white/20 dark:bg-white/5 dark:text-gray-200">
@@ -946,7 +991,8 @@ const AdminDashboard = ({ onExit }: AdminDashboardProps) => {
                       </label>
                     </div>
                     <TagInput
-                      label="스택"
+                      label="스킬"
+                      hashtags
                       value={group.items}
                       onChange={(items) => updateSkillGroup(index, { ...group, items })}
                       placeholder="새 스택 입력 후 Enter"

@@ -6,15 +6,15 @@ interface TagInputProps {
   value: string[];
   onChange: (nextValue: string[]) => void;
   placeholder?: string;
+  hashtags?: boolean;
 }
 
-const TagInput = ({ label, value, onChange, placeholder }: TagInputProps) => {
+const TagInput = ({ label, value, onChange, placeholder, hashtags = false }: TagInputProps) => {
   const [draft, setDraft] = useState('');
 
   const addTag = () => {
-    const nextTag = draft.trim();
-    if (!nextTag || value.includes(nextTag)) return;
-    onChange([...value, nextTag]);
+    const tags = hashtags ? draft.split(/\s+/).map((tag) => tag.replace(/^#+/, '').trim()).filter(Boolean) : [draft.trim()].filter(Boolean);
+    if (tags.length) onChange([...new Set([...value, ...tags])]);
     setDraft('');
   };
 
@@ -23,17 +23,19 @@ const TagInput = ({ label, value, onChange, placeholder }: TagInputProps) => {
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== 'Enter') return;
+    if (event.nativeEvent.isComposing) return;
+    if (event.key !== 'Enter' && !(hashtags && event.key === ' ')) return;
     event.preventDefault();
     addTag();
   };
 
   return (
-    <label className="block">
+    <div className="block">
       <span className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-200">
         {label}
       </span>
       <input
+        aria-label={label}
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
         onKeyDown={handleKeyDown}
@@ -47,7 +49,7 @@ const TagInput = ({ label, value, onChange, placeholder }: TagInputProps) => {
             key={tag}
             className="relative inline-flex items-center rounded-lg bg-blue-500/20 px-3 py-1.5 pr-6 text-xs font-semibold text-blue-700 dark:text-cyan-300"
           >
-            {tag}
+            {hashtags ? `#${tag}` : tag}
             <button
               type="button"
               onClick={() => removeTag(tag)}
@@ -59,7 +61,7 @@ const TagInput = ({ label, value, onChange, placeholder }: TagInputProps) => {
           </span>
         ))}
       </div>
-    </label>
+    </div>
   );
 };
 

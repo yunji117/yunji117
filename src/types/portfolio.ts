@@ -1,4 +1,6 @@
-export type ProjectCategory = 'personal' | 'team' | 'design';
+export type ProjectCategory = string;
+export interface CategoryOption { value: string; label: string }
+export interface ProjectSectionContent { id: string; title: string; content: string }
 export type ProjectFilter = 'all' | ProjectCategory;
 
 export type ThumbnailFit = 'cover' | 'contain';
@@ -22,6 +24,7 @@ export interface PortfolioProject {
   overview: string;
   goal: string;
   difficulties: string[];
+  sections?: ProjectSectionContent[];
   outputs?: string[];
   detailImages?: string[];
   fullPageImages?: string[];
