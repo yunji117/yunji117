@@ -1,3 +1,4 @@
+import EditButton from './admin/EditButton';
 // src/components/Hero.tsx
 import { useEffect, useState } from 'react';
 import { motion, type Variants } from 'framer-motion';
@@ -6,7 +7,7 @@ import yunjiAvatar from '../assets/img/yunjicharacternobg.png';
 import { defaultSiteContent } from '../lib/defaultPortfolio';
 import { fetchSiteContent } from '../lib/portfolioApi';
 
-const Hero = () => {
+const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number }) => {
   const [content, setContent] = useState(defaultSiteContent);
 
   useEffect(() => {
@@ -21,7 +22,7 @@ const Hero = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [revision]);
 
   const handleScroll = () => {
     const aboutSection = document.getElementById('about');
@@ -53,6 +54,7 @@ const Hero = () => {
       id="hero"
       className="relative min-h-screen w-full flex items-center justify-center overflow-hidden"
     >
+      {onEdit && <EditButton label="Hero" onClick={onEdit} />}
       {/* 배경 효과 */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-40 left-10 w-72 h-72 bg-blue-500/30 dark:bg-blue-600/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-50 animate-pulse" />

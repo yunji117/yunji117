@@ -13,7 +13,7 @@ const TagInput = ({ label, value, onChange, placeholder, hashtags = false }: Tag
   const [draft, setDraft] = useState('');
 
   const addTag = () => {
-    const tags = hashtags ? draft.split(/\s+/).map((tag) => tag.replace(/^#+/, '').trim()).filter(Boolean) : [draft.trim()].filter(Boolean);
+    const tags = hashtags ? draft.split(/[\s#]+/).map((tag) => tag.replace(/^#+/, '').trim()).filter(Boolean) : [draft.trim()].filter(Boolean);
     if (tags.length) onChange([...new Set([...value, ...tags])]);
     setDraft('');
   };
@@ -49,7 +49,7 @@ const TagInput = ({ label, value, onChange, placeholder, hashtags = false }: Tag
             key={tag}
             className="relative inline-flex items-center rounded-lg bg-blue-500/20 px-3 py-1.5 pr-6 text-xs font-semibold text-blue-700 dark:text-cyan-300"
           >
-            {hashtags ? `#${tag}` : tag}
+            {hashtags ? tag.replace(/^#+/, '') : tag}
             <button
               type="button"
               onClick={() => removeTag(tag)}

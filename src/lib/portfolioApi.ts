@@ -1,3 +1,4 @@
+import { encodeProjectImage, decodeProjectImage } from './projectImages';
 import { supabase } from './supabase';
 import type {
   AboutHighlight,
@@ -131,7 +132,7 @@ const rowToProject = (row: ProjectRow): PortfolioProject => ({
   title: row.title,
   description: row.description ?? '',
   shortDesc: row.short_desc ?? '',
-  image: row.image_url ?? '',
+  image: decodeProjectImage(row.image_url ?? ''),
   thumbnailFit: toThumbnailFit(row.thumbnail_fit),
   thumbnailPosition: row.thumbnail_position ?? undefined,
   category: toProjectCategory(row.category),
@@ -139,10 +140,10 @@ const rowToProject = (row: ProjectRow): PortfolioProject => ({
   overview: row.overview ?? '',
   goal: row.goal ?? '',
   difficulties: row.difficulties ?? [],
-  outputs: row.outputs ?? [],
-  detailImages: row.detail_images ?? [],
-  fullPageImages: row.full_page_images ?? [],
-  challengeImages: row.challenge_images ?? [],
+  outputs: (row.outputs ?? []).map(decodeProjectImage),
+  detailImages: (row.detail_images ?? []).map(decodeProjectImage),
+  fullPageImages: (row.full_page_images ?? []).map(decodeProjectImage),
+  challengeImages: (row.challenge_images ?? []).map(decodeProjectImage),
   projectLinks: asProjectLinks(row.project_links),
   sections: row.sections ?? [],
   link: row.link_url ?? undefined,
@@ -156,7 +157,7 @@ const projectToRow = (project: PortfolioProject) => ({
   title: project.title,
   description: project.description,
   short_desc: project.shortDesc,
-  image_url: project.image,
+  image_url: encodeProjectImage(project.image),
   thumbnail_fit: project.thumbnailFit ?? 'cover',
   thumbnail_position: project.thumbnailPosition ?? 'center',
   category: project.category,
@@ -164,10 +165,10 @@ const projectToRow = (project: PortfolioProject) => ({
   overview: project.overview,
   goal: project.goal,
   difficulties: project.difficulties,
-  outputs: project.outputs ?? [],
-  detail_images: project.detailImages ?? [],
-  full_page_images: project.fullPageImages ?? [],
-  challenge_images: project.challengeImages ?? [],
+  outputs: (project.outputs ?? []).map(encodeProjectImage),
+  detail_images: (project.detailImages ?? []).map(encodeProjectImage),
+  full_page_images: (project.fullPageImages ?? []).map(encodeProjectImage),
+  challenge_images: (project.challengeImages ?? []).map(encodeProjectImage),
   project_links: project.projectLinks ?? [],
   sections: project.sections ?? [],
   link_url: project.link ?? '',
@@ -235,7 +236,7 @@ export const fetchAdminProjects = async (): Promise<PortfolioProject[]> => {
 
   const { data, error } = await supabase
     .from('projects')
-    .select('*')
+    .select('*, sections')
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
 
@@ -260,7 +261,7 @@ export const deleteProject = async (projectId: string) => {
   if (error) throw error;
 };
 
-export const fetchSiteContent = async (): Promise<SiteContent | null> => {
+export const fetchSiteContent = async (strict = false): Promise<SiteContent | null> => {
   if (!supabase) return null;
 
   const { data, error } = await supabase
@@ -270,6 +271,7 @@ export const fetchSiteContent = async (): Promise<SiteContent | null> => {
     .maybeSingle();
 
   if (error) {
+    if (strict) throw error;
     console.warn('Failed to fetch site content from Supabase:', error.message);
     return null;
   }
@@ -287,7 +289,7 @@ export const saveSiteContent = async (content: SiteContent) => {
   if (error) throw error;
 };
 
-export const fetchSkillGroups = async (): Promise<SkillGroup[]> => {
+export const fetchSkillGroups = async (strict = false): Promise<SkillGroup[]> => {
   if (!supabase) return [];
 
   const [{ data: groups, error: groupError }, { data: items, error: itemError }] =
@@ -297,6 +299,7 @@ export const fetchSkillGroups = async (): Promise<SkillGroup[]> => {
     ]);
 
   if (groupError || itemError) {
+    if (strict) throw groupError ?? itemError;
     console.warn('Failed to fetch skills from Supabase:', groupError?.message ?? itemError?.message);
     return [];
   }
@@ -411,4 +414,16 @@ export const addProjectCategory = async (name: string): Promise<CategoryOption> 
     .insert({ id: crypto.randomUUID(), name: label }).select('id, name').single();
   if (error) throw error;
   return { value: data.id, label: data.name };
+};
+
+export const fetchProjectOrder = async (): Promise<string[]> => {
+  if (!supabase) return [];
+  const { data, error } = await supabase.from('project_order').select('project_id').order('position');
+  if (error) throw error;
+  return (data ?? []).map((row) => row.project_id);
+};
+export const saveProjectOrder = async (ids: string[]) => {
+  if (!supabase) throw new Error('Supabase 연결이 필요합니다.');
+  const { error } = await supabase.rpc('save_project_order', { project_ids: ids });
+  if (error) throw error;
 };

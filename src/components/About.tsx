@@ -1,3 +1,4 @@
+import EditButton from './admin/EditButton';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
@@ -12,7 +13,7 @@ const aboutIconMap = {
   CheckCircle2,
 } satisfies Record<AboutIconName, typeof Users>;
 
-const About = () => {
+const About = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number }) => {
   const [content, setContent] = useState(defaultSiteContent);
   const { ref, inView } = useInView({
     threshold: 0.2,
@@ -31,7 +32,7 @@ const About = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [revision]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -55,6 +56,7 @@ const About = () => {
 
   return (
     <section id="about" className="relative py-20 lg:py-32 px-6">
+      {onEdit && <EditButton label="About" onClick={onEdit} />}
       <div className="max-w-6xl mx-auto">
         <motion.div
           ref={ref}

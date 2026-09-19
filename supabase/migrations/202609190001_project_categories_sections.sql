@@ -23,4 +23,17 @@ alter table public.projects add column if not exists sections jsonb not null def
 alter table public.projects drop constraint if exists projects_category_fkey;
 alter table public.projects add constraint projects_category_fkey
   foreign key (category) references public.project_categories(id) on delete restrict;
+-- Table grants are required in addition to RLS policies.
+-- Public visitors can read only published projects; only admins can write.
+alter table public.projects enable row level security;
+grant usage on schema public to anon, authenticated;
+grant select on public.projects to anon;
+grant select, insert, update, delete on public.projects to authenticated;
+drop policy if exists "Public can read published projects" on public.projects;
+create policy "Public can read published projects" on public.projects for select
+  to anon, authenticated using (is_published = true);
+drop policy if exists "Admins can manage projects" on public.projects;
+create policy "Admins can manage projects" on public.projects for all
+  to authenticated using (public.is_portfolio_admin())
+  with check (public.is_portfolio_admin());
 commit;

@@ -6,7 +6,7 @@ import About from './components/About';
 import Skill from './components/Skill';
 import ProjectSection from './components/ProjectSection';
 import Contact from './components/Contact';
-import AdminDashboard from './components/admin/AdminDashboard';
+import SectionEditorModal, { type EditableSection } from './components/admin/SectionEditorModal';
 import AdminLogin from './components/admin/AdminLogin';
 import AdminAccess from './components/admin/AdminAccess';
 import { initialAuthState, observePortfolioAuth } from './lib/portfolioAuth';
@@ -15,13 +15,15 @@ import { supabase } from './lib/supabase';
 function App() {
   const { theme } = useThemeStore();
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
-  const [isAdminView, setIsAdminView] = useState(() => sessionStorage.getItem('portfolio-admin-view') === 'true');
-  const [startNewProject, setStartNewProject] = useState(false);
+  const [isAdminView, setIsAdminView] = useState(() => sessionStorage.getItem('portfolio-admin-view') !== 'false');
+  const [editingSection, setEditingSection] = useState<EditableSection | null>(null);
+  const [contentRevision, setContentRevision] = useState(0);
   const [auth, setAuth] = useState(initialAuthState);
   const authController = useRef<ReturnType<typeof observePortfolioAuth> | null>(null);
   const [signOutError, setSignOutError] = useState('');
   const [signingOut, setSigningOut] = useState(false);
   const isAdmin = auth.phase === 'admin';
+  const canEdit = isAdmin && isAdminView;
 
   const handleSignOut = async () => {
     if (!supabase) return;
@@ -62,8 +64,8 @@ function App() {
     if (auth.phase === 'signed-out') setIsAdminView(false);
     if (auth.phase === 'admin' && sessionStorage.getItem('portfolio-open-admin') === 'true') {
       sessionStorage.removeItem('portfolio-open-admin');
-      // Return to the portfolio with the add card visible after Google sign-in.
-      setIsAdminView(false);
+      // Show editing controls on the portfolio after Google sign-in.
+      setIsAdminView(true);
       setIsAdminLoginOpen(false);
     }
   }, [auth.phase]);
@@ -72,50 +74,35 @@ function App() {
     sessionStorage.setItem('portfolio-admin-view', String(isAdminView));
   }, [isAdminView]);
 
-  if (isAdmin && isAdminView) {
-    return (
-      <AdminDashboard
-        startWithNewProject={startNewProject}
-        onExit={() => {
-          setStartNewProject(false);
-          setIsAdminView(false);
-        }}
-      />
-    );
-  }
-
   return (
     <div className="w-full min-h-screen bg-white dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <Header
         isAdmin={isAdmin}
         onOpenAdmin={() => {
-          setStartNewProject(false);
           setIsAdminView(true);
         }}
       />
       <main className="pt-20">
-        <Hero />
-        <About />
-        <Skill />
-        <ProjectSection
-          isAdmin={isAdmin}
-          onCreateProject={() => {
-            setStartNewProject(true);
-            setIsAdminView(true);
-          }}
-        />
+        {canEdit && <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-xl bg-cyan-50 px-6 py-3 text-sm text-cyan-800 dark:bg-cyan-950 dark:text-cyan-200"><span>관리자 모드 · 연필로 수정하고 프로젝트를 길게 눌러 순서를 바꾸세요.</span><button onClick={() => setIsAdminView(false)} className="underline">방문자 화면 보기</button></div>}
+        <Hero revision={contentRevision} onEdit={canEdit ? () => setEditingSection('hero') : undefined} />
+        <About revision={contentRevision} onEdit={canEdit ? () => setEditingSection('about') : undefined} />
+        <Skill revision={contentRevision} onEdit={canEdit ? () => setEditingSection('skills') : undefined} />
+        <ProjectSection isAdmin={canEdit} />
         <Contact
+          revision={contentRevision}
+          onEdit={canEdit ? () => setEditingSection('contact') : undefined}
           isAuthenticated={Boolean(auth.session)}
           onOpenAdmin={() => setIsAdminLoginOpen(true)}
         />
       </main>
+      {canEdit && editingSection && <SectionEditorModal section={editingSection} onClose={() => setEditingSection(null)} onSaved={() => { setEditingSection(null); setContentRevision((value) => value + 1); }} />}
       {isAdminLoginOpen && (auth.phase === 'signed-out'
         ? <AdminLogin onClose={() => setIsAdminLoginOpen(false)} />
         : <AdminAccess
             auth={auth}
             onClose={() => setIsAdminLoginOpen(false)}
             onRetry={() => authController.current?.retry()}
-            onOpenAdmin={() => { setIsAdminLoginOpen(false); setStartNewProject(false); setIsAdminView(true); }}
+            onOpenAdmin={() => { setIsAdminLoginOpen(false); setIsAdminView(true); }}
             onSignOut={handleSignOut}
             signOutError={signOutError}
             signingOut={signingOut}

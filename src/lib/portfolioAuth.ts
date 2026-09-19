@@ -26,7 +26,9 @@ export function observePortfolioAuth(
 
   const checkAccess = async (session: Session) => {
     const request = ++revision;
-    emit({ session, phase: 'checking', message: '' });
+    // Keep an open editor mounted while refreshing the same admin session.
+    const sameAdmin = state.phase === 'admin' && state.session?.user.id === session.user.id;
+    emit({ session, phase: sameAdmin ? 'admin' : 'checking', message: '' });
     try {
       const { data, error } = await client.rpc('is_portfolio_admin').abortSignal(AbortSignal.timeout(15000));
       if (disposed || request !== revision) return;

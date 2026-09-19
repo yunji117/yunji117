@@ -28,6 +28,7 @@ import {
   uploadPortfolioImage,
 } from '../../lib/portfolioApi';
 import { supabase } from '../../lib/supabase';
+import { portfolioErrorMessage } from '../../lib/portfolioErrors';
 import type {
   AboutHighlight,
   ContactItem,
@@ -105,6 +106,7 @@ const AdminDashboard = ({ onExit, startWithNewProject = false }: AdminDashboardP
   const [skillDrafts, setSkillDrafts] = useState<SkillGroup[]>(defaultSkillGroups);
   const [statusMessage, setStatusMessage] = useState('');
   const [loadError, setLoadError] = useState('');
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const [uploadingTarget, setUploadingTarget] = useState('');
   const [savingTarget, setSavingTarget] = useState('');
 
@@ -138,7 +140,7 @@ const AdminDashboard = ({ onExit, startWithNewProject = false }: AdminDashboardP
         if (nextContent) setContentDraft({ ...defaultSiteContent, ...nextContent });
         if (nextSkills.length > 0) setSkillDrafts(nextSkills);
       } catch (error) {
-        setLoadError(error instanceof Error ? error.message : '관리자 데이터를 불러오지 못했어요.');
+        setLoadError(portfolioErrorMessage(error, '관리자 데이터를 불러오지 못했어요.'));
       } finally {
         setIsChecking(false);
         setIsLoading(false);
@@ -146,7 +148,7 @@ const AdminDashboard = ({ onExit, startWithNewProject = false }: AdminDashboardP
     };
 
     void loadAdminData();
-  }, [startWithNewProject]);
+  }, [startWithNewProject, loadAttempt]);
 
   const updateProjectDraft = <Key extends keyof PortfolioProject>(
     key: Key,
@@ -179,7 +181,7 @@ const AdminDashboard = ({ onExit, startWithNewProject = false }: AdminDashboardP
       setProjectDraft(nextProjects.find((project) => project.id === projectDraft.id) ?? projectDraft);
       setStatusMessage('프로젝트가 저장됐어요.');
     } catch (error) {
-      setStatusMessage(error instanceof Error ? error.message : '프로젝트 저장에 실패했어요.');
+      setStatusMessage(portfolioErrorMessage(error, '프로젝트 저장에 실패했어요.'));
     } finally {
       setSavingTarget('');
     }
@@ -297,7 +299,8 @@ const AdminDashboard = ({ onExit, startWithNewProject = false }: AdminDashboardP
       <div className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
         <div className="max-w-lg rounded-2xl border border-red-400/20 bg-white/5 p-8 text-center">
           <h2 className="text-2xl font-bold">관리자 데이터를 불러오지 못했어요</h2>
-          <p className="mt-3 break-words text-sm text-red-200">{loadError}</p>
+          <p role="alert" className="mt-3 break-words text-sm text-red-200">{loadError}</p>
+          <button type="button" onClick={() => setLoadAttempt((attempt) => attempt + 1)} className="mt-6 mr-3 rounded-lg bg-cyan-500 px-5 py-3 text-sm font-semibold text-white">다시 시도</button>
           <button
             type="button"
             onClick={onExit}

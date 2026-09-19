@@ -1,8 +1,13 @@
+import ProjectEditorModal from './admin/ProjectEditorModal';
+import EditButton from './admin/EditButton';
+import { useProjectDrag } from './admin/useProjectDrag';
+import { sortProjects, moveProject } from '../lib/projectOrder';
+import { portfolioErrorMessage } from '../lib/portfolioErrors';
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { X, ExternalLink, Github } from 'lucide-react';
-import { fetchPublishedProjects, fetchProjectCategories, defaultCategories } from '../lib/portfolioApi';
+import { X, ExternalLink, Github, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
+import { fetchPublishedProjects, fetchAdminProjects, fetchProjectCategories, defaultCategories, fetchProjectOrder, saveProjectOrder } from '../lib/portfolioApi';
 import type { PortfolioProject, ProjectCategory, ProjectFilter } from '../types/portfolio';
 
 // 이미지 경로 helper
@@ -352,10 +357,15 @@ const fallbackProjects: PortfolioProject[] = [
 
 interface ProjectSectionProps {
   isAdmin: boolean;
-  onCreateProject: () => void;
 }
 
-const ProjectSection = ({ isAdmin, onCreateProject }: ProjectSectionProps) => {
+const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
+  const [editor, setEditor] = useState<PortfolioProject | 'new' | null>(null);
+  const [order, setOrder] = useState<string[]>([]);
+  const [orderSaving, setOrderSaving] = useState(false);
+  const [orderError, setOrderError] = useState('');
+  const [loadError, setLoadError] = useState('');
+  const [reload, setReload] = useState(0);
   const [categories, setCategories] = useState(defaultCategories);
   const categoryMeta = { ...defaultCategoryMeta };
   categories.forEach(({ value, label }) => {
@@ -390,34 +400,36 @@ const ProjectSection = ({ isAdmin, onCreateProject }: ProjectSectionProps) => {
 
     fetchProjectCategories().then((items) => { if (isMounted) setCategories(items); }).catch(console.warn);
 
-    fetchPublishedProjects().then((nextProjects) => {
-      if (isMounted && nextProjects.length > 0) {
-        setDatabaseProjects(nextProjects);
-      }
-    });
+    (isAdmin ? fetchAdminProjects() : fetchPublishedProjects()).then((nextProjects) => {
+      if (isMounted) { setDatabaseProjects(nextProjects); setLoadError(''); }
+    }).catch((error) => { if (isMounted) setLoadError(portfolioErrorMessage(error, '프로젝트를 불러오지 못했습니다.')); });
+    fetchProjectOrder().then((ids) => { if (isMounted) { setOrder(ids); setOrderError(''); } }).catch((error) => { if (isMounted && isAdmin) setOrderError(portfolioErrorMessage(error, '프로젝트 순서를 불러오지 못했습니다.')); });
 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isAdmin, reload]);
 
-  const visibleProjects = databaseProjects
-    ? [
-        ...fallbackProjects.filter(
-          (fallbackProject) =>
-            !databaseProjects.some((databaseProject) => databaseProject.id === fallbackProject.id),
-        ),
-        ...databaseProjects,
-      ].sort((a, b) => (a.sortOrder ?? Number(a.id)) - (b.sortOrder ?? Number(b.id)))
+  const mergedProjects = databaseProjects
+    ? [...fallbackProjects.filter((item) => !databaseProjects.some((saved) => saved.id === item.id)), ...databaseProjects]
     : fallbackProjects;
+  const visibleProjects = sortProjects(mergedProjects, order);
+  const persistOrder = async (ids: string[]) => {
+    const previous = order; setOrder(ids); setOrderSaving(true); setOrderError('');
+    try { await saveProjectOrder(ids); }
+    catch (error) { setOrder(previous); setOrderError(portfolioErrorMessage(error, '순서 저장에 실패해 원래 순서로 복구했습니다.')); }
+    finally { setOrderSaving(false); }
+  };
+  const drag = useProjectDrag(visibleProjects.map((item) => item.id), isAdmin && activeCategory === 'all' && !orderSaving && !loadError, (ids) => void persistOrder(ids));
+  const arrangedProjects = drag.preview ? sortProjects(visibleProjects, drag.preview) : visibleProjects;
   visibleProjects.forEach(({ category }) => {
     if (!categoryMeta[category]) categoryMeta[category] = { label: category, tabLabel: category, badgeClass: 'bg-blue-500/20 text-blue-600 dark:text-blue-400' };
   });
   const projectFilters = ['all', ...Object.keys(categoryMeta)];
   const filteredProjects =
     activeCategory === 'all'
-      ? visibleProjects
-      : visibleProjects.filter((p) => p.category === activeCategory);
+      ? arrangedProjects
+      : arrangedProjects.filter((p) => p.category === activeCategory);
 
   const openImageViewer = (image: string) => {
     setSelectedImage(image);
@@ -534,6 +546,11 @@ const ProjectSection = ({ isAdmin, onCreateProject }: ProjectSectionProps) => {
             ))}
           </motion.div>
 
+          {isAdmin && <div className="space-y-2 text-center text-sm text-gray-500">
+            <p>카드를 길게 누른 채 드래그하세요. 모바일에서는 카드의 이동 손잡이를 사용하세요. {activeCategory !== 'all' && '순서 변경은 All Projects에서 가능합니다.'}</p>
+            {orderSaving && <p role="status">순서 저장 중…</p>}
+            {(orderError || loadError) && <p role="alert" className="text-red-500">{loadError || orderError} <button className="underline" onClick={() => setReload((value) => value + 1)}>다시 확인</button></p>}
+          </div>}
           {/* 프로젝트 그리드 */}
           <motion.div
             variants={containerVariants}
@@ -544,14 +561,34 @@ const ProjectSection = ({ isAdmin, onCreateProject }: ProjectSectionProps) => {
                 <motion.div
                   key={project.id}
                   variants={projectCardVariants}
-                  whileHover="hover"
-                  onClick={() => setSelectedProject(project)}
-                  className="cursor-pointer glass rounded-2xl overflow-hidden bg-white/85 border border-slate-200/80 shadow-lg shadow-slate-200/60 hover:shadow-2xl dark:bg-transparent dark:border-white/10 dark:shadow-none dark:hover:shadow-cyan-500/30 transition-all duration-300"
+                  whileHover={drag.dragged ? undefined : 'hover'}
+                  data-project-id={project.id}
+                  onPointerDown={(event) => drag.onPointerDown(event, project.id)}
+                  onPointerMove={drag.onPointerMove}
+                  onPointerUp={drag.onPointerUp}
+                  onPointerCancel={drag.onPointerCancel}
+                  onContextMenu={(event) => { if (isAdmin) event.preventDefault(); }}
+                  style={{ outline: drag.dragged === project.id ? '3px solid #06b6d4' : undefined }}
+                  onClick={() => { if (drag.suppressClick.current) { drag.suppressClick.current = false; return; } setSelectedProject(project); }}
+                  className="relative cursor-pointer glass rounded-2xl overflow-hidden bg-white/85 border border-slate-200/80 shadow-lg shadow-slate-200/60 hover:shadow-2xl dark:bg-transparent dark:border-white/10 dark:shadow-none dark:hover:shadow-cyan-500/30 transition-all duration-300"
                 >
+                  {isAdmin && <>
+                    <EditButton label={project.title} onClick={() => setEditor(project)} />
+                    {activeCategory === 'all' && <div className="absolute left-3 top-3 z-20 flex rounded-full bg-white/95 p-1 text-gray-700 shadow">
+                      <button type="button" data-drag-handle aria-label={`${project.title} 길게 눌러 이동`} disabled={orderSaving || Boolean(loadError)} style={{ touchAction: 'none' }} className="cursor-grab rounded-full p-2 active:cursor-grabbing" onClick={(event) => event.stopPropagation()}><GripVertical className="h-4 w-4" /></button>
+                      {[[-1, ArrowUp, '앞으로'], [1, ArrowDown, '뒤로']].map(([offset, Icon, label]) => {
+                        const position = visibleProjects.findIndex((item) => item.id === project.id);
+                        const target = visibleProjects[position + Number(offset)];
+                        const MoveIcon = Icon as typeof ArrowUp;
+                        return <button type="button" key={String(label)} aria-label={`${project.title} ${label} 이동`} disabled={!target || orderSaving || Boolean(loadError)} className="rounded-full p-2 disabled:opacity-25" onClick={(event) => { event.stopPropagation(); if (target) void persistOrder(moveProject(visibleProjects.map((item) => item.id), project.id, target.id)); }}><MoveIcon className="h-4 w-4" /></button>;
+                      })}
+                    </div>}
+                  </>}
                   {/* 프로젝트 이미지 */}
                   <div className="relative h-56 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 overflow-hidden group">
                     {project.image && (
                       <img
+                        draggable={false}
                         src={project.image}
                         alt={project.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
@@ -595,7 +632,7 @@ const ProjectSection = ({ isAdmin, onCreateProject }: ProjectSectionProps) => {
                           key={idx}
                           className="text-xs bg-blue-500/20 text-blue-600 dark:text-cyan-400 px-2 py-1 rounded"
                         >
-                          {tech}
+                          {tech.replace(/^#+/, '')}
                         </span>
                       ))}
                       {project.stack.length > 3 && (
@@ -612,7 +649,7 @@ const ProjectSection = ({ isAdmin, onCreateProject }: ProjectSectionProps) => {
                   type="button"
                   variants={projectCardVariants}
                   whileHover="hover"
-                  onClick={onCreateProject}
+                  onClick={() => setEditor('new')}
                   className="flex min-h-[23rem] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-300/70 bg-cyan-50/50 text-cyan-600 transition-colors hover:bg-cyan-100/70 dark:border-cyan-400/30 dark:bg-cyan-500/5 dark:text-cyan-300 dark:hover:bg-cyan-500/10"
                 >
                   <span className="flex h-16 w-16 items-center justify-center rounded-full bg-cyan-500 text-4xl font-light text-white shadow-lg shadow-cyan-500/25">
@@ -626,6 +663,13 @@ const ProjectSection = ({ isAdmin, onCreateProject }: ProjectSectionProps) => {
         </motion.div>
       </div>
 
+      {isAdmin && editor && <ProjectEditorModal
+        project={editor === 'new' ? undefined : editor}
+        category={activeCategory === 'all' ? 'personal' : activeCategory}
+        sortOrder={Math.max(0, ...visibleProjects.map((item) => item.sortOrder ?? (Number(item.id) || 0))) + 1}
+        onClose={() => setEditor(null)}
+        onSaved={(project) => { setDatabaseProjects((items) => [...(items ?? []).filter((item) => item.id !== project.id), project]); setEditor(null); setReload((value) => value + 1); }}
+      />}
       {/* 프로젝트 상세 모달 */}
       <AnimatePresence>
         {selectedProject && (
@@ -685,12 +729,6 @@ const ProjectSection = ({ isAdmin, onCreateProject }: ProjectSectionProps) => {
               {/* 모달 콘텐츠 */}
               <div className="space-y-8">
                 {selectedProject.description && <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">{selectedProject.description}</p>}
-                {(selectedProject.sections ?? []).map((section) => (
-                  <section key={section.id}>
-                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">{section.title}</h3>
-                    <p className="whitespace-pre-wrap leading-relaxed text-gray-700 dark:text-gray-300">{section.content}</p>
-                  </section>
-                ))}
                 {/* Overview */}
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
@@ -789,14 +827,20 @@ const ProjectSection = ({ isAdmin, onCreateProject }: ProjectSectionProps) => {
                         key={idx}
                         className="px-4 py-2 bg-blue-500/20 text-blue-600 dark:text-cyan-400 rounded-lg font-semibold text-sm"
                       >
-                        {tech}
+                        {tech.replace(/^#+/, '')}
                       </span>
                     ))}
                   </div>
                 </div>
 
+                {(selectedProject.sections ?? []).map((section) => (
+                  <section key={section.id}>
+                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">{section.title}</h3>
+                    <p className="whitespace-pre-wrap leading-relaxed text-gray-700 dark:text-gray-300">{section.content}</p>
+                  </section>
+                ))}
                 {/* Difficulties */}
-                <div>
+                {(selectedProject.difficulties.length > 0 || Boolean(selectedProject.challengeImages?.length)) && <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                     Challenges & Solutions
                   </h3>
@@ -828,7 +872,7 @@ const ProjectSection = ({ isAdmin, onCreateProject }: ProjectSectionProps) => {
                         ))}
                       </div>
                     )}
-                </div>
+                </div>}
 
                 {/* Additional Images */}
                 {selectedProject.detailImages && selectedProject.detailImages.length > 0 && (

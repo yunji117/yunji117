@@ -1,3 +1,4 @@
+import EditButton from './admin/EditButton';
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
@@ -18,7 +19,7 @@ const skillIconMap = {
   Palette,
 } satisfies Record<SkillIconName, typeof Code2>;
 
-const Skill = () => {
+const Skill = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number }) => {
   const reduceMotion = useReducedMotion();
   const [skills, setSkills] = useState(defaultSkillGroups);
   const [footerText, setFooterText] = useState(defaultSiteContent.skillsFooter);
@@ -39,7 +40,7 @@ const Skill = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [revision]);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -67,6 +68,7 @@ const Skill = () => {
 
   return (
     <section id="skills" className="relative py-20 lg:py-32 px-6">
+      {onEdit && <EditButton label="Skill" onClick={onEdit} />}
       <div className="max-w-6xl mx-auto">
         <motion.div
           ref={ref}

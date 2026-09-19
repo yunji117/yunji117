@@ -1,14 +1,17 @@
+import EditButton from './admin/EditButton';
 // src/components/Contact.tsx
 import { useEffect, useState } from 'react';
 import { defaultSiteContent } from '../lib/defaultPortfolio';
 import { fetchSiteContent } from '../lib/portfolioApi';
 
 interface ContactProps {
+  onEdit?: () => void;
+  revision?: number;
   isAuthenticated: boolean;
   onOpenAdmin: () => void;
 }
 
-const Contact = ({ isAuthenticated, onOpenAdmin }: ContactProps) => {
+const Contact = ({ isAuthenticated, onOpenAdmin, onEdit, revision = 0 }: ContactProps) => {
   const [content, setContent] = useState(defaultSiteContent);
 
   useEffect(() => {
@@ -23,11 +26,12 @@ const Contact = ({ isAuthenticated, onOpenAdmin }: ContactProps) => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [revision]);
 
   return (
     <>
-      <section id="contact" className="min-h-[60vh] flex items-center justify-center px-4 sm:px-10">
+      <section id="contact" className="relative min-h-[60vh] flex items-center justify-center px-4 sm:px-10">
+        {onEdit && <EditButton label="Contact" onClick={onEdit} />}
         <div className="text-center text-sm sm:text-base">
           <h2 className="text-xl sm:text-2xl font-bold">{content.contactTitle}</h2>
           <div className="mt-6 space-y-2">

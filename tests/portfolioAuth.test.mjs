@@ -111,3 +111,13 @@ test('unmount cancels late updates and unsubscribes (StrictMode cleanup)', async
   assert.equal(f.states.length, count);
   assert.equal(f.unsubscribed(), true);
 });
+
+test('token refresh keeps the same admin editor mounted until permission result arrives', async () => {
+  const pending = deferred(); let first = true;
+  const f = fixture({ stored: session(), rpc: () => { if (first) { first = false; return Promise.resolve({ data: true, error: null }); } return pending.promise; } });
+  await flush(); f.emit(session('owner', 'refreshed-token')); await flush();
+  assert.equal(f.last().phase, 'admin');
+  pending.resolve({ data: false, error: null }); await flush();
+  assert.equal(f.last().phase, 'member');
+  f.controller.dispose();
+});
