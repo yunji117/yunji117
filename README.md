@@ -77,3 +77,11 @@ GitHub 저장소 Settings → Secrets and variables → Actions에 `VITE_SUPABAS
 기존 대주제/중주제 SQL을 적용한 상태에서 `supabase/migrations/202609190002_project_order.sql` 전체를 Supabase SQL Editor에서 실행합니다. 이 파일은 순서 저장 테이블·트랜잭션 함수와 섹션 편집용 접근 권한을 설정합니다. 신규 설치는 최신 `supabase/schema.sql`에 모두 포함되어 있습니다.
 
 서버 읽기 검사에서는 기존 대주제/중주제 변경 적용을 확인했지만, 새 정렬 테이블과 섹션 조회 권한은 아직 누락된 상태였습니다. SQL을 적용해야 정렬 저장 및 섹션 편집이 실제 서버에서 작동합니다.
+
+## Vercel 빈 화면 방지
+
+Vercel의 기본 빌드 경로는 `/`입니다. GitHub Pages 워크플로만 `--base=/yunji117/`을 전달하며, 로컬 `npm run dev`도 기존 `/yunji117/` 경로를 유지합니다. Vercel Build Command는 `npm run build`, Output Directory는 `dist`를 사용합니다.
+
+Supabase Authentication → URL Configuration의 Redirect URLs에 `https://yunji117.vercel.app/`도 추가해야 배포 사이트의 Google 로그인 후 올바른 주소로 돌아옵니다. 로컬용 `http://localhost:5173/yunji117/`은 그대로 유지합니다.
+
+Git 이메일 설정 변경은 새 커밋부터 적용됩니다. 기존 `1c5bcda`를 Redeploy하면 기존 작성자 이메일은 바뀌지 않습니다. 새 수정 커밋을 push하여 배포해야 합니다.

@@ -9,7 +9,9 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    base: '/yunji117/',
+    // Vercel serves this site from the domain root. GitHub Pages overrides
+    // this with --base=/yunji117/ in its workflow.
+    base: '/',
     build: { outDir: 'dist' },
   };
 });
