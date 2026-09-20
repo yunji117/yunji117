@@ -25,9 +25,7 @@ const AdminLogin = ({ onClose }: AdminLoginProps) => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.hostname === 'localhost'
-            ? new URL(import.meta.env.BASE_URL, window.location.origin).href
-            : 'https://yunji117.github.io/yunji117/',
+          redirectTo: 'https://yunji117.github.io/yunji117/',
           queryParams: { prompt: 'select_account' },
         },
       });
