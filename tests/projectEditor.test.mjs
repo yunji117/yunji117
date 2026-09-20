@@ -37,3 +37,8 @@ test('empty project URL has no Visit Project preview and hashtag is hidden on ta
   assert.match(tags, />TypeScript</);
   assert.doesNotMatch(tags, />#(?:React|TypeScript)</);
 });
+test('project editor exposes the publication toggle beside the close action', () => {
+  assert.match(html, /aria-label="프로젝트 비공개로 전환"/);
+  assert.match(html, /aria-pressed="true"/);
+  assert.match(html, />공개<\/button>/);
+});

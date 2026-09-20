@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import { ExternalLink, ImagePlus, Loader2, Plus, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, ExternalLink, ImagePlus, Loader2, Plus, Trash2 } from 'lucide-react';
 import type { PortfolioProject } from '../../types/portfolio';
 import { addProjectCategory, defaultCategories, fetchProjectCategories, saveProject, uploadPortfolioImage } from '../../lib/portfolioApi';
 import { portfolioErrorMessage } from '../../lib/portfolioErrors';
@@ -53,7 +53,12 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
     catch (reason) { setError(portfolioErrorMessage(reason, '프로젝트를 저장하지 못했습니다.')); }
     finally { setBusy(''); }
   };
-  return <EditorModal title={project ? '프로젝트 수정' : '프로젝트 추가'} onClose={close}>
+  const isPublished = draft.isPublished ?? true;
+  const publicationToggle = <button type="button" onClick={() => update('isPublished', !isPublished)} disabled={Boolean(busy)} aria-label={isPublished ? '프로젝트 비공개로 전환' : '프로젝트 공개로 전환'} aria-pressed={isPublished} className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold transition-colors ${isPublished ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300' : 'bg-slate-200 text-slate-600 dark:bg-white/10 dark:text-slate-300'}`}>
+    {isPublished ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+    {isPublished ? '공개' : '비공개'}
+  </button>;
+  return <EditorModal title={project ? '프로젝트 수정' : '프로젝트 추가'} headerActions={publicationToggle} onClose={close}>
     <form onSubmit={submit} className="space-y-8">
       <fieldset disabled={Boolean(busy)} className="space-y-8 disabled:opacity-70">
         <div>
