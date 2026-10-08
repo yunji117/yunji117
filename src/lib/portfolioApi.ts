@@ -224,8 +224,7 @@ export const fetchPublishedProjects = async (): Promise<PortfolioProject[]> => {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.warn('Failed to fetch projects from Supabase:', error.message);
-    return [];
+    throw error;
   }
 
   return ((data ?? []) as ProjectRow[]).map(rowToProject);

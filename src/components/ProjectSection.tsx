@@ -404,9 +404,32 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
 
     fetchProjectCategories().then((items) => { if (isMounted) setCategories(items); }).catch(console.warn);
 
-    (isAdmin ? fetchAdminProjects() : fetchPublishedProjects()).then((nextProjects) => {
-      if (isMounted) { setDatabaseProjects(nextProjects); setLoadError(''); }
-    }).catch((error) => { if (isMounted) setLoadError(portfolioErrorMessage(error, '프로젝트를 불러오지 못했습니다.')); });
+    const loadProjects = async () => {
+      setDatabaseProjects(null);
+      setLoadError('');
+
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        try {
+          const nextProjects = await (isAdmin ? fetchAdminProjects() : fetchPublishedProjects());
+          if (isMounted) {
+            setDatabaseProjects(nextProjects);
+            setLoadError('');
+          }
+          return;
+        } catch (error) {
+          if (attempt === 0) {
+            await new Promise((resolve) => window.setTimeout(resolve, 600));
+            if (!isMounted) return;
+            continue;
+          }
+          if (isMounted) {
+            setLoadError(portfolioErrorMessage(error, 'DB 프로젝트를 불러오지 못했습니다.'));
+          }
+        }
+      }
+    };
+
+    void loadProjects();
     fetchProjectOrder().then((ids) => { if (isMounted) { setOrder(ids); setOrderError(''); } }).catch((error) => { if (isMounted && isAdmin) setOrderError(portfolioErrorMessage(error, '프로젝트 순서를 불러오지 못했습니다.')); });
 
     return () => {
@@ -550,8 +573,8 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
             ))}
           </motion.div>
 
-          {isAdmin && <div className="space-y-2 text-center text-sm text-gray-500">
-            <p>카드를 길게 누른 채 드래그하세요. 모바일에서는 카드의 이동 손잡이를 사용하세요. {activeCategory !== 'all' && '순서 변경은 All Projects에서 가능합니다.'}</p>
+          {(isAdmin || loadError) && <div className="space-y-2 text-center text-sm text-gray-500">
+            {isAdmin && <p>카드를 길게 누른 채 드래그하세요. 모바일에서는 카드의 이동 손잡이를 사용하세요. {activeCategory !== 'all' && '순서 변경은 All Projects에서 가능합니다.'}</p>}
             {orderSaving && <p role="status">순서 저장 중…</p>}
             {(orderError || loadError) && <p role="alert" className="text-red-500">{loadError || orderError} <button className="underline" onClick={() => setReload((value) => value + 1)}>다시 확인</button></p>}
           </div>}
@@ -565,6 +588,8 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                 <motion.div
                   key={project.id}
                   variants={projectCardVariants}
+                  initial="hidden"
+                  animate={inView ? 'visible' : 'hidden'}
                   whileHover={drag.dragged ? undefined : 'hover'}
                   data-project-id={project.id}
                   onPointerDown={(event) => drag.onPointerDown(event, project.id)}
@@ -593,6 +618,8 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                     {project.image && (
                       <img
                         draggable={false}
+                        loading="lazy"
+                        decoding="async"
                         src={project.image}
                         alt={project.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
