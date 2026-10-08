@@ -129,17 +129,21 @@ a {
 }
 
 .hero-korean-copy {
-  /* Fallback for browsers without container-relative units. */
   width: 100%;
   max-width: 100%;
-  font-size: clamp(1rem, 4.65vw, 2.5rem);
   letter-spacing: -0.045em;
 }
 
-@supports (font-size: 1cqw) {
+@media (min-width: 1024px) {
   .hero-korean-copy {
-    /* Size against the real text-column width so both lines always fit. */
-    font-size: clamp(1rem, 4.65cqw, 2.5rem);
+    /* Keep the longer Korean lines inside the desktop copy column. */
+    font-size: clamp(1rem, 4.65vw, 2.5rem);
+  }
+
+  @supports (font-size: 1cqw) {
+    .hero-korean-copy {
+      font-size: clamp(1rem, 4.65cqw, 2.5rem);
+    }
   }
 }
 

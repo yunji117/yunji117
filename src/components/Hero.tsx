@@ -23,9 +23,9 @@ const heroCopy: Record<Language, HeroCopy> = {
     statement: 'I turn ideas into\nvisual experiences.',
   },
   ko: {
-    intro: '안녕하세요.',
+    intro: '안녕하세요',
     lead: '아이디어를\n시각적인 경험으로 만드는',
-    highlight: '김윤지의 포트폴리오입니다.',
+    highlight: '김윤지의\n포트폴리오입니다.',
     statement: '',
   },
 };
@@ -145,7 +145,7 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
         animate="visible"
         className="relative z-10 mx-auto w-full max-w-7xl px-2 py-12 sm:px-6 lg:px-12"
       >
-        <div className={`grid items-center gap-8 lg:gap-x-10 lg:gap-y-0 ${language === 'ko' ? 'lg:grid-cols-[1.45fr_0.55fr]' : 'lg:grid-cols-[1.12fr_0.88fr]'}`}>
+        <div className="grid items-center gap-8 lg:grid-cols-[1.12fr_0.88fr] lg:gap-x-10 lg:gap-y-0">
           <div className="hero-copy-column min-w-0 text-left lg:col-start-1 lg:row-start-1">
             <motion.div variants={itemVariants} className="mb-8 flex items-center gap-2" role="group" aria-label="언어 선택">
               {([
@@ -177,11 +177,11 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
                 {isTyping && visibleCharacters <= introEnd && <span className="hero-typing-cursor" aria-hidden="true" />}
               </p>
               <h1 className={`min-h-[9rem] text-[2.55rem] font-bold leading-[1.08] tracking-tight text-gray-900 dark:text-white sm:text-5xl md:min-h-[10.5rem] md:text-6xl lg:text-[3.65rem] ${language === 'ko' ? 'hero-korean-copy' : ''}`}>
-                <span className={`block ${language === 'ko' ? 'whitespace-nowrap' : ''}`}>
+                <span className={`block ${language === 'ko' ? 'whitespace-pre-line' : ''}`}>
                   {visibleCopy.lead}
                   {isTyping && visibleCharacters > introEnd && visibleCharacters <= leadEnd && <span className="hero-typing-cursor" aria-hidden="true" />}
                 </span>
-                <span className={`hero-name-gradient block pb-2 ${language === 'ko' ? 'whitespace-nowrap' : ''}`}>
+                <span className={`hero-name-gradient block pb-2 ${language === 'ko' ? 'whitespace-pre-line font-extrabold' : ''}`}>
                   {visibleCopy.highlight}
                   {isTyping && visibleCharacters > leadEnd && visibleCharacters <= highlightEnd && <span className="hero-typing-cursor" aria-hidden="true" />}
                 </span>
