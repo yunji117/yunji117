@@ -24,7 +24,7 @@ const heroCopy: Record<Language, HeroCopy> = {
   },
   ko: {
     intro: '안녕하세요',
-    lead: '아이디어를\n시각적인 경험으로 만드는',
+    lead: '아이디어를 시각적인\n경험으로 만드는',
     highlight: '김윤지의\n포트폴리오입니다.',
     statement: '',
   },
