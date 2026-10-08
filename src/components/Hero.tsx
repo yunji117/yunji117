@@ -143,9 +143,9 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative z-10 mx-auto w-full max-w-7xl px-6 py-12 lg:px-12"
+        className="relative z-10 mx-auto w-full max-w-7xl px-2 py-12 sm:px-6 lg:px-12"
       >
-        <div className="grid items-center gap-8 lg:grid-cols-[1.12fr_0.88fr] lg:gap-x-10 lg:gap-y-0">
+        <div className={`grid items-center gap-8 lg:gap-x-10 lg:gap-y-0 ${language === 'ko' ? 'lg:grid-cols-[1.45fr_0.55fr]' : 'lg:grid-cols-[1.12fr_0.88fr]'}`}>
           <div className="min-w-0 text-left lg:col-start-1 lg:row-start-1">
             <motion.div variants={itemVariants} className="mb-8 flex items-center gap-2" role="group" aria-label="언어 선택">
               {([
@@ -176,8 +176,8 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
                 {visibleCopy.intro}
                 {isTyping && visibleCharacters <= introEnd && <span className="hero-typing-cursor" aria-hidden="true" />}
               </p>
-              <h1 className="min-h-[9rem] text-[2.55rem] font-bold leading-[1.08] tracking-tight text-gray-900 dark:text-white sm:text-5xl md:min-h-[10.5rem] md:text-6xl lg:text-[3.65rem]">
-                <span className={`block ${language === 'ko' ? 'whitespace-pre-line' : ''}`}>
+              <h1 className={`min-h-[9rem] text-[2.55rem] font-bold leading-[1.08] tracking-tight text-gray-900 dark:text-white sm:text-5xl md:min-h-[10.5rem] md:text-6xl lg:text-[3.65rem] ${language === 'ko' ? 'hero-korean-copy' : ''}`}>
+                <span className={`block ${language === 'ko' ? 'whitespace-nowrap' : ''}`}>
                   {visibleCopy.lead}
                   {isTyping && visibleCharacters > introEnd && visibleCharacters <= leadEnd && <span className="hero-typing-cursor" aria-hidden="true" />}
                 </span>

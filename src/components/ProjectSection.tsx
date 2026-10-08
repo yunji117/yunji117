@@ -377,7 +377,11 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
   const [activeCategory, setActiveCategory] = useState<ProjectFilter>('all');
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const { ref, inView } = useInView({
-    threshold: 0.1,
+    // On mobile the single-column project list is much taller than the viewport.
+    // A percentage threshold can therefore be impossible to reach and leave the
+    // entire animated section at opacity: 0. Reveal it as soon as it enters.
+    threshold: 0,
+    rootMargin: '0px 0px -10% 0px',
     triggerOnce: true,
   });
 
