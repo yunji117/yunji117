@@ -146,7 +146,7 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
         className="relative z-10 mx-auto w-full max-w-7xl px-2 py-12 sm:px-6 lg:px-12"
       >
         <div className={`grid items-center gap-8 lg:gap-x-10 lg:gap-y-0 ${language === 'ko' ? 'lg:grid-cols-[1.45fr_0.55fr]' : 'lg:grid-cols-[1.12fr_0.88fr]'}`}>
-          <div className="min-w-0 text-left lg:col-start-1 lg:row-start-1">
+          <div className="hero-copy-column min-w-0 text-left lg:col-start-1 lg:row-start-1">
             <motion.div variants={itemVariants} className="mb-8 flex items-center gap-2" role="group" aria-label="언어 선택">
               {([
                 ['en', 'English'],

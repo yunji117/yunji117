@@ -124,10 +124,23 @@ a {
   animation: typingCursorBlink 0.75s steps(1, end) infinite;
 }
 
+.hero-copy-column {
+  container-type: inline-size;
+}
+
 .hero-korean-copy {
-  /* Keep both Korean sentences on one line without overflowing narrow phones. */
-  font-size: clamp(1rem, 5vw, 2.5rem);
+  /* Fallback for browsers without container-relative units. */
+  width: 100%;
+  max-width: 100%;
+  font-size: clamp(1rem, 4.65vw, 2.5rem);
   letter-spacing: -0.045em;
+}
+
+@supports (font-size: 1cqw) {
+  .hero-korean-copy {
+    /* Size against the real text-column width so both lines always fit. */
+    font-size: clamp(1rem, 4.65cqw, 2.5rem);
+  }
 }
 
 .animate-hero-fade {
