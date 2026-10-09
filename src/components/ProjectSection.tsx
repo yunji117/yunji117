@@ -49,7 +49,9 @@ const defaultCategoryMeta: Record<ProjectCategory, { label: string; tabLabel: st
   },
 };
 
-const fallbackProjects: PortfolioProject[] = [
+// Shared with Hero so featured cards use the same project records and detail content.
+// eslint-disable-next-line react-refresh/only-export-components
+export const fallbackProjects: PortfolioProject[] = [
   {
     id: '1',
     title: '오늘 하루',
@@ -398,6 +400,16 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
       body.style.overflow = previousOverflow;
     };
   }, [selectedProject, selectedImage]);
+
+  useEffect(() => {
+    const openProject = (event: Event) => {
+      const project = (event as CustomEvent<PortfolioProject>).detail;
+      if (project) setSelectedProject(project);
+    };
+
+    window.addEventListener('portfolio:open-project', openProject);
+    return () => window.removeEventListener('portfolio:open-project', openProject);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
