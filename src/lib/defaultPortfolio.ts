@@ -6,29 +6,29 @@ export const defaultSiteContent: SiteContent = {
   heroDescription:
     '아름답고 모던한 인터페이스와 견고한 애플리케이션을 만드는 것을 좋아하는 풀스택 개발자입니다.',
   aboutParagraphs: [
-    '안녕하세요! 4년제 대학교를 졸업하고, 현재는 풀스택 개발자를 꿈꾸며 성장 중인 KIM YUNJI입니다.',
-    '평소 사람들에게 도움을 주는 일을 좋아하고, 더 넓은 세상에서 영향력을 주는 방법을 고민하다가 개발에 관심을 갖게 되었습니다.',
-    '이후 본격적으로 개발을 공부하기 위해 풀스택 개발자 양성과정에 등록했고, 현재 React, JavaScript, Node.js, MySQL 등 프론트엔드부터 백엔드까지 폭넓게 배우고 있습니다.',
-    '프로젝트 기반의 실습을 통해 로그인/회원가입 기능, 커뮤니티 게시판 등 실제 서비스를 구현하는 경험을 쌓고 있습니다.',
+    '안녕하세요. 디자인 의도를 실제로 동작하는 웹 경험으로 구현하는 김윤지입니다.',
+    'React와 TypeScript를 중심으로 사용자에게 필요한 정보를 명확하게 전달하고, 자연스럽게 탐색하고 행동할 수 있는 인터페이스를 만들고 있습니다. Figma를 활용한 화면 설계부터 프론트엔드 개발, 데이터 연동, 배포와 운영까지 웹서비스 제작의 전 과정을 경험했습니다.',
+    '실무에서는 126개 제품의 커머스 상세페이지를 제작하며 제품의 강점과 구매 흐름을 시각적으로 설계했습니다. 개발 프로젝트에서는 Next.js, Supabase 등의 기술을 활용해 아이디어를 실제로 사용할 수 있는 서비스로 구현했습니다.',
+    '보기 좋은 화면에 그치지 않고, 사용자의 경험과 서비스의 목적을 함께 생각하는 디자이너이자 개발자가 되고자 합니다.',
   ],
   aboutHighlights: [
     {
-      iconName: 'Users',
-      title: 'User-Centric Design',
-      description: '사용자 중심의 UI/UX를 고려한 서비스 개발',
-    },
-    {
       iconName: 'Zap',
-      title: 'Full-Stack Development',
-      description: 'React, Node.js, MySQL 등 풀스택 기술 보유',
+      title: 'DESIGN TO DEVELOPMENT',
+      description: '디자인 의도를 반응형 웹 인터페이스로 정확하게 구현합니다.',
     },
     {
       iconName: 'CheckCircle2',
-      title: 'Problem Solver',
-      description: '실제 프로젝트를 통한 실무 경험 축적',
+      title: 'SERVICE DEVELOPMENT',
+      description: '기획부터 개발, 배포와 운영까지 서비스 제작 과정을 경험했습니다.',
+    },
+    {
+      iconName: 'Users',
+      title: '126 PRODUCT PAGES',
+      description: '126개 제품의 상세페이지를 제작하며 제품별 정보 구조와 구매 흐름을 설계했습니다.',
     },
   ],
-  aboutCtaText: '끈기 있게 한 걸음씩 나아가고 있는 개발자입니다 👨‍💻',
+  aboutCtaText: '디자인과 개발을 연결해 아이디어를 실제 서비스로 완성합니다.',
   skillsFooter: '지속적으로 학습하고 새로운 기술을 탐구하는 개발자입니다 🚀',
   contactTitle: 'KIM YUNJI Contact',
   contactItems: [

@@ -13,6 +13,11 @@ const aboutIconMap = {
   CheckCircle2,
 } satisfies Record<AboutIconName, typeof Users>;
 
+const hasLegacyAboutContent = (content: typeof defaultSiteContent) =>
+  content.aboutParagraphs.includes(
+    '안녕하세요! 4년제 대학교를 졸업하고, 현재는 풀스택 개발자를 꿈꾸며 성장 중인 KIM YUNJI입니다.',
+  ) || content.aboutHighlights.some((item) => item.title === 'Problem Solver');
+
 const About = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number }) => {
   const [content, setContent] = useState(defaultSiteContent);
   const { ref, inView } = useInView({
@@ -25,7 +30,18 @@ const About = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
 
     fetchSiteContent().then((nextContent) => {
       if (isMounted && nextContent) {
-        setContent({ ...defaultSiteContent, ...nextContent });
+        const mergedContent = { ...defaultSiteContent, ...nextContent };
+
+        setContent(
+          hasLegacyAboutContent(mergedContent)
+            ? {
+                ...mergedContent,
+                aboutParagraphs: defaultSiteContent.aboutParagraphs,
+                aboutHighlights: defaultSiteContent.aboutHighlights,
+                aboutCtaText: defaultSiteContent.aboutCtaText,
+              }
+            : mergedContent,
+        );
       }
     });
 
@@ -71,6 +87,10 @@ const About = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
               About <span className="text-gradient">Me</span>
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mx-auto" />
+            <p className="mx-auto mt-8 max-w-3xl text-2xl font-bold leading-tight text-gray-900 dark:text-white md:text-4xl">
+              디자인 의도를 이해하고
+              <span className="text-gradient block">실제로 동작하는 경험으로 구현합니다.</span>
+            </p>
           </motion.div>
 
           {/* 소개 카드 */}
@@ -123,7 +143,7 @@ const About = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
               }
               className="px-8 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105"
             >
-              See My Projects
+              프로젝트 살펴보기 <span aria-hidden="true">→</span>
             </button>
           </motion.div>
         </motion.div>
