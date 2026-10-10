@@ -8,6 +8,7 @@ import type {
   PortfolioProject,
   ProjectCategory,
   ProjectLink,
+  ProjectCaseStudy,
   SiteContent,
   SkillGroup,
   SkillIconName,
@@ -28,6 +29,29 @@ const asProjectLinks = (value: unknown): ProjectLink[] => {
       };
     })
     .filter((item): item is ProjectLink => Boolean(item?.title && item.url));
+};
+
+const asStringList = (value: unknown) =>
+  Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string' && Boolean(item.trim())) : [];
+
+const asProjectCaseStudy = (value: unknown): ProjectCaseStudy | undefined => {
+  if (!value || typeof value !== 'object') return undefined;
+  const item = value as Record<string, unknown>;
+  const text = (key: string) => typeof item[key] === 'string' ? item[key] as string : undefined;
+
+  return {
+    period: text('period'),
+    projectType: text('projectType'),
+    role: text('role'),
+    contribution: text('contribution'),
+    deploymentStatus: text('deploymentStatus'),
+    keyOutcome: text('keyOutcome'),
+    responsibilities: asStringList(item.responsibilities),
+    features: asStringList(item.features),
+    decisions: asStringList(item.decisions),
+    results: asStringList(item.results),
+    retrospective: text('retrospective'),
+  };
 };
 
 const asAboutHighlights = (value: unknown): AboutHighlight[] => {
@@ -92,6 +116,7 @@ interface ProjectRow {
   full_page_images: string[] | null;
   challenge_images: string[] | null;
   project_links: unknown;
+  case_study?: unknown;
   sections?: ProjectSectionContent[];
   link_url: string | null;
   github_url: string | null;
@@ -145,6 +170,7 @@ const rowToProject = (row: ProjectRow): PortfolioProject => ({
   fullPageImages: (row.full_page_images ?? []).map(decodeProjectImage),
   challengeImages: (row.challenge_images ?? []).map(decodeProjectImage),
   projectLinks: asProjectLinks(row.project_links),
+  caseStudy: asProjectCaseStudy(row.case_study),
   sections: row.sections ?? [],
   link: row.link_url ?? undefined,
   github: row.github_url ?? undefined,
@@ -170,6 +196,7 @@ const projectToRow = (project: PortfolioProject) => ({
   full_page_images: (project.fullPageImages ?? []).map(encodeProjectImage),
   challenge_images: (project.challengeImages ?? []).map(encodeProjectImage),
   project_links: project.projectLinks ?? [],
+  case_study: project.caseStudy ?? {},
   sections: project.sections ?? [],
   link_url: project.link ?? '',
   github_url: project.github ?? '',

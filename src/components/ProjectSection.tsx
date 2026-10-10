@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { X, ExternalLink, Github, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
 import { fetchPublishedProjects, fetchAdminProjects, fetchProjectCategories, defaultCategories, fetchProjectOrder, saveProjectOrder } from '../lib/portfolioApi';
-import type { PortfolioProject, ProjectCategory, ProjectFilter } from '../types/portfolio';
+import type { PortfolioProject, ProjectCaseStudy, ProjectCategory, ProjectFilter } from '../types/portfolio';
 
 // 이미지 경로 helper
 const getImagePath = (imageName: string) => {
@@ -162,6 +162,17 @@ export const fallbackProjects: PortfolioProject[] = [
       getImagePath("Dayjscode.svg"),
       getImagePath("Elcode.svg"),
     ],
+    caseStudy: {
+      projectType: '개인 프로젝트',
+      role: '기획 · UI/UX · 프론트엔드 · 배포',
+      deploymentStatus: '실제 운영 중',
+      keyOutcome: '복잡한 날짜와 시간 계산 기능을 하나의 사용하기 쉬운 웹 도구로 구현',
+      responsibilities: ['서비스 기획과 화면 구조 설계', '날짜·시간 계산 로직 구현', '반응형 UI 개발과 배포'],
+      features: ['날짜 차이 계산', '시간 계산', '나이와 띠 계산', 'D-day 기능'],
+      decisions: ['dayjs를 활용해 날짜 계산 기준을 일관되게 관리', '기능별 화면을 직관적으로 구분해 계산 과정의 복잡도를 낮춤'],
+      results: ['여러 날짜·시간 도구를 하나의 서비스로 완성', '모바일과 PC에서 사용할 수 있는 반응형 인터페이스 구현', '실제 도메인에 배포해 운영'],
+      retrospective: '복잡한 계산일수록 결과뿐 아니라 입력 방식과 설명이 중요하다는 점을 배웠습니다. 앞으로는 계산 로직 테스트와 접근성을 더 강화할 계획입니다.',
+    },
     link: 'https://getdaytimes.com',
   },
   {
@@ -251,6 +262,17 @@ export const fallbackProjects: PortfolioProject[] = [
       getImagePath("transaction-type-merge-and-sort.svg"),
       getImagePath("transaction-price-query-mapping.svg"),
     ],
+    caseStudy: {
+      projectType: '개인 프로젝트',
+      role: '기획 · UI/UX · 프론트엔드 · 데이터 연동 · 관리자 기능',
+      deploymentStatus: '서비스형 기능 구현 완료',
+      keyOutcome: '매물 탐색부터 상세 조회와 상담 접수까지 전체 사용자 흐름 구현',
+      responsibilities: ['서비스 기획과 사용자 흐름 설계', '매물 목록·상세·필터 UI 개발', 'Supabase 데이터 연동', '상담 접수와 관리자 매물 관리 기능 구현'],
+      features: ['조건별 매물 검색과 필터링', '최근 본 매물과 관심 매물', '매물 상세 조회', '상담 문의 저장', '관리자 매물 등록·수정과 커스텀 항목 관리'],
+      decisions: ['카테고리, 지역, 거래 유형, 가격 조건을 분리해 조합 가능한 필터 구조로 설계', 'Next.js 서버 데이터 조회와 클라이언트 인터랙션의 역할 분리', 'Supabase와 커스텀 필드 구조로 관리자 화면의 확장성 확보'],
+      results: ['매물 검색부터 상세 조회와 상담 접수까지 하나의 흐름으로 구현', '관리자 페이지에서 매물과 추가 입력 항목을 관리할 수 있도록 구성', '최근 본 매물과 관심 매물로 탐색 편의성 향상', 'Supabase를 활용해 매물과 문의 데이터 관리', '실제 운영과 확장을 고려한 데이터 구조 설계'],
+      retrospective: '검색 조건과 운영 데이터가 늘어날수록 초기 데이터 구조의 중요성이 커진다는 점을 배웠습니다. 다음 단계에서는 실제 사용자 데이터를 바탕으로 필터 사용성과 초기 로딩 성능을 검증하고 개선할 계획입니다.',
+    },
   },
   {
     id: '9',
@@ -331,6 +353,17 @@ export const fallbackProjects: PortfolioProject[] = [
         url: 'https://www.coupang.com/vp/products/9675019694?vendorItemId=95860227818',
       },
     ],
+    caseStudy: {
+      projectType: '실무 디자인',
+      role: '제품 정보 분석 · 정보 구조 · 카피 방향 · 상세페이지 디자인',
+      deploymentStatus: '스마트스토어·쿠팡 게시',
+      keyOutcome: '126개 제품의 정보를 구매 설득 흐름으로 구조화해 실제 판매 페이지에 적용',
+      responsibilities: ['제품별 USP와 사용자 질문 분석', '상세페이지 정보 구조와 시선 흐름 설계', '카피 방향 설정과 시각 디자인', '설치·배송·비교 안내 이미지 제작'],
+      features: ['제품 핵심 장점 전달', '문제 제기와 해결 메시지', '제품 비교와 설치 안내', '구매 행동으로 이어지는 CTA 흐름'],
+      decisions: ['제품별 사용 맥락에 따라 섹션 순서를 다르게 구성', '제목–근거–이미지–구매 행동의 반복 리듬으로 긴 페이지의 가독성 유지', 'AI로 초기 가이드와 카피 방향을 탐색한 뒤 Figma에서 최종 구조와 디자인 완성'],
+      results: ['힘펠 75개와 하츠 51개, 총 126개 제품 상세페이지 제작', '설치·배송·리모컨 구분 등 구매 전 문의를 줄이는 보조 이미지 구성', '스마트스토어와 쿠팡 판매 페이지에 실제 게시', '사내 리뷰에서 완성도와 제작 속도에 대한 긍정적 피드백 확보'],
+      retrospective: '많은 제품을 빠르게 제작하면서도 제품별 설득 포인트를 구분하는 것이 중요했습니다. 앞으로는 실제 구매 전환과 문의 데이터를 바탕으로 정보 구조의 효과를 더 구체적으로 검증하고 싶습니다.',
+    },
   },
   {
     id: '11',
@@ -356,6 +389,47 @@ export const fallbackProjects: PortfolioProject[] = [
     link: 'https://typing-in-sheets.vercel.app',
   },
 ];
+
+const businessWebsiteCaseStudy: ProjectCaseStudy = {
+  projectType: '개인 프로젝트',
+  role: 'UI 구현 · 반응형 레이아웃 · 인터랙션 개발',
+  deploymentStatus: '웹사이트 구현 완료',
+  keyOutcome: '재사용 가능한 섹션과 자연스러운 스크롤 경험을 갖춘 반응형 비즈니스 웹사이트 구현',
+  responsibilities: ['서비스 웹사이트 구조와 사용자 흐름 분석', '재사용 가능한 섹션 컴포넌트 설계', '반응형 레이아웃과 스크롤 인터랙션 구현'],
+  features: ['기업 및 서비스 소개 섹션', '반응형 레이아웃', 'GSAP·ScrollTrigger 기반 스크롤 인터랙션'],
+  decisions: ['반복되는 화면을 섹션 컴포넌트로 분리해 재사용성 확보', '정보 전달을 방해하지 않는 범위에서 스크롤 모션 적용'],
+  results: ['PC와 모바일에 대응하는 반응형 웹사이트 완성', '콘텐츠 전달부터 서비스 소개까지 이어지는 사용자 흐름 구현', 'GSAP와 ScrollTrigger로 자연스러운 스크롤 경험 구현'],
+  retrospective: '비즈니스 웹사이트에서는 화려한 효과보다 정보의 우선순위와 탐색 흐름이 중요하다는 점을 배웠습니다. 이후에는 실제 사용자 행동 데이터를 바탕으로 섹션 순서와 전환 효과를 검증하고 싶습니다.',
+};
+
+const getCaseStudy = (project: PortfolioProject): ProjectCaseStudy => {
+  const localCaseStudy = fallbackProjects.find((item) => item.title === project.title)?.caseStudy
+    ?? (project.title.toLowerCase() === 'business website' ? businessWebsiteCaseStudy : undefined);
+  const savedCaseStudy = project.caseStudy;
+  const textValue = (key: keyof ProjectCaseStudy) => {
+    const saved = savedCaseStudy?.[key];
+    const local = localCaseStudy?.[key];
+    return typeof saved === 'string' && saved.trim() ? saved : typeof local === 'string' ? local : undefined;
+  };
+  const listValue = (key: 'responsibilities' | 'features' | 'decisions' | 'results') => {
+    const saved = savedCaseStudy?.[key];
+    return saved?.length ? saved : localCaseStudy?.[key];
+  };
+
+  return {
+    period: textValue('period'),
+    projectType: textValue('projectType'),
+    role: textValue('role'),
+    contribution: textValue('contribution'),
+    deploymentStatus: textValue('deploymentStatus'),
+    keyOutcome: textValue('keyOutcome'),
+    responsibilities: listValue('responsibilities'),
+    features: listValue('features'),
+    decisions: listValue('decisions'),
+    results: listValue('results'),
+    retrospective: textValue('retrospective'),
+  };
+};
 
 interface ProjectSectionProps {
   isAdmin: boolean;
@@ -546,6 +620,23 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
       setSelectedProject(null);
     }
   };
+
+  const selectedCaseStudy = selectedProject ? getCaseStudy(selectedProject) : undefined;
+  const caseStudySummary = selectedProject && selectedCaseStudy
+    ? [
+        ['프로젝트 기간', selectedCaseStudy.period ?? '정보 업데이트 예정'],
+        ['프로젝트', selectedCaseStudy.projectType ?? categoryMeta[selectedProject.category]?.label],
+        ['담당', selectedCaseStudy.role],
+        ['기여도', selectedCaseStudy.contribution],
+        ['배포 상태', selectedCaseStudy.deploymentStatus],
+      ].filter((entry): entry is [string, string] => Boolean(entry[1]))
+    : [];
+  const challengePairs = selectedProject
+    ? Array.from({ length: Math.ceil(selectedProject.difficulties.length / 2) }, (_, index) => ({
+        challenge: selectedProject.difficulties[index * 2],
+        solution: selectedProject.difficulties[index * 2 + 1],
+      }))
+    : [];
 
   return (
     <section id="projects" className="relative py-20 lg:py-32 px-6">
@@ -771,110 +862,172 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
 
               {/* 모달 콘텐츠 */}
               <div className="space-y-8">
-                {selectedProject.description && <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">{selectedProject.description}</p>}
-                {/* Overview */}
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                    Project Overview
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                    {selectedProject.overview}
-                  </p>
-                </div>
-
-                {/* Goal */}
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Goal</h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                    {selectedProject.goal}
-                  </p>
-                </div>
-
-                {/* Published Links */}
-                {selectedProject.projectLinks && selectedProject.projectLinks.length > 0 && (
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                      Published Pages
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {selectedProject.projectLinks.map((projectLink, idx) => (
-                        <a
-                          key={idx}
-                          href={projectLink.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group rounded-lg border border-slate-200/80 bg-white/70 p-4 text-left shadow-sm transition-all hover:border-cyan-400 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
-                        >
-                          <div className="mb-2 flex items-start justify-between gap-3">
-                            <p className="text-sm font-bold leading-snug text-gray-900 dark:text-white">
-                              {projectLink.title}
-                            </p>
-                            <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-cyan-500 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                          </div>
-                          <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-400">
-                            {projectLink.description}
-                          </p>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Gallery */}
-                {selectedProject.outputs && selectedProject.outputs.length > 0 && (
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                      Project Gallery
-                    </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {selectedProject.outputs.map((img, idx) => {
-                        const isLongPage = isFullPageImage(selectedProject, img);
-
-                        return (
-                        <div
-                          key={idx}
-                          className={`rounded-lg overflow-hidden shadow-lg hover:shadow-xl dark:hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-105 cursor-zoom-in ${
-                            isLongPage ? 'col-span-2 md:col-span-1' : ''
-                          }`}
-                          onClick={() => openImageViewer(img)}
-                        >
-                          <img
-                            src={img}
-                            alt={`Gallery ${idx + 1}`}
-                            className={`w-full bg-gray-100 dark:bg-gray-800 ${
-                              isLongPage
-                                ? 'h-48 object-cover object-top p-0'
-                                : 'h-48 object-contain p-2'
-                            }`}
-                            style={
-                              isLongPage
-                                ? { objectPosition: selectedProject.thumbnailPosition ?? 'top center' }
-                                : undefined
-                            }
-                          />
+                {(caseStudySummary.length > 0 || selectedCaseStudy?.keyOutcome) && (
+                  <section className="rounded-2xl border border-slate-200/80 bg-white/65 p-5 shadow-sm dark:border-white/10 dark:bg-white/5 sm:p-6">
+                    <dl className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
+                      {caseStudySummary.map(([label, value]) => (
+                        <div key={label} className={label === '담당' ? 'sm:col-span-2' : ''}>
+                          <dt className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-cyan-600 dark:text-cyan-300">{label}</dt>
+                          <dd className="leading-relaxed text-gray-800 dark:text-gray-200">{value}</dd>
                         </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                      ))}
+                      {selectedCaseStudy?.keyOutcome && (
+                        <div className="border-t border-slate-200/80 pt-5 dark:border-white/10 sm:col-span-2">
+                          <dt className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-cyan-600 dark:text-cyan-300">핵심 성과</dt>
+                          <dd className="font-semibold leading-relaxed text-gray-900 dark:text-white">{selectedCaseStudy.keyOutcome}</dd>
+                        </div>
+                      )}
+                    </dl>
+                  </section>
                 )}
 
-                {/* Stack */}
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                    {selectedProject.category === 'design' ? 'Tools & Process' : 'Tech Stack'}
-                  </h3>
+                {selectedProject.description && (
+                  <p className="whitespace-pre-wrap text-lg leading-relaxed text-gray-700 dark:text-gray-300">
+                    {selectedProject.description}
+                  </p>
+                )}
+
+                <section>
+                  <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">01</p>
+                  <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">프로젝트 배경과 문제</h3>
+                  <p className="leading-relaxed text-gray-700 dark:text-gray-300">{selectedProject.overview}</p>
+                </section>
+
+                <section>
+                  <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">02</p>
+                  <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">목표</h3>
+                  <p className="leading-relaxed text-gray-700 dark:text-gray-300">{selectedProject.goal}</p>
+                </section>
+
+                {(selectedCaseStudy?.role || Boolean(selectedCaseStudy?.responsibilities?.length)) && (
+                  <section>
+                    <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">03</p>
+                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">나의 역할</h3>
+                    {selectedCaseStudy?.role && <p className="mb-4 font-semibold leading-relaxed text-gray-800 dark:text-gray-200">{selectedCaseStudy.role}</p>}
+                    {selectedCaseStudy?.responsibilities && (
+                      <ul className="grid gap-3 sm:grid-cols-2">
+                        {selectedCaseStudy.responsibilities.map((item) => (
+                          <li key={item} className="rounded-xl border border-slate-200/80 bg-white/60 p-4 leading-relaxed text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">{item}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </section>
+                )}
+
+                {selectedCaseStudy?.features && selectedCaseStudy.features.length > 0 && (
+                  <section>
+                    <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">04</p>
+                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">핵심 기능</h3>
+                    <ul className="grid gap-3 sm:grid-cols-2">
+                      {selectedCaseStudy.features.map((feature) => (
+                        <li key={feature} className="flex gap-3 rounded-xl bg-slate-100/80 p-4 leading-relaxed text-gray-700 dark:bg-white/5 dark:text-gray-300">
+                          <span aria-hidden="true" className="font-bold text-cyan-500">✓</span>
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+
+                {(Boolean(selectedCaseStudy?.decisions?.length) || challengePairs.length > 0 || Boolean(selectedProject.challengeImages?.length)) && (
+                  <section>
+                    <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">05</p>
+                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">기술적·디자인적 의사결정</h3>
+                    {selectedCaseStudy?.decisions && selectedCaseStudy.decisions.length > 0 && (
+                      <ul className="mb-6 space-y-3">
+                        {selectedCaseStudy.decisions.map((decision) => (
+                          <li key={decision} className="flex gap-3 leading-relaxed text-gray-700 dark:text-gray-300">
+                            <span aria-hidden="true" className="mt-1 shrink-0 font-bold text-cyan-500">→</span>
+                            <span>{decision}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {challengePairs.length > 0 && (
+                      <div className="grid gap-4">
+                        {challengePairs.map(({ challenge, solution }, index) => (
+                          <article key={`${challenge}-${index}`} className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/65 dark:border-white/10 dark:bg-white/5">
+                            <div className="p-5 sm:p-6">
+                              <p className="mb-3 text-xs font-bold tracking-[0.16em] text-amber-600 dark:text-amber-300">CHALLENGE {String(index + 1).padStart(2, '0')}</p>
+                              <p className="leading-relaxed text-gray-800 dark:text-gray-200">{challenge}</p>
+                            </div>
+                            {solution && (
+                              <div className="border-t border-slate-200/80 bg-cyan-50/60 p-5 dark:border-white/10 dark:bg-cyan-500/5 sm:p-6">
+                                <p className="mb-3 text-xs font-bold tracking-[0.16em] text-cyan-700 dark:text-cyan-300">SOLUTION</p>
+                                <p className="leading-relaxed text-gray-700 dark:text-gray-300">{solution}</p>
+                              </div>
+                            )}
+                          </article>
+                        ))}
+                      </div>
+                    )}
+                    {selectedProject.challengeImages && selectedProject.challengeImages.length > 0 && (
+                      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {selectedProject.challengeImages.map((img, idx) => (
+                          <button key={img} type="button" className="overflow-hidden rounded-lg bg-gray-100 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:bg-gray-800 dark:hover:shadow-cyan-500/30" onClick={() => openImageViewer(img)}>
+                            <img src={img} alt={`문제 해결 과정 ${idx + 1}`} className="h-48 w-full object-contain p-2" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </section>
+                )}
+
+                {selectedCaseStudy?.results && selectedCaseStudy.results.length > 0 && (
+                  <section>
+                    <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">06</p>
+                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">결과와 성과</h3>
+                    <ul className="space-y-3 rounded-2xl border border-cyan-200/70 bg-cyan-50/55 p-5 dark:border-cyan-400/15 dark:bg-cyan-500/5 sm:p-6">
+                      {selectedCaseStudy.results.map((result) => (
+                        <li key={result} className="flex gap-3 leading-relaxed text-gray-700 dark:text-gray-300">
+                          <span aria-hidden="true" className="shrink-0 font-bold text-cyan-600 dark:text-cyan-300">•</span>
+                          <span>{result}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+
+                {((selectedProject.outputs?.length ?? 0) > 0 || (selectedProject.detailImages?.length ?? 0) > 0) && (
+                  <section>
+                    <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">07</p>
+                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">프로젝트 갤러리</h3>
+                    {selectedProject.outputs && selectedProject.outputs.length > 0 && (
+                      <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+                        {selectedProject.outputs.map((img, idx) => {
+                          const isLongPage = isFullPageImage(selectedProject, img);
+                          return (
+                            <button key={img} type="button" className={`overflow-hidden rounded-lg bg-gray-100 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:bg-gray-800 dark:hover:shadow-cyan-500/30 ${isLongPage ? 'col-span-2 md:col-span-1' : ''}`} onClick={() => openImageViewer(img)}>
+                              <img src={img} alt={`${selectedProject.title} 화면 ${idx + 1}`} className={`w-full ${isLongPage ? 'h-48 object-cover object-top' : 'h-48 object-contain p-2'}`} style={isLongPage ? { objectPosition: selectedProject.thumbnailPosition ?? 'top center' } : undefined} />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                    {selectedProject.detailImages && selectedProject.detailImages.length > 0 && (
+                      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {selectedProject.detailImages.map((img, idx) => {
+                          const isLongPage = isFullPageImage(selectedProject, img);
+                          return (
+                            <button key={img} type="button" className="overflow-hidden rounded-lg bg-gray-100 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:bg-gray-800 dark:hover:shadow-cyan-500/30" onClick={() => openImageViewer(img)}>
+                              <img src={img} alt={`${selectedProject.title} 상세 화면 ${idx + 1}`} className={`w-full ${isLongPage ? 'h-72 object-cover object-top' : 'h-56 object-contain p-2'}`} style={isLongPage ? { objectPosition: selectedProject.thumbnailPosition ?? 'top center' } : undefined} />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </section>
+                )}
+
+                <section>
+                  <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">08</p>
+                  <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">{selectedProject.category === 'design' ? '도구와 제작 과정' : '기술 스택'}</h3>
                   <div className="flex flex-wrap gap-3">
-                    {selectedProject.stack.map((tech, idx) => (
-                      <span
-                        key={idx}
-                        className="px-4 py-2 bg-blue-500/20 text-blue-600 dark:text-cyan-400 rounded-lg font-semibold text-sm"
-                      >
-                        {tech.replace(/^#+/, '')}
-                      </span>
+                    {selectedProject.stack.map((tech) => (
+                      <span key={tech} className="rounded-lg bg-blue-500/20 px-4 py-2 text-sm font-semibold text-blue-600 dark:text-cyan-400">{tech.replace(/^#+/, '')}</span>
                     ))}
                   </div>
-                </div>
+                </section>
 
                 {(selectedProject.sections ?? []).map((section) => (
                   <section key={section.id}>
@@ -882,76 +1035,30 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                     <p className="whitespace-pre-wrap leading-relaxed text-gray-700 dark:text-gray-300">{section.content}</p>
                   </section>
                 ))}
-                {/* Difficulties */}
-                {(selectedProject.difficulties.length > 0 || Boolean(selectedProject.challengeImages?.length)) && <div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                    Challenges & Solutions
-                  </h3>
-                  <ul className="space-y-3">
-                    {selectedProject.difficulties.map((difficulty, idx) => (
-                      <li
-                        key={idx}
-                        className="flex gap-3 text-gray-700 dark:text-gray-300 leading-relaxed"
-                      >
-                        <span className="text-cyan-400 font-bold flex-shrink-0 mt-1">→</span>
-                        <span>{difficulty}</span>
-                      </li>
-                    ))}
-                  </ul>
-                    {selectedProject.challengeImages && selectedProject.challengeImages.length > 0 && (
-                      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {selectedProject.challengeImages.map((img, idx) => (
-                          <div
-                            key={idx}
-                            className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl dark:hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-105 cursor-zoom-in"
-                            onClick={() => openImageViewer(img)}
-                          >
-                            <img
-                              src={img}
-                              alt={`Challenge ${idx + 1}`}
-                              className="w-full h-48 object-contain bg-gray-100 dark:bg-gray-800 p-2"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                </div>}
 
-                {/* Additional Images */}
-                {selectedProject.detailImages && selectedProject.detailImages.length > 0 && (
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                      Detail Images
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {selectedProject.detailImages.map((img, idx) => {
-                        const isLongPage = isFullPageImage(selectedProject, img);
+                {selectedCaseStudy?.retrospective && (
+                  <section>
+                    <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">09</p>
+                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">회고와 다음 개선 사항</h3>
+                    <p className="leading-relaxed text-gray-700 dark:text-gray-300">{selectedCaseStudy.retrospective}</p>
+                  </section>
+                )}
 
-                        return (
-                          <div
-                            key={idx}
-                            className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl dark:hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-[1.02] cursor-zoom-in"
-                            onClick={() => openImageViewer(img)}
-                          >
-                            <img
-                              src={img}
-                              alt={`Detail ${idx + 1}`}
-                              className={`w-full bg-gray-100 dark:bg-gray-800 ${
-                                isLongPage
-                                  ? 'h-72 object-cover object-top p-0'
-                                  : 'h-56 object-contain p-2'
-                              }`}
-                              style={
-                                isLongPage
-                                  ? { objectPosition: selectedProject.thumbnailPosition ?? 'top center' }
-                                  : undefined
-                              }
-                            />
+                {selectedProject.projectLinks && selectedProject.projectLinks.length > 0 && (
+                  <section>
+                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">게시된 작업 보기</h3>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      {selectedProject.projectLinks.map((projectLink) => (
+                        <a key={projectLink.url} href={projectLink.url} target="_blank" rel="noopener noreferrer" className="group rounded-lg border border-slate-200/80 bg-white/70 p-4 text-left shadow-sm transition-all hover:border-cyan-400 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
+                          <div className="mb-2 flex items-start justify-between gap-3">
+                            <p className="text-sm font-bold leading-snug text-gray-900 dark:text-white">{projectLink.title}</p>
+                            <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-cyan-500 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                           </div>
-                        );
-                      })}
+                          <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-400">{projectLink.description}</p>
+                        </a>
+                      ))}
                     </div>
-                  </div>
+                  </section>
                 )}
 
                 {/* 하단 버튼 */}
@@ -975,7 +1082,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                       className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all font-semibold"
                     >
                       <ExternalLink className="w-5 h-5" />
-                      Visit Project
+                      사이트 방문
                     </a>
                   )}
                 </div>

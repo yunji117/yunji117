@@ -20,7 +20,7 @@ const result = await build({
 });
 const { html, tags } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`).catch((error) => { throw new Error(error.message); });
 test('editor follows the requested detail-view content order', () => {
-  const labels = ['대표 이미지 한 장 선택', '프로젝트 이름', '프로젝트 간단 소개', 'Project Overview', 'Goal', 'Project Gallery', 'Tech Stack', '중주제 추가하기', '프로젝트 URL'];
+  const labels = ['대표 이미지 한 장 선택', '프로젝트 이름', '프로젝트 간단 소개', 'Case Study Summary', '프로젝트 배경과 문제', 'Goal', 'Project Gallery', 'Tech Stack', '중주제 추가하기', '프로젝트 URL'];
   const positions = labels.map((label) => html.indexOf(label));
   assert.ok(positions.every((position) => position >= 0));
   assert.deepEqual(positions, [...positions].sort((a, b) => a - b));

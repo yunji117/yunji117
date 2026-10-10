@@ -11,6 +11,20 @@ export interface ProjectLink {
   url: string;
 }
 
+export interface ProjectCaseStudy {
+  period?: string;
+  projectType?: string;
+  role?: string;
+  contribution?: string;
+  deploymentStatus?: string;
+  keyOutcome?: string;
+  responsibilities?: string[];
+  features?: string[];
+  decisions?: string[];
+  results?: string[];
+  retrospective?: string;
+}
+
 export interface PortfolioProject {
   id: string;
   title: string;
@@ -30,6 +44,7 @@ export interface PortfolioProject {
   fullPageImages?: string[];
   challengeImages?: string[];
   projectLinks?: ProjectLink[];
+  caseStudy?: ProjectCaseStudy;
   link?: string;
   github?: string;
   isPublished?: boolean;

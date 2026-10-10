@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Eye, EyeOff, ExternalLink, ImagePlus, Loader2, Plus, Trash2 } from 'lucide-react';
-import type { PortfolioProject } from '../../types/portfolio';
+import type { PortfolioProject, ProjectCaseStudy } from '../../types/portfolio';
 import { addProjectCategory, defaultCategories, fetchProjectCategories, saveProject, uploadPortfolioImage } from '../../lib/portfolioApi';
 import { portfolioErrorMessage } from '../../lib/portfolioErrors';
 import EditorModal from './EditorModal';
@@ -8,7 +8,7 @@ import TagInput from './TagInput';
 
 const field = 'w-full rounded-xl border border-slate-200 bg-white/70 px-4 py-3 text-gray-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-white/15 dark:bg-white/5 dark:text-white dark:focus:ring-cyan-500/20';
 const heading = 'mb-3 block text-2xl font-bold';
-const blank = (category: string, sortOrder: number): PortfolioProject => ({ id: crypto.randomUUID(), title: '', description: '', shortDesc: '', image: '', category, stack: [], overview: '', goal: '', difficulties: [], outputs: [], sections: [], link: '', isPublished: true, sortOrder });
+const blank = (category: string, sortOrder: number): PortfolioProject => ({ id: crypto.randomUUID(), title: '', description: '', shortDesc: '', image: '', category, stack: [], overview: '', goal: '', difficulties: [], outputs: [], sections: [], caseStudy: {}, link: '', isPublished: true, sortOrder });
 
 export default function ProjectEditorModal({ project, category = 'personal', sortOrder, onClose, onSaved }: { project?: PortfolioProject; category?: string; sortOrder: number; onClose: () => void; onSaved: (project: PortfolioProject) => void }) {
   const [draft, setDraft] = useState(() => project ? { ...structuredClone(project), outputs: [...new Set([...(project.outputs ?? []), ...(project.detailImages ?? [])])], detailImages: [] } : blank(category, sortOrder));
@@ -25,6 +25,8 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
     return () => { active = false; };
   }, [categoryAttempt]);
   const update = <K extends keyof PortfolioProject>(key: K, value: PortfolioProject[K]) => setDraft((current) => ({ ...current, [key]: value }));
+  const updateCaseStudy = <K extends keyof ProjectCaseStudy>(key: K, value: ProjectCaseStudy[K]) =>
+    setDraft((current) => ({ ...current, caseStudy: { ...current.caseStudy, [key]: value } }));
   const close = () => { if (!busy && (initial === JSON.stringify(draft) || window.confirm('작성 중인 내용을 저장하지 않고 닫을까요?'))) onClose(); };
   const upload = async (event: ChangeEvent<HTMLInputElement>, cover: boolean) => {
     const files = Array.from(event.target.files ?? []); event.target.value = '';
@@ -80,7 +82,34 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
           }}>추가</button></div>}
         </div>
         <label className="block"><span className="mb-2 block text-sm text-gray-500">프로젝트 간단 소개</span><textarea aria-label="프로젝트 간단 소개" className={`${field} min-h-24`} value={draft.description} onChange={(event) => update('description', event.target.value)} placeholder="이 프로젝트는 …을 위한 웹 서비스입니다." /></label>
-        <label className="block"><span className={heading}>Project Overview</span><textarea className={`${field} min-h-32`} value={draft.overview} onChange={(event) => update('overview', event.target.value)} /></label>
+        <section className="space-y-4 rounded-2xl border border-violet-200 bg-violet-50/40 p-5 dark:border-violet-400/20 dark:bg-violet-500/5">
+          <div><h3 className={heading}>Case Study Summary</h3><p className="text-sm text-gray-500">확인된 실제 정보만 입력하세요. 빈 항목은 상세 화면에 표시되지 않습니다.</p></div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {([
+              ['period', '프로젝트 기간', '예: 2026.01 – 2026.03'],
+              ['projectType', '프로젝트 형태', '예: 개인 프로젝트'],
+              ['role', '담당', '예: 기획 · UI/UX · 프론트엔드'],
+              ['contribution', '기여도', '예: 100%'],
+              ['deploymentStatus', '배포 상태', '예: 실제 운영 중'],
+              ['keyOutcome', '핵심 성과', '완성된 기능이나 해결한 문제'],
+            ] as const).map(([key, label, placeholder]) => (
+              <label key={key} className={key === 'role' || key === 'keyOutcome' ? 'sm:col-span-2' : ''}>
+                <span className="mb-2 block text-sm font-semibold">{label}</span>
+                <input className={field} value={draft.caseStudy?.[key] ?? ''} onChange={(event) => updateCaseStudy(key, event.target.value)} placeholder={placeholder} />
+              </label>
+            ))}
+          </div>
+          {([
+            ['responsibilities', '나의 역할', '한 줄에 하나씩 입력하세요'],
+            ['features', '핵심 기능', '한 줄에 하나씩 입력하세요'],
+            ['decisions', '기술적·디자인적 의사결정', '한 줄에 하나씩 입력하세요'],
+            ['results', '결과와 성과', '한 줄에 하나씩 입력하세요'],
+          ] as const).map(([key, label, placeholder]) => (
+            <label key={key} className="block"><span className="mb-2 block text-sm font-semibold">{label}</span><textarea className={`${field} min-h-24`} value={(draft.caseStudy?.[key] ?? []).join('\n')} onChange={(event) => updateCaseStudy(key, event.target.value.split('\n').map((item) => item.trim()).filter(Boolean))} placeholder={placeholder} /></label>
+          ))}
+          <label className="block"><span className="mb-2 block text-sm font-semibold">회고와 다음 개선 사항</span><textarea className={`${field} min-h-28`} value={draft.caseStudy?.retrospective ?? ''} onChange={(event) => updateCaseStudy('retrospective', event.target.value)} /></label>
+        </section>
+        <label className="block"><span className={heading}>프로젝트 배경과 문제</span><textarea className={`${field} min-h-32`} value={draft.overview} onChange={(event) => update('overview', event.target.value)} /></label>
         <label className="block"><span className={heading}>Goal</span><textarea className={`${field} min-h-28`} value={draft.goal} onChange={(event) => update('goal', event.target.value)} /></label>
         <section><h3 className={heading}>Project Gallery</h3><div className="grid grid-cols-2 gap-4 sm:grid-cols-3">{(draft.outputs ?? []).map((url, index) => <div key={`${url}-${index}`} className="relative overflow-hidden rounded-lg bg-gray-100 dark:bg-slate-800"><img src={url} alt={`프로젝트 이미지 ${index + 1}`} className="h-40 w-full object-contain" /><button type="button" aria-label={`프로젝트 이미지 ${index + 1} 삭제`} className="absolute right-2 top-2 rounded-full bg-white p-2 text-red-600" onClick={() => update('outputs', draft.outputs?.filter((_, position) => position !== index))}><Trash2 className="h-4 w-4" /></button></div>)}<label className="flex min-h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-cyan-300 text-sm text-cyan-600"><ImagePlus />이미지 여러 장 추가<input type="file" multiple accept="image/*" aria-label="프로젝트 이미지 여러 장 선택" className="sr-only" onChange={(event) => void upload(event, false)} /></label></div></section>
         <section><h3 className={heading}>Tech Stack</h3><TagInput label="스택" hashtags value={draft.stack} onChange={(items) => update('stack', items)} placeholder="#React #TypeScript 입력 후 Enter" /></section>

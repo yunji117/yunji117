@@ -40,6 +40,7 @@ create table if not exists public.projects (
   full_page_images text[] not null default '{}',
   challenge_images text[] not null default '{}',
   project_links jsonb not null default '[]'::jsonb,
+  case_study jsonb not null default '{}'::jsonb,
   link_url text not null default '',
   github_url text not null default '',
   is_published boolean not null default true,
