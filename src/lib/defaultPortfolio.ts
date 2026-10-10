@@ -45,7 +45,7 @@ export const defaultSkillGroups: SkillGroup[] = [
     category: 'CORE EXPERTISE',
     iconName: 'Code2',
     color: 'from-blue-500 to-violet-500',
-    items: ['React', 'TypeScript', 'Next.js', 'Figma', 'Supabase', 'Tailwind CSS'],
+    items: ['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Supabase', 'Figma'],
   },
   {
     id: 'project-experience',

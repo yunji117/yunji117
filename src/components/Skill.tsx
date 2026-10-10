@@ -14,6 +14,7 @@ interface CoreSkillDetail {
   preferredProject: string;
   aliases: string[];
   icon: typeof Code2;
+  iconColor: string;
 }
 
 const coreSkillDetails: Record<string, CoreSkillDetail> = {
@@ -23,6 +24,7 @@ const coreSkillDetails: Record<string, CoreSkillDetail> = {
     preferredProject: 'Business Website',
     aliases: ['react'],
     icon: Code2,
+    iconColor: 'from-blue-500 to-cyan-500 shadow-blue-500/20',
   },
   TypeScript: {
     description: '타입을 활용한 컴포넌트와 데이터 구조 설계',
@@ -30,6 +32,7 @@ const coreSkillDetails: Record<string, CoreSkillDetail> = {
     preferredProject: 'DayTime',
     aliases: ['typescript'],
     icon: Code2,
+    iconColor: 'from-blue-500 to-cyan-500 shadow-blue-500/20',
   },
   'Next.js': {
     description: '라우팅, SEO, 데이터 기반 웹서비스 구현',
@@ -37,6 +40,7 @@ const coreSkillDetails: Record<string, CoreSkillDetail> = {
     preferredProject: '부동산 매물 플랫폼',
     aliases: ['next.js', 'next.js 16'],
     icon: LayoutTemplate,
+    iconColor: 'from-blue-500 to-cyan-500 shadow-blue-500/20',
   },
   Figma: {
     description: 'UI/UX 설계와 커머스 콘텐츠 제작',
@@ -44,6 +48,7 @@ const coreSkillDetails: Record<string, CoreSkillDetail> = {
     preferredProject: '커머스 상세페이지 디자인',
     aliases: ['figma'],
     icon: Palette,
+    iconColor: 'from-fuchsia-500 to-violet-500 shadow-fuchsia-500/20',
   },
   Supabase: {
     description: '데이터 연동과 관리 기능 구현',
@@ -51,6 +56,7 @@ const coreSkillDetails: Record<string, CoreSkillDetail> = {
     preferredProject: '부동산 매물 플랫폼',
     aliases: ['supabase'],
     icon: Database,
+    iconColor: 'from-emerald-500 to-teal-500 shadow-emerald-500/20',
   },
   'Tailwind CSS': {
     description: '반응형 레이아웃과 일관된 UI 시스템 구현',
@@ -58,8 +64,11 @@ const coreSkillDetails: Record<string, CoreSkillDetail> = {
     preferredProject: 'DayTime',
     aliases: ['tailwind css', 'tailwind'],
     icon: LayoutTemplate,
+    iconColor: 'from-blue-500 to-cyan-500 shadow-blue-500/20',
   },
 };
+
+const coreSkillOrder = ['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Supabase', 'Figma'];
 
 const normalizeTitle = (value: string) =>
   value.toLocaleLowerCase().replace(/[^a-z0-9가-힣]/g, '');
@@ -124,7 +133,15 @@ const Skill = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
   }, [revision]);
 
   const coreSkills = useMemo(
-    () => skills.find((group) => group.id === 'core-expertise')?.items ?? [],
+    () => {
+      const items = skills.find((group) => group.id === 'core-expertise')?.items ?? [];
+      return [...items].sort((a, b) => {
+        const aIndex = coreSkillOrder.indexOf(a);
+        const bIndex = coreSkillOrder.indexOf(b);
+        return (aIndex === -1 ? coreSkillOrder.length : aIndex) -
+          (bIndex === -1 ? coreSkillOrder.length : bIndex);
+      });
+    },
     [skills],
   );
   const projectExperience = skills.find((group) => group.id === 'project-experience')?.items ?? [];
@@ -193,7 +210,7 @@ const Skill = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
             </div>
 
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {expertiseCards.map(({ name, description, evidence, project, icon: Icon }) => (
+              {expertiseCards.map(({ name, description, evidence, project, icon: Icon, iconColor }) => (
                 <motion.button
                   key={name}
                   type="button"
@@ -204,7 +221,7 @@ const Skill = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
                   aria-label={project ? `${name} 관련 프로젝트 ${project.title} 보기` : undefined}
                 >
                   <div className="flex w-full items-start justify-between gap-4">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-violet-500 text-white shadow-lg shadow-blue-500/20">
+                    <span className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg ${iconColor}`}>
                       <Icon className="h-6 w-6" />
                     </span>
                     <span className="rounded-full bg-violet-500/10 px-3 py-1.5 text-xs font-black text-violet-700 dark:text-violet-300">{evidence}</span>
