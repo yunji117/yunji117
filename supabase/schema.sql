@@ -202,7 +202,7 @@ values (
     {"iconName":"Users","title":"126 PRODUCT PAGES","description":"126개 제품의 상세페이지를 제작하며 제품별 정보 구조와 구매 흐름을 설계했습니다."}
   ]'::jsonb,
   '디자인과 개발을 연결해 아이디어를 실제 서비스로 완성합니다.',
-  '지속적으로 학습하고 새로운 기술을 탐구하는 개발자입니다 🚀',
+  '많은 기술을 알고 있다는 것보다, 어떤 기술로 무엇을 만들었는지를 보여드립니다.',
   'KIM YUNJI Contact',
   '[
     {"label":"Email","value":"yunw0117@gmail.com","url":"mailto:yunw0117@gmail.com"},
@@ -215,44 +215,49 @@ on conflict (id) do nothing;
 
 insert into public.skill_groups (id, category, icon_name, color, sort_order)
 values
-  ('devops-tools', 'DevOps & Tools', 'GitBranch', 'from-green-500 to-emerald-500', 0),
-  ('backend-database', 'Backend & Database', 'Database', 'from-purple-500 to-pink-500', 1),
-  ('frontend', 'Frontend', 'Code2', 'from-blue-500 to-cyan-500', 2),
-  ('design-content', 'Design & Content', 'Palette', 'from-amber-500 to-rose-500', 3)
+  ('core-expertise', 'CORE EXPERTISE', 'Code2', 'from-blue-500 to-violet-500', 0),
+  ('project-experience', 'PROJECT EXPERIENCE', 'GitBranch', 'from-cyan-500 to-blue-500', 1),
+  ('familiar-with', 'FAMILIAR WITH', 'Database', 'from-purple-500 to-pink-500', 2),
+  ('additional-tools', 'Additional Tools', 'Palette', 'from-amber-500 to-rose-500', 3)
 on conflict (id) do nothing;
 
 insert into public.skill_items (group_id, label, sort_order)
 select group_id, label, sort_order
 from (
   values
-    ('devops-tools', 'Git / Github', 0),
-    ('devops-tools', 'Notion', 1),
-    ('devops-tools', 'Postman', 2),
-    ('devops-tools', 'npm / yarn', 3),
-    ('devops-tools', 'VS Code', 4),
-    ('devops-tools', 'Slack', 5),
-    ('devops-tools', 'AWS / Vercel / Github Action', 6),
-    ('devops-tools', 'Ubuntu / PowerShell', 7),
-    ('backend-database', 'Node.js', 0),
-    ('backend-database', 'Express', 1),
-    ('backend-database', 'NestJS', 2),
-    ('backend-database', 'MongoDB / MySQL / PostgreSQL', 3),
-    ('backend-database', 'Firebase', 4),
-    ('backend-database', 'Supabase', 5),
-    ('backend-database', 'REST API', 6),
-    ('backend-database', 'Docker', 7),
-    ('frontend', 'HTML / CSS / Tailwind CSS', 0),
-    ('frontend', 'React', 1),
-    ('frontend', 'Next.js', 2),
-    ('frontend', 'Vite', 3),
-    ('frontend', 'JavaScript / TypeScript', 4),
-    ('frontend', 'Electron', 5),
-    ('frontend', 'Jest (Testing)', 6),
-    ('design-content', 'Figma (UI/UX Design)', 0),
-    ('design-content', 'Adobe Photoshop', 1),
-    ('design-content', 'CapCut', 2),
-    ('design-content', 'VLLO', 3),
-    ('design-content', 'Blender (3D Modeling)', 4)
+    ('core-expertise', 'React', 0),
+    ('core-expertise', 'TypeScript', 1),
+    ('core-expertise', 'Next.js', 2),
+    ('core-expertise', 'Figma', 3),
+    ('core-expertise', 'Supabase', 4),
+    ('core-expertise', 'Tailwind CSS', 5),
+    ('project-experience', 'JavaScript', 0),
+    ('project-experience', 'HTML / CSS', 1),
+    ('project-experience', 'Vite', 2),
+    ('project-experience', 'Node.js', 3),
+    ('project-experience', 'Express', 4),
+    ('project-experience', 'REST API', 5),
+    ('project-experience', 'PostgreSQL / MySQL', 6),
+    ('project-experience', 'Git / GitHub', 7),
+    ('project-experience', 'Vercel', 8),
+    ('project-experience', 'Postman', 9),
+    ('project-experience', 'npm / yarn', 10),
+    ('familiar-with', 'NestJS', 0),
+    ('familiar-with', 'MongoDB', 1),
+    ('familiar-with', 'Firebase', 2),
+    ('familiar-with', 'Docker', 3),
+    ('familiar-with', 'AWS', 4),
+    ('familiar-with', 'Electron', 5),
+    ('familiar-with', 'Jest', 6),
+    ('familiar-with', 'Blender', 7),
+    ('familiar-with', 'Adobe Photoshop', 8),
+    ('additional-tools', 'CapCut', 0),
+    ('additional-tools', 'VLLO', 1),
+    ('additional-tools', 'Notion', 2),
+    ('additional-tools', 'Slack', 3),
+    ('additional-tools', 'VS Code', 4),
+    ('additional-tools', 'Ubuntu', 5),
+    ('additional-tools', 'PowerShell', 6)
 ) as seed(group_id, label, sort_order)
 where not exists (
   select 1
