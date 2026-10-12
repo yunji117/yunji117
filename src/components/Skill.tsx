@@ -7,6 +7,16 @@ import { defaultSkillGroups, defaultSiteContent } from '../lib/defaultPortfolio'
 import { fetchPublishedProjects, fetchSiteContent, fetchSkillGroups } from '../lib/portfolioApi';
 import type { PortfolioProject } from '../types/portfolio';
 import { fallbackProjects } from './ProjectSection';
+import { useLanguageStore } from '../store/languageStore';
+
+const coreSkillDescriptionsEn: Record<string, string> = {
+  React: 'Component-based UI and user interaction development',
+  TypeScript: 'Typed component and data-structure design',
+  'Next.js': 'Routing, SEO, and data-driven web-service development',
+  'Tailwind CSS': 'Responsive layouts and consistent UI systems',
+  Supabase: 'Data integration and admin-feature development',
+  Figma: 'UI/UX design and e-commerce content creation',
+};
 
 interface CoreSkillDetail {
   description: string;
@@ -97,6 +107,7 @@ const findProjectForSkill = (projects: PortfolioProject[], skill: CoreSkillDetai
 
 const Skill = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number }) => {
   const reduceMotion = useReducedMotion();
+  const { language } = useLanguageStore();
   const [skills, setSkills] = useState(defaultSkillGroups);
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>(fallbackProjects);
   const [footerText, setFooterText] = useState(defaultSiteContent.skillsFooter);
@@ -191,22 +202,22 @@ const Skill = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
         >
           <motion.div variants={itemVariants} className="text-center">
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white md:text-5xl">
-              Skills <span className="text-gradient">& Expertise</span>
+              {language === 'ko' ? <>기술과 <span className="text-gradient">전문 역량</span></> : <>Skills <span className="text-gradient">& Expertise</span></>}
             </h2>
             <div className="mx-auto mt-4 h-1 w-20 bg-gradient-to-r from-blue-500 to-cyan-500" />
             <p className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-300">
-              실제 프로젝트에서 사용하며
-              <span className="block font-bold text-gray-900 dark:text-white">결과로 증명한 기술을 중심으로 정리했습니다.</span>
+              {language === 'ko' ? '실제 프로젝트에서 사용하며' : 'A focused view of the skills I have used in real projects'}
+              <span className="block font-bold text-gray-900 dark:text-white">{language === 'ko' ? '결과로 증명한 기술을 중심으로 정리했습니다.' : 'and demonstrated through completed work.'}</span>
             </p>
           </motion.div>
 
           <motion.section variants={containerVariants} aria-labelledby="core-expertise-title">
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-violet-600 dark:text-violet-300">Primary Skills</p>
-                <h3 id="core-expertise-title" className="mt-2 text-2xl font-black text-gray-900 dark:text-white">CORE EXPERTISE</h3>
+                <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-violet-600 dark:text-violet-300">{language === 'ko' ? '주력 기술' : 'Primary Skills'}</p>
+                <h3 id="core-expertise-title" className="mt-2 text-2xl font-black text-gray-900 dark:text-white">{language === 'ko' ? '핵심 전문 역량' : 'CORE EXPERTISE'}</h3>
               </div>
-              <p className="hidden text-sm text-gray-500 dark:text-gray-400 sm:block">카드를 선택하면 관련 프로젝트를 볼 수 있습니다.</p>
+              <p className="hidden text-sm text-gray-500 dark:text-gray-400 sm:block">{language === 'ko' ? '카드를 선택하면 관련 프로젝트를 볼 수 있습니다.' : 'Select a card to view a related project.'}</p>
             </div>
 
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -218,7 +229,7 @@ const Skill = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
                   onClick={() => project && openProject(project)}
                   disabled={!project}
                   className="group flex min-h-64 flex-col rounded-2xl border border-slate-200/80 bg-white/80 p-6 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 disabled:cursor-default disabled:hover:translate-y-0 dark:border-white/10 dark:bg-white/5 dark:hover:border-violet-400/50"
-                  aria-label={project ? `${name} 관련 프로젝트 ${project.title} 보기` : undefined}
+                  aria-label={project ? (language === 'ko' ? `${name} 관련 프로젝트 ${project.title} 보기` : `View ${project.title}, a project using ${name}`) : undefined}
                 >
                   <div className="flex w-full items-start justify-between gap-4">
                     <span className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg ${iconColor}`}>
@@ -227,7 +238,7 @@ const Skill = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
                     <span className="rounded-full bg-violet-500/10 px-3 py-1.5 text-xs font-black text-violet-700 dark:text-violet-300">{evidence}</span>
                   </div>
                   <h4 className="mt-6 text-2xl font-black text-gray-900 dark:text-white">{name}</h4>
-                  <p className="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-300">{description}</p>
+                  <p className="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-300">{language === 'ko' ? description : coreSkillDescriptionsEn[name] ?? description}</p>
                   {project && (
                     <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-extrabold text-violet-600 dark:text-violet-300">
                       {project.title} <ArrowUpRight className="h-4 w-4" />
@@ -240,8 +251,8 @@ const Skill = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
 
           <motion.div variants={containerVariants} className="grid gap-6 lg:grid-cols-2">
             <motion.section variants={itemVariants} className="rounded-2xl border border-slate-200/80 bg-white/65 p-6 dark:border-white/10 dark:bg-white/5" aria-labelledby="project-experience-title">
-              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-600 dark:text-cyan-300">Used in Projects</p>
-              <h3 id="project-experience-title" className="mt-2 text-xl font-black text-gray-900 dark:text-white">PROJECT EXPERIENCE</h3>
+              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-600 dark:text-cyan-300">{language === 'ko' ? '프로젝트에서 사용' : 'Used in Projects'}</p>
+              <h3 id="project-experience-title" className="mt-2 text-xl font-black text-gray-900 dark:text-white">{language === 'ko' ? '프로젝트 경험 기술' : 'PROJECT EXPERIENCE'}</h3>
               <div className="mt-5 flex flex-wrap gap-2.5">
                 {projectExperience.map((skill) => (
                   <span key={skill} className="rounded-lg bg-blue-500/10 px-3.5 py-2 text-sm font-bold text-blue-800 dark:text-cyan-200">{skill}</span>
@@ -250,8 +261,8 @@ const Skill = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
             </motion.section>
 
             <motion.section variants={itemVariants} className="rounded-2xl border border-slate-200/80 bg-white/65 p-6 dark:border-white/10 dark:bg-white/5" aria-labelledby="familiar-with-title">
-              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">Learning & Applied</p>
-              <h3 id="familiar-with-title" className="mt-2 text-xl font-black text-gray-900 dark:text-white">FAMILIAR WITH</h3>
+              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">{language === 'ko' ? '학습 및 적용 경험' : 'Learning & Applied'}</p>
+              <h3 id="familiar-with-title" className="mt-2 text-xl font-black text-gray-900 dark:text-white">{language === 'ko' ? '사용 경험 기술' : 'FAMILIAR WITH'}</h3>
               <div className="mt-5 flex flex-wrap gap-2.5">
                 {familiarWith.map((skill) => (
                   <span key={skill} className="rounded-lg border border-slate-200 bg-white/70 px-3.5 py-2 text-sm font-semibold text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">{skill}</span>
@@ -263,7 +274,7 @@ const Skill = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
           {additionalTools.length > 0 && (
             <motion.details variants={itemVariants} className="group rounded-2xl border border-dashed border-slate-300 bg-white/40 p-5 dark:border-white/15 dark:bg-white/[0.03]">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-gray-700 dark:text-gray-200">
-                <span>Additional Tools</span>
+                <span>{language === 'ko' ? '추가 도구' : 'Additional Tools'}</span>
                 <ChevronDown className="h-5 w-5 transition-transform group-open:rotate-180" />
               </summary>
               <div className="mt-5 flex flex-wrap gap-2">
@@ -275,7 +286,7 @@ const Skill = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
           )}
 
           <motion.p variants={itemVariants} className="text-center text-lg font-semibold leading-8 text-gray-600 dark:text-gray-300">
-            {footerText}
+            {language === 'ko' ? footerText : 'What matters is not how many technologies I know, but what I have built with them.'}
           </motion.p>
         </motion.div>
       </div>

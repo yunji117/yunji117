@@ -6,6 +6,27 @@ import { CheckCircle2, Zap, Users } from 'lucide-react';
 import { defaultSiteContent } from '../lib/defaultPortfolio';
 import { fetchSiteContent } from '../lib/portfolioApi';
 import type { AboutIconName } from '../types/portfolio';
+import { useLanguageStore } from '../store/languageStore';
+
+const aboutEnglish = {
+  paragraphs: [
+    'Hello, I’m Kim Yun Ji. I turn design intent into web experiences that work.',
+    'With React and TypeScript, I build interfaces that communicate information clearly and guide users through natural interactions. I have experience across the full web-service process, from Figma-based screen design to frontend development, data integration, deployment, and operations.',
+    'In professional work, I designed 126 e-commerce product detail pages, shaping product strengths and purchase flows visually. In development projects, I used technologies including Next.js and Supabase to turn ideas into usable services.',
+    'I aim to be a designer and developer who considers both the user experience and the purpose of the service—not just how the screen looks.',
+  ],
+  highlights: [
+    { iconName: 'Zap' as const, title: 'DESIGN TO DEVELOPMENT', description: 'I translate design intent into accurate, responsive web interfaces.' },
+    { iconName: 'CheckCircle2' as const, title: 'SERVICE DEVELOPMENT', description: 'I have experience planning, developing, deploying, and operating web services.' },
+    { iconName: 'Users' as const, title: '126 PRODUCT PAGES', description: 'I designed information structures and purchase journeys across 126 product detail pages.' },
+  ],
+};
+
+const koreanHighlightTitles: Record<string, string> = {
+  'DESIGN TO DEVELOPMENT': '디자인에서 개발까지',
+  'SERVICE DEVELOPMENT': '서비스 개발',
+  '126 PRODUCT PAGES': '126개 상품 상세페이지',
+};
 
 const aboutIconMap = {
   Users,
@@ -20,6 +41,7 @@ const hasLegacyAboutContent = (content: typeof defaultSiteContent) =>
 
 const About = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number }) => {
   const [content, setContent] = useState(defaultSiteContent);
+  const { language } = useLanguageStore();
   const { ref, inView } = useInView({
     threshold: 0.2,
     triggerOnce: true,
@@ -84,12 +106,12 @@ const About = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
           {/* 섹션 제목 */}
           <motion.div variants={itemVariants} className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
-              About <span className="text-gradient">Me</span>
+              {language === 'ko' ? <>나를 <span className="text-gradient">소개합니다</span></> : <>About <span className="text-gradient">Me</span></>}
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mx-auto" />
             <p className="mx-auto mt-8 max-w-3xl text-2xl font-bold leading-tight text-gray-900 dark:text-white md:text-4xl">
-              디자인 의도를 이해하고
-              <span className="text-gradient block">실제로 동작하는 경험으로 구현합니다.</span>
+              {language === 'ko' ? '디자인 의도를 이해하고' : 'I understand design intent and'}
+              <span className="text-gradient block">{language === 'ko' ? '실제로 동작하는 경험으로 구현합니다.' : 'turn it into experiences that work.'}</span>
             </p>
           </motion.div>
 
@@ -99,7 +121,7 @@ const About = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
             className="glass p-8 md:p-12 rounded-2xl"
           >
             <p className="text-lg md:text-xl text-gray-700 dark:text-gray-200 leading-relaxed space-y-4">
-              {content.aboutParagraphs.map((paragraph) => (
+              {(language === 'ko' ? content.aboutParagraphs : aboutEnglish.paragraphs).map((paragraph) => (
                 <span key={paragraph} className="block">
                   {paragraph}
                 </span>
@@ -112,8 +134,9 @@ const About = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
             variants={containerVariants}
             className="grid grid-cols-1 md:grid-cols-3 gap-6"
           >
-            {content.aboutHighlights.map((item, index) => {
+            {(language === 'ko' ? content.aboutHighlights : aboutEnglish.highlights).map((item, index) => {
               const Icon = aboutIconMap[item.iconName] ?? Users;
+              const displayTitle = language === 'ko' ? koreanHighlightTitles[item.title] ?? item.title : item.title;
               return (
                 <motion.div
                   key={index}
@@ -122,7 +145,7 @@ const About = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
                 >
                   <Icon className="w-12 h-12 text-blue-500 dark:text-cyan-400 mb-4" />
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    {item.title}
+                    {displayTitle}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">{item.description}</p>
                 </motion.div>
@@ -133,7 +156,7 @@ const About = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
           {/* 하단 CTA */}
           <motion.div variants={itemVariants} className="text-center">
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {content.aboutCtaText}
+              {language === 'ko' ? content.aboutCtaText : 'I connect design and development to turn ideas into complete services.'}
             </p>
             <button
               onClick={() =>
@@ -143,7 +166,7 @@ const About = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: numbe
               }
               className="px-8 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105"
             >
-              프로젝트 살펴보기 <span aria-hidden="true">→</span>
+              {language === 'ko' ? '프로젝트 살펴보기' : 'Explore Projects'} <span aria-hidden="true">→</span>
             </button>
           </motion.div>
         </motion.div>

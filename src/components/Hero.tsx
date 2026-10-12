@@ -6,11 +6,11 @@ import yunjiAvatar from '../assets/img/hero-character.webp';
 import { defaultSiteContent } from '../lib/defaultPortfolio';
 import { fetchPublishedProjects, fetchSiteContent } from '../lib/portfolioApi';
 import type { PortfolioProject } from '../types/portfolio';
-import { fallbackProjects, getProjectThumbnail } from './ProjectSection';
+import { fallbackProjects, getProjectCardText, getProjectThumbnail } from './ProjectSection';
 import { getResumeUrl } from '../lib/contactLinks';
 import ProgressiveImage from './ProgressiveImage';
+import { useLanguageStore, type Language } from '../store/languageStore';
 
-type Language = 'en' | 'ko';
 type CareerRole = 'frontend' | 'designer' | 'fullstack';
 
 interface HeroCopy {
@@ -53,10 +53,10 @@ const heroCopy: Record<Language, HeroCopy> = {
   },
 };
 
-const careerProfiles: Record<CareerRole, CareerProfile> = {
+const careerProfilesKo: Record<CareerRole, CareerProfile> = {
   frontend: {
     tabLabel: '프론트엔드 개발자',
-    label: 'Frontend Developer',
+    label: '프론트엔드 개발자',
     lead: '사용자 경험을 설계하고',
     title: 'React로 구현하는 프론트엔드 개발자',
     description:
@@ -64,9 +64,9 @@ const careerProfiles: Record<CareerRole, CareerProfile> = {
     proof:
       '10개의 React 프로젝트와 7개 이상의 TypeScript 프로젝트를 통해, 아이디어를 실제로 동작하는 사용자 경험으로 구현했습니다.',
     numbers: [
-      { value: '10', label: 'React Projects' },
-      { value: '7+', label: 'TypeScript Projects' },
-      { value: '11', label: 'Web Development Projects' },
+      { value: '10', label: 'React 프로젝트' },
+      { value: '7+', label: 'TypeScript 프로젝트' },
+      { value: '11', label: '웹 개발 프로젝트' },
     ],
     skills: ['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Vite', 'GSAP'],
     projects: [
@@ -93,7 +93,7 @@ const careerProfiles: Record<CareerRole, CareerProfile> = {
   },
   designer: {
     tabLabel: '웹디자이너',
-    label: 'Web Designer',
+    label: '웹디자이너',
     lead: '정보를 이해하기 쉬운 흐름으로 바꾸는',
     title: '웹디자이너',
     description:
@@ -101,9 +101,9 @@ const careerProfiles: Record<CareerRole, CareerProfile> = {
     proof:
       '126개의 상품 상세페이지를 제작하며, 제품 정보를 사용자의 구매 흐름으로 바꾸는 실무 경험을 쌓았습니다.',
     numbers: [
-      { value: '126', label: 'Product Detail Pages' },
-      { value: '3', label: 'Featured Design Projects' },
-      { value: '100%', label: 'Planning to Final Design' },
+      { value: '126', label: '상품 상세페이지' },
+      { value: '3', label: '대표 디자인 프로젝트' },
+      { value: '100%', label: '기획부터 최종 디자인' },
     ],
     skills: [
       'Figma',
@@ -136,7 +136,7 @@ const careerProfiles: Record<CareerRole, CareerProfile> = {
   },
   fullstack: {
     tabLabel: '풀스택 개발자',
-    label: 'Full-Stack Developer',
+    label: '풀스택 개발자',
     lead: '화면부터 데이터와 운영까지 연결하는',
     title: '풀스택 개발자',
     description:
@@ -144,9 +144,9 @@ const careerProfiles: Record<CareerRole, CareerProfile> = {
     proof:
       '프론트엔드, API, 데이터베이스, 배포의 4개 영역을 연결하고, 4번의 팀 프로젝트 중 1번은 팀장으로 전체 기획과 일정을 리딩했습니다.',
     numbers: [
-      { value: '4', label: 'Development Areas' },
-      { value: '4', label: 'Team Projects' },
-      { value: '1', label: 'Team Lead Experience' },
+      { value: '4', label: '개발 영역' },
+      { value: '4', label: '팀 프로젝트' },
+      { value: '1', label: '팀장 경험' },
     ],
     skills: ['Next.js', 'React', 'TypeScript', 'Node.js', 'NestJS', 'Supabase', 'PostgreSQL', 'Docker'],
     projects: [
@@ -170,6 +170,65 @@ const careerProfiles: Record<CareerRole, CareerProfile> = {
     projectCtaLabel: '프로젝트 더 보러가기',
     secondaryCtaLabel: 'GitHub',
     secondaryCtaType: 'github',
+  },
+};
+
+const careerProfilesEn: Record<CareerRole, CareerProfile> = {
+  frontend: {
+    tabLabel: 'Frontend Developer',
+    label: 'Frontend Developer',
+    lead: 'Designing user experiences and',
+    title: 'building them with React',
+    description: 'I translate design intent into precise interfaces and create web experiences that help users explore and act naturally. My work focuses on responsive UI, data-driven screens, and interactions built with React and TypeScript.',
+    proof: 'Across 10 React projects and 7+ TypeScript projects, I have turned ideas into working user experiences.',
+    numbers: [
+      { value: '10', label: 'React Projects' },
+      { value: '7+', label: 'TypeScript Projects' },
+      { value: '11', label: 'Web Development Projects' },
+    ],
+    skills: ['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Vite', 'GSAP'],
+    projects: careerProfilesKo.frontend.projects,
+    resumeLabel: 'Frontend Resume PDF',
+    projectCtaLabel: 'Explore More Projects',
+    secondaryCtaLabel: 'GitHub',
+    secondaryCtaType: 'github',
+  },
+  fullstack: {
+    tabLabel: 'Full-Stack Developer',
+    label: 'Full-Stack Developer',
+    lead: 'Connecting interfaces, data, and operations as a',
+    title: 'Full-Stack Developer',
+    description: 'I consider not only the interface users see, but also data storage, APIs, admin features, and deployment. I am strongest when planning and building services as complete, maintainable systems.',
+    proof: 'I have connected four development areas—frontend, API, database, and deployment—and led planning and scheduling as team lead in one of four team projects.',
+    numbers: [
+      { value: '4', label: 'Development Areas' },
+      { value: '4', label: 'Team Projects' },
+      { value: '1', label: 'Team Lead Experience' },
+    ],
+    skills: ['Next.js', 'React', 'TypeScript', 'Node.js', 'NestJS', 'Supabase', 'PostgreSQL', 'Docker'],
+    projects: careerProfilesKo.fullstack.projects,
+    resumeLabel: 'Full-Stack Resume PDF',
+    projectCtaLabel: 'Explore More Projects',
+    secondaryCtaLabel: 'GitHub',
+    secondaryCtaType: 'github',
+  },
+  designer: {
+    tabLabel: 'Web Designer',
+    label: 'Web Designer',
+    lead: 'Turning information into an intuitive flow as a',
+    title: 'Web Designer',
+    description: 'I organize the core information a product or brand needs to communicate and design around the user’s visual and behavioral flow. My goal is not only an attractive screen, but a design that improves product understanding and supports action.',
+    proof: 'By creating 126 product detail pages, I gained hands-on experience turning product information into a persuasive purchase journey.',
+    numbers: [
+      { value: '126', label: 'Product Detail Pages' },
+      { value: '3', label: 'Featured Design Projects' },
+      { value: '100%', label: 'Planning to Final Design' },
+    ],
+    skills: ['Figma', 'Adobe Photoshop', 'UI/UX Design', 'Information Architecture', 'E-commerce Design', 'Visual Design'],
+    projects: careerProfilesKo.designer.projects,
+    resumeLabel: 'Web Design Resume PDF',
+    projectCtaLabel: 'Explore Design Projects',
+    note: '100% means I was responsible for the thumbnail, content structure, and complete detail-page design for the Cuckoo Nello project.',
   },
 };
 
@@ -244,7 +303,7 @@ const sliceCopy = (copy: HeroCopy, visibleCharacters: number): HeroCopy => {
 const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number }) => {
   const [content, setContent] = useState(defaultSiteContent);
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>(fallbackProjects);
-  const [language, setLanguage] = useState<Language>('en');
+  const { language, setLanguage } = useLanguageStore();
   const [careerRole, setCareerRole] = useState<CareerRole>('frontend');
   const [hasSelectedLanguage, setHasSelectedLanguage] = useState(false);
   const [visibleCharacters, setVisibleCharacters] = useState(0);
@@ -324,7 +383,7 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
   const introEnd = selectedCopy.intro.length;
   const leadEnd = introEnd + selectedCopy.lead.length;
   const highlightEnd = leadEnd + selectedCopy.highlight.length;
-  const selectedCareer = careerProfiles[careerRole];
+  const selectedCareer = (language === 'ko' ? careerProfilesKo : careerProfilesEn)[careerRole];
   const selectedResumeUrl = getResumeUrl(content.contactItems, careerRole) ?? selectedCareer.resumeHref;
   const featuredProjects = useMemo(
     () => selectFeaturedProjects(portfolioProjects, careerRole, selectedCareer.projects),
@@ -402,10 +461,10 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
       >
         <div className="grid items-center gap-8 lg:grid-cols-[1.12fr_0.88fr] lg:gap-x-10 lg:gap-y-0">
           <div className="hero-copy-column min-w-0 text-left lg:col-start-1 lg:row-start-1">
-            <motion.div variants={itemVariants} className="mb-8 flex items-center gap-2" role="group" aria-label="언어 선택">
+            <motion.div variants={itemVariants} className="mb-8 flex items-center gap-2" role="group" aria-label={language === 'ko' ? '언어 선택' : 'Select language'}>
               {([
-                ['en', 'English'],
                 ['ko', '한글'],
+                ['en', 'English'],
               ] as const).map(([value, label]) => {
                 const isActive = language === value;
                 return (
@@ -468,11 +527,11 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
             className="lg:col-start-1 lg:row-start-2 lg:mt-10"
           >
             <p className="mb-3 text-sm font-bold tracking-[0.16em] text-violet-600 dark:text-violet-300">
-              지원 직무
+              {language === 'ko' ? '지원 직무' : 'Target Roles'}
             </p>
             <div
               role="tablist"
-              aria-label="지원 직무 선택"
+              aria-label={language === 'ko' ? '지원 직무 선택' : 'Select a target role'}
               className="flex flex-col gap-2 sm:flex-row sm:flex-wrap"
             >
               {careerRoleOrder.map((role) => {
@@ -495,7 +554,7 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
                         : 'border-gray-300 bg-white/70 text-gray-700 hover:border-violet-400 hover:text-violet-600 dark:border-white/15 dark:bg-white/5 dark:text-gray-200 dark:hover:border-violet-400'
                     }`}
                   >
-                    {careerProfiles[role].tabLabel}
+                    {(language === 'ko' ? careerProfilesKo : careerProfilesEn)[role].tabLabel}
                   </button>
                 );
               })}
@@ -532,7 +591,7 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
 
               <div>
                 <h3 className="text-sm font-extrabold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">
-                  Key Numbers
+                  {language === 'ko' ? '주요 수치' : 'Key Numbers'}
                 </h3>
                 <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-4">
                   {selectedCareer.numbers.map((item) => (
@@ -553,7 +612,7 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
                 )}
 
                 <h3 className="mt-7 text-sm font-extrabold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">
-                  Core Skills
+                  {language === 'ko' ? '핵심 기술' : 'Core Skills'}
                 </h3>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {selectedCareer.skills.map((skill) => (
@@ -568,13 +627,14 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
             <div className="mt-10">
               <div className="flex items-end justify-between gap-4">
                 <h3 className="text-xl font-extrabold text-gray-900 dark:text-white sm:text-2xl">
-                  Featured Projects
+                  {language === 'ko' ? '대표 프로젝트' : 'Featured Projects'}
                 </h3>
-                <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">대표 프로젝트 3개</span>
+                <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">{language === 'ko' ? '대표 프로젝트 3개' : '3 selected projects'}</span>
               </div>
               <div className="mt-4 grid gap-4 md:grid-cols-3">
                 {featuredProjects.map((project, index) => {
                   const siteUrl = project.link ?? project.projectLinks?.[0]?.url;
+                  const projectCopy = getProjectCardText(project, language);
 
                   return (
                     <article key={project.id} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white/70 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl dark:border-white/10 dark:bg-white/5">
@@ -582,13 +642,13 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
                         type="button"
                         onClick={() => openProject(project)}
                         className="flex flex-1 flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500"
-                        aria-label={`${project.title} 상세 내용 보기`}
+                        aria-label={`${projectCopy.title} ${language === 'ko' ? '상세 내용 보기' : 'view details'}`}
                       >
                         <div className="relative aspect-[8/5] w-full shrink-0 overflow-hidden bg-gradient-to-br from-blue-500/10 to-violet-500/15">
                           {project.image && (
                             <ProgressiveImage
                               src={getProjectThumbnail(project)}
-                              alt={`${project.title} 프로젝트 대표 화면`}
+                              alt={`${projectCopy.title} ${language === 'ko' ? '프로젝트 대표 화면' : 'project cover'}`}
                               width={800}
                               height={500}
                               loading="lazy"
@@ -606,9 +666,9 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
                           </span>
                         </div>
                         <div className="flex w-full flex-1 flex-col p-5">
-                          <h4 className="text-lg font-extrabold text-gray-900 dark:text-white">{project.title}</h4>
+                          <h4 className="text-lg font-extrabold text-gray-900 dark:text-white">{projectCopy.title}</h4>
                           <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600 dark:text-gray-300">
-                            {project.shortDesc || project.description}
+                            {projectCopy.shortDesc || project.description}
                           </p>
                           <div className="mt-4 flex flex-wrap gap-1.5">
                             {project.stack.slice(0, 3).map((skill) => (
@@ -618,7 +678,7 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
                             ))}
                           </div>
                           <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-extrabold text-violet-600 dark:text-violet-300">
-                            상세 내용 보기 <ExternalLink className="h-3.5 w-3.5" />
+                            {language === 'ko' ? '상세 내용 보기' : 'View details'} <ExternalLink className="h-3.5 w-3.5" />
                           </span>
                         </div>
                       </button>
@@ -630,7 +690,7 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
                           className="flex items-center justify-center gap-2 border-t border-slate-200/80 px-5 py-3 text-sm font-extrabold text-gray-700 transition-colors hover:bg-violet-50 hover:text-violet-700 dark:border-white/10 dark:text-gray-200 dark:hover:bg-white/10 dark:hover:text-violet-300"
                         >
                           <ExternalLink className="h-4 w-4" />
-                          사이트 바로가기
+                          {language === 'ko' ? '사이트 바로가기' : 'Visit website'}
                         </a>
                       )}
                     </article>
@@ -690,7 +750,7 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
           className="mx-auto mt-8 block rounded-full p-2"
-          aria-label="About 섹션으로 이동"
+          aria-label={language === 'ko' ? '소개 섹션으로 이동' : 'Go to About section'}
         >
           <ChevronDown className="h-8 w-8 text-gray-500 dark:text-gray-400" />
         </motion.button>

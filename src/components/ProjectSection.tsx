@@ -9,6 +9,7 @@ import { X, ExternalLink, Github, GripVertical, ArrowUp, ArrowDown } from 'lucid
 import { fetchPublishedProjects, fetchAdminProjects, fetchProjectCategories, defaultCategories, fetchProjectOrder, saveProjectOrder } from '../lib/portfolioApi';
 import type { PortfolioProject, ProjectCaseStudy, ProjectCategory, ProjectFilter } from '../types/portfolio';
 import ProgressiveImage from './ProgressiveImage';
+import { useLanguageStore } from '../store/languageStore';
 
 const ProjectEditorModal = lazy(() => import('./admin/ProjectEditorModal'));
 
@@ -61,6 +62,43 @@ const defaultCategoryMeta: Record<ProjectCategory, { label: string; tabLabel: st
     tabLabel: 'Design',
     badgeClass: 'bg-amber-500/20 text-amber-700 dark:text-amber-300',
   },
+};
+
+const projectCardEnglish: Record<string, { title: string; shortDesc: string }> = {
+  '1': { title: 'Today I Wrote', shortDesc: 'A CRUD-based writing web service' },
+  '2': { title: 'League of Legends Ban/Pick', shortDesc: 'A web app that recreates the champion ban-and-pick experience' },
+  '3': { title: 'POOP TIME', shortDesc: 'A platform for making short breaks more meaningful' },
+  '4': { title: 'Motoshoot', shortDesc: 'A virtual stock-investment platform designed for beginners' },
+  '5': { title: 'DayTime', shortDesc: 'An all-in-one tool for date and time calculations' },
+  '6': { title: 'Meal Picker', shortDesc: 'A simple web app that recommends what to eat' },
+  '7': { title: 'Runner Game', shortDesc: 'A browser runner game built with real-time game logic' },
+  '8': { title: 'Nonsan Real Estate Platform', shortDesc: 'A service for property discovery, details, favorites, and consultation requests' },
+  '9': { title: 'Real Estate Brokerage Fee Calculator', shortDesc: 'A practical calculator based on Korean brokerage-fee rules' },
+  '10': { title: 'E-commerce Product Detail Page Design', shortDesc: 'Sales-focused page design for 126 products using AI and Figma' },
+  '11': { title: 'Typing in Sheets', shortDesc: 'A Korean typing game inspired by a familiar spreadsheet interface' },
+};
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const getProjectCardText = (project: PortfolioProject, language: 'ko' | 'en') => {
+  const englishCopy = language === 'en' ? projectCardEnglish[project.id] : undefined;
+  return {
+    title: englishCopy?.title ?? project.title,
+    shortDesc: englishCopy?.shortDesc ?? project.shortDesc,
+  };
+};
+
+const projectDetailEnglish: Record<string, { description: string; overview: string; goal: string }> = {
+  '1': { description: 'A personal writing service where I implemented the full CRUD flow.', overview: 'This was my first project implementing create, read, update, and delete operations in a complete web experience.', goal: 'Learn the fundamentals of web development by building the CRUD flow directly.' },
+  '2': { description: 'A team web app that simulates the League of Legends champion ban-and-pick process.', overview: 'Users can practice strategic bans and picks in an environment modeled after the game’s pre-match flow.', goal: 'Create an interactive platform where users can practice champion selection strategies.' },
+  '3': { description: 'A team platform with quizzes, community features, and short-form content.', overview: 'POOP TIME helps users make short breaks more enjoyable through accessible content and community features.', goal: 'Build a service-like platform with authentication, CRUD, email verification, and collaborative development.' },
+  '4': { description: 'A virtual investment platform for users who are new to stock trading.', overview: 'Motoshoot recreates key parts of a stock-trading experience so beginners can practice without financial risk.', goal: 'Build an approachable investment-learning service while strengthening team leadership and collaboration.' },
+  '5': { description: 'A personal web tool for date differences, time calculations, age, and D-day features.', overview: 'DayTime combines several date and time utilities in one intuitive interface.', goal: 'Make complex date and time calculations easy to use through clear UX and practical functionality.' },
+  '6': { description: 'A meal recommendation app designed to reduce the everyday decision of what to eat.', overview: 'Meal Picker offers category filters, preference-based options, and fully random recommendations.', goal: 'Create a fast and playful recommendation experience that is simple enough to use every day.' },
+  '7': { description: 'A browser-based runner game with real-time animation and scoring.', overview: 'The project implements a game loop, collision detection, score tracking, and difficulty control on the web.', goal: 'Strengthen real-time UI and Canvas animation skills by designing the core game logic directly.' },
+  '8': { description: 'A service-oriented real estate platform for property search, details, favorites, and consultation requests.', overview: 'The platform connects property discovery, detailed information, recently viewed and favorite listings, consultation requests, and admin management in one operational flow.', goal: 'Build a service close to real-world operation for both users searching for properties and administrators managing listings.' },
+  '9': { description: 'A personal service that estimates brokerage fees using Korean real estate transaction rules.', overview: 'The calculator handles purchase, jeonse, and monthly-rent conditions while explaining rates, VAT references, and negotiation points.', goal: 'Provide immediate, understandable fee estimates while also considering search discovery and service operations.' },
+  '10': { description: 'Planning and design work for Cuckoo, Himpel, and Haatz e-commerce product pages.', overview: 'I created 126 product detail pages and supporting information graphics, organizing product strengths into clear visual purchase journeys.', goal: 'Design practical sales pages that move users naturally from product understanding to purchase action.' },
+  '11': { description: 'A personal Korean typing game built inside a spreadsheet-inspired interface.', overview: 'Users type words appearing across cells while tracking score, combo, WPM, accuracy, and remaining time.', goal: 'Combine a familiar productivity interface with a focused typing game that feels playful and complete.' },
 };
 
 // Shared with Hero so featured cards use the same project records and detail content.
@@ -457,6 +495,7 @@ interface ProjectSectionProps {
 }
 
 const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
+  const { language } = useLanguageStore();
   const [editor, setEditor] = useState<PortfolioProject | 'new' | null>(null);
   const [order, setOrder] = useState<string[]>([]);
   const [orderSaving, setOrderSaving] = useState(false);
@@ -610,6 +649,13 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
     activeCategory === 'all'
       ? arrangedProjects
       : arrangedProjects.filter((p) => p.category === activeCategory);
+  const categoryLabel = (category: ProjectCategory) => {
+    if (language === 'ko') return categoryMeta[category].label;
+    if (category === 'personal') return 'Personal Project';
+    if (category === 'team') return 'Team Project';
+    if (category === 'design') return 'Design Work';
+    return categoryMeta[category].label;
+  };
 
   const openImageViewer = (image: string) => {
     setSelectedImage(image);
@@ -699,13 +745,17 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
   };
 
   const selectedCaseStudy = selectedProject ? getCaseStudy(selectedProject) : undefined;
+  const selectedEnglishCopy = selectedProject ? projectDetailEnglish[selectedProject.id] : undefined;
+  const selectedDisplayTitle = selectedProject && language === 'en'
+    ? projectCardEnglish[selectedProject.id]?.title ?? selectedProject.title
+    : selectedProject?.title;
   const caseStudySummary = selectedProject && selectedCaseStudy
     ? [
-        ['프로젝트 기간', selectedCaseStudy.period ?? '정보 업데이트 예정'],
-        ['프로젝트', selectedCaseStudy.projectType ?? categoryMeta[selectedProject.category]?.label],
-        ['담당', selectedCaseStudy.role],
-        ['기여도', selectedCaseStudy.contribution],
-        ['배포 상태', selectedCaseStudy.deploymentStatus],
+        [language === 'ko' ? '프로젝트 기간' : 'Period', selectedCaseStudy.period ?? (language === 'ko' ? '정보 업데이트 예정' : 'To be updated')],
+        [language === 'ko' ? '프로젝트' : 'Project Type', selectedCaseStudy.projectType ?? categoryLabel(selectedProject.category)],
+        [language === 'ko' ? '담당' : 'Role', selectedCaseStudy.role],
+        [language === 'ko' ? '기여도' : 'Contribution', selectedCaseStudy.contribution],
+        [language === 'ko' ? '배포 상태' : 'Status', selectedCaseStudy.deploymentStatus],
       ].filter((entry): entry is [string, string] => Boolean(entry[1]))
     : [];
   const challengePairs = selectedProject
@@ -728,11 +778,11 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
           {/* 섹션 제목 */}
           <motion.div variants={itemVariants} className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
-              Featured <span className="text-gradient">Projects</span>
+              {language === 'ko' ? <>주요 <span className="text-gradient">프로젝트</span></> : <>Featured <span className="text-gradient">Projects</span></>}
             </h2>
             <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mx-auto mb-8" />
             <p className="text-gray-600 dark:text-gray-400 text-lg">
-              개발 프로젝트와 디자인 작업을 통해 실무에 가까운 경험을 쌓아왔습니다
+              {language === 'ko' ? '개발 프로젝트와 디자인 작업을 통해 실무에 가까운 경험을 쌓아왔습니다' : 'Development and design projects that demonstrate practical, real-world experience'}
             </p>
           </motion.div>
 
@@ -748,7 +798,9 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                     : 'glass bg-white/85 text-gray-800 border border-slate-200/80 shadow-sm shadow-slate-200/60 hover:bg-white dark:bg-transparent dark:text-gray-300 dark:border-white/10 dark:shadow-none dark:hover:bg-white/10'
                 }`}
               >
-                {tab === 'all' ? 'All Projects' : categoryMeta[tab].tabLabel}
+                {tab === 'all'
+                  ? (language === 'ko' ? '전체 프로젝트' : 'All Projects')
+                  : (language === 'ko' ? categoryMeta[tab].label : categoryMeta[tab].tabLabel)}
               </button>
             ))}
           </motion.div>
@@ -764,7 +816,9 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8"
           >
             <AnimatePresence>
-              {filteredProjects.map((project) => (
+              {filteredProjects.map((project) => {
+                const { title: displayTitle, shortDesc: displayDescription } = getProjectCardText(project, language);
+                return (
                 <motion.div
                   key={project.id}
                   variants={projectCardVariants}
@@ -795,7 +849,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                   <button
                     ref={(element) => { if (element) projectTriggerRefs.current.set(project.id, element); else projectTriggerRefs.current.delete(project.id); }}
                     type="button"
-                    aria-label={`${project.title} 프로젝트 상세 보기`}
+                    aria-label={`${displayTitle} ${language === 'ko' ? '프로젝트 상세 보기' : 'project details'}`}
                     onClick={(event) => { if (drag.suppressClick.current) { drag.suppressClick.current = false; return; } openProjectDetails(project, event.currentTarget); }}
                     className="group flex h-full w-full flex-col text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-cyan-500"
                   >
@@ -807,7 +861,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                         loading="lazy"
                         decoding="async"
                         src={getProjectThumbnail(project)}
-                        alt={`${project.title} 프로젝트 대표 화면`}
+                        alt={`${displayTitle} ${language === 'ko' ? '프로젝트 대표 화면' : 'project cover'}`}
                         width={800}
                         height={500}
                         wrapperClassName="h-full w-full"
@@ -819,7 +873,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                       />
                     )}
                     <div className="absolute inset-0 hidden items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 md:flex">
-                      <span className="text-white font-semibold text-sm">View Details</span>
+                      <span className="text-white font-semibold text-sm">{language === 'ko' ? '상세 보기' : 'View Details'}</span>
                     </div>
                   </div>
 
@@ -831,18 +885,18 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                           categoryMeta[project.category].badgeClass
                         }`}
                       >
-                        {categoryMeta[project.category].label}
+                        {categoryLabel(project.category)}
                       </span>
                     </div>
 
                     {/* 프로젝트 제목 */}
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                      {project.title}
+                      {displayTitle}
                     </h3>
 
                     {/* 프로젝트 설명 */}
                     <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
-                      {project.shortDesc}
+                      {displayDescription}
                     </p>
 
                     {/* 스택 태그 */}
@@ -862,12 +916,13 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                       )}
                     </div>
                     <span className="mt-5 inline-flex min-h-11 items-center text-sm font-extrabold text-violet-600 dark:text-violet-300">
-                      프로젝트 상세 보기 →
+                      {language === 'ko' ? '프로젝트 상세 보기 →' : 'View project details →'}
                     </span>
                   </div>
                   </button>
                 </motion.div>
-              ))}
+                );
+              })}
               {isAdmin && (
                 <motion.button
                   type="button"
@@ -925,7 +980,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
               <button
                 ref={modalCloseRef}
                 type="button"
-                aria-label="프로젝트 상세 닫기"
+                aria-label={language === 'ko' ? '프로젝트 상세 닫기' : 'Close project details'}
                 onClick={closeProjectDetails}
                 className="absolute right-6 top-6 flex h-11 w-11 items-center justify-center rounded-lg transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 dark:hover:bg-white/10"
               >
@@ -952,21 +1007,21 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                 )}
                 <div className="flex flex-col items-start gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
                   <h2 id="project-modal-title" className="text-4xl font-bold text-gray-900 dark:text-white">
-                    {selectedProject.title}
+                    {selectedDisplayTitle}
                   </h2>
                   <span
                     className={`inline-flex shrink-0 text-sm font-bold px-4 py-2 rounded-full whitespace-nowrap ${
                       categoryMeta[selectedProject.category].badgeClass
                     }`}
                   >
-                    {categoryMeta[selectedProject.category].label}
+                    {categoryLabel(selectedProject.category)}
                   </span>
                 </div>
               </div>
 
               {/* 모달 콘텐츠 */}
               <div className="space-y-8">
-                {(caseStudySummary.length > 0 || selectedCaseStudy?.keyOutcome) && (
+                {language === 'ko' && (caseStudySummary.length > 0 || selectedCaseStudy?.keyOutcome) && (
                   <section className="rounded-2xl border border-slate-200/80 bg-white/65 p-5 shadow-sm dark:border-white/10 dark:bg-white/5 sm:p-6">
                     <dl className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
                       {caseStudySummary.map(([label, value]) => (
@@ -977,7 +1032,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                       ))}
                       {selectedCaseStudy?.keyOutcome && (
                         <div className="border-t border-slate-200/80 pt-5 dark:border-white/10 sm:col-span-2">
-                          <dt className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-cyan-600 dark:text-cyan-300">핵심 성과</dt>
+                          <dt className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-cyan-600 dark:text-cyan-300">{language === 'ko' ? '핵심 성과' : 'Key Outcome'}</dt>
                           <dd className="font-semibold leading-relaxed text-gray-900 dark:text-white">{selectedCaseStudy.keyOutcome}</dd>
                         </div>
                       )}
@@ -985,28 +1040,28 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                   </section>
                 )}
 
-                {selectedProject.description && (
+                {(language === 'en' ? selectedEnglishCopy?.description : selectedProject.description) && (
                   <p className="whitespace-pre-wrap text-lg leading-relaxed text-gray-700 dark:text-gray-300">
-                    {selectedProject.description}
+                    {language === 'en' ? selectedEnglishCopy?.description : selectedProject.description}
                   </p>
                 )}
 
                 <section>
                   <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">01</p>
-                  <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">프로젝트 배경과 문제</h3>
-                  <p className="leading-relaxed text-gray-700 dark:text-gray-300">{selectedProject.overview}</p>
+                  <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">{language === 'ko' ? '프로젝트 배경과 문제' : 'Background & Problem'}</h3>
+                  <p className="leading-relaxed text-gray-700 dark:text-gray-300">{language === 'en' ? selectedEnglishCopy?.overview ?? selectedProject.overview : selectedProject.overview}</p>
                 </section>
 
                 <section>
                   <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">02</p>
-                  <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">목표</h3>
-                  <p className="leading-relaxed text-gray-700 dark:text-gray-300">{selectedProject.goal}</p>
+                  <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">{language === 'ko' ? '목표' : 'Goal'}</h3>
+                  <p className="leading-relaxed text-gray-700 dark:text-gray-300">{language === 'en' ? selectedEnglishCopy?.goal ?? selectedProject.goal : selectedProject.goal}</p>
                 </section>
 
-                {(selectedCaseStudy?.role || Boolean(selectedCaseStudy?.responsibilities?.length)) && (
+                {language === 'ko' && (selectedCaseStudy?.role || Boolean(selectedCaseStudy?.responsibilities?.length)) && (
                   <section>
                     <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">03</p>
-                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">나의 역할</h3>
+                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">{language === 'ko' ? '나의 역할' : 'My Role'}</h3>
                     {selectedCaseStudy?.role && <p className="mb-4 font-semibold leading-relaxed text-gray-800 dark:text-gray-200">{selectedCaseStudy.role}</p>}
                     {selectedCaseStudy?.responsibilities && (
                       <ul className="grid gap-3 sm:grid-cols-2">
@@ -1018,10 +1073,10 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                   </section>
                 )}
 
-                {selectedCaseStudy?.features && selectedCaseStudy.features.length > 0 && (
+                {language === 'ko' && selectedCaseStudy?.features && selectedCaseStudy.features.length > 0 && (
                   <section>
                     <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">04</p>
-                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">핵심 기능</h3>
+                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">{language === 'ko' ? '핵심 기능' : 'Key Features'}</h3>
                     <ul className="grid gap-3 sm:grid-cols-2">
                       {selectedCaseStudy.features.map((feature) => (
                         <li key={feature} className="flex gap-3 rounded-xl bg-slate-100/80 p-4 leading-relaxed text-gray-700 dark:bg-white/5 dark:text-gray-300">
@@ -1033,10 +1088,10 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                   </section>
                 )}
 
-                {(Boolean(selectedCaseStudy?.decisions?.length) || challengePairs.length > 0 || Boolean(selectedProject.challengeImages?.length)) && (
+                {language === 'ko' && (Boolean(selectedCaseStudy?.decisions?.length) || challengePairs.length > 0 || Boolean(selectedProject.challengeImages?.length)) && (
                   <section>
                     <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">05</p>
-                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">기술적·디자인적 의사결정</h3>
+                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">{language === 'ko' ? '기술적·디자인적 의사결정' : 'Technical & Design Decisions'}</h3>
                     {selectedCaseStudy?.decisions && selectedCaseStudy.decisions.length > 0 && (
                       <ul className="mb-6 space-y-3">
                         {selectedCaseStudy.decisions.map((decision) => (
@@ -1077,10 +1132,10 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                   </section>
                 )}
 
-                {selectedCaseStudy?.results && selectedCaseStudy.results.length > 0 && (
+                {language === 'ko' && selectedCaseStudy?.results && selectedCaseStudy.results.length > 0 && (
                   <section>
                     <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">06</p>
-                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">결과와 성과</h3>
+                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">{language === 'ko' ? '결과와 성과' : 'Results & Outcomes'}</h3>
                     <ul className="space-y-3 rounded-2xl border border-cyan-200/70 bg-cyan-50/55 p-5 dark:border-cyan-400/15 dark:bg-cyan-500/5 sm:p-6">
                       {selectedCaseStudy.results.map((result) => (
                         <li key={result} className="flex gap-3 leading-relaxed text-gray-700 dark:text-gray-300">
@@ -1095,7 +1150,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                 {((selectedProject.outputs?.length ?? 0) > 0 || (selectedProject.detailImages?.length ?? 0) > 0) && (
                   <section>
                     <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">07</p>
-                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">프로젝트 갤러리</h3>
+                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">{language === 'ko' ? '프로젝트 갤러리' : 'Project Gallery'}</h3>
                     {selectedProject.outputs && selectedProject.outputs.length > 0 && (
                       <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                         {selectedProject.outputs.map((img, idx) => {
@@ -1125,7 +1180,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
 
                 <section>
                   <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">08</p>
-                  <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">{selectedProject.category === 'design' ? '도구와 제작 과정' : '기술 스택'}</h3>
+                  <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">{language === 'ko' ? (selectedProject.category === 'design' ? '도구와 제작 과정' : '기술 스택') : (selectedProject.category === 'design' ? 'Tools & Process' : 'Tech Stack')}</h3>
                   <div className="flex flex-wrap gap-3">
                     {selectedProject.stack.map((tech) => (
                       <span key={tech} className="rounded-lg bg-blue-500/20 px-4 py-2 text-sm font-semibold text-blue-600 dark:text-cyan-400">{tech.replace(/^#+/, '')}</span>
@@ -1140,17 +1195,17 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                   </section>
                 ))}
 
-                {selectedCaseStudy?.retrospective && (
+                {language === 'ko' && selectedCaseStudy?.retrospective && (
                   <section>
                     <p className="mb-2 text-sm font-bold tracking-[0.18em] text-cyan-600 dark:text-cyan-300">09</p>
-                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">회고와 다음 개선 사항</h3>
+                    <h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-white">{language === 'ko' ? '회고와 다음 개선 사항' : 'Retrospective & Next Steps'}</h3>
                     <p className="leading-relaxed text-gray-700 dark:text-gray-300">{selectedCaseStudy.retrospective}</p>
                   </section>
                 )}
 
                 {selectedProject.projectLinks && selectedProject.projectLinks.length > 0 && (
                   <section>
-                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">게시된 작업 보기</h3>
+                    <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">{language === 'ko' ? '게시된 작업 보기' : 'Published Work'}</h3>
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       {selectedProject.projectLinks.map((projectLink) => (
                         <a key={projectLink.url} href={projectLink.url} target="_blank" rel="noopener noreferrer" className="group rounded-lg border border-slate-200/80 bg-white/70 p-4 text-left shadow-sm transition-all hover:border-cyan-400 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
@@ -1186,7 +1241,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                       className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all font-semibold"
                     >
                       <ExternalLink className="w-5 h-5" />
-                      사이트 방문
+                      {language === 'ko' ? '사이트 방문' : 'Visit Website'}
                     </a>
                   )}
                 </div>
@@ -1209,7 +1264,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
             <motion.div
               role="dialog"
               aria-modal="true"
-              aria-label="프로젝트 이미지 확대 보기"
+              aria-label={language === 'ko' ? '프로젝트 이미지 확대 보기' : 'Expanded project image'}
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
@@ -1218,7 +1273,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
             >
               <button
                 type="button"
-                aria-label="확대 이미지 닫기"
+                aria-label={language === 'ko' ? '확대 이미지 닫기' : 'Close enlarged image'}
                 className="sticky top-0 z-10 ml-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
                 onClick={() => setSelectedImage(null)}
               >
