@@ -260,9 +260,16 @@ export const fetchPublishedProjects = async (): Promise<PortfolioProject[]> => {
 export const fetchAdminProjects = async (): Promise<PortfolioProject[]> => {
   if (!supabase) return [];
 
+  // A failed/expired admin session can still read published rows through the
+  // public RLS policy. Verify permission first so that partial data is never
+  // mistaken for the complete administrator project list.
+  const { data: isAdmin, error: permissionError } = await supabase.rpc('is_portfolio_admin');
+  if (permissionError) throw permissionError;
+  if (isAdmin !== true) throw new Error('관리자 권한을 확인하지 못해 전체 프로젝트를 불러오지 않았습니다.');
+
   const { data, error } = await supabase
     .from('projects')
-    .select('*, sections')
+    .select('*')
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
 

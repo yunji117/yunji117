@@ -40,6 +40,8 @@ import type {
   ThumbnailFit,
 } from '../../types/portfolio';
 import TagInput from './TagInput';
+import { fallbackProjects } from '../ProjectSection';
+import { mergePortfolioProjects } from '../../lib/projectCollection';
 
 type AdminTab = 'projects' | 'content' | 'skills';
 
@@ -134,11 +136,12 @@ const AdminDashboard = ({ onExit, startWithNewProject = false }: AdminDashboardP
         ]);
 
         setCategoryOptions(nextCategories);
-        setProjects(nextProjects);
+        const mergedProjects = mergePortfolioProjects(fallbackProjects, nextProjects);
+        setProjects(mergedProjects);
         if (startWithNewProject) {
           setProjectDraft(makeBlankProject());
-        } else if (nextProjects[0]) {
-          setProjectDraft(nextProjects[0]);
+        } else if (mergedProjects[0]) {
+          setProjectDraft(mergedProjects[0]);
         }
         if (nextContent) setContentDraft({ ...defaultSiteContent, ...nextContent });
         if (nextSkills.length > 0) setSkillDrafts(nextSkills);
@@ -166,8 +169,9 @@ const AdminDashboard = ({ onExit, startWithNewProject = false }: AdminDashboardP
 
   const refreshProjects = async () => {
     const nextProjects = await fetchAdminProjects();
-    setProjects(nextProjects);
-    return nextProjects;
+    const mergedProjects = mergePortfolioProjects(fallbackProjects, nextProjects);
+    setProjects(mergedProjects);
+    return mergedProjects;
   };
 
   const handleSaveProject = async () => {
