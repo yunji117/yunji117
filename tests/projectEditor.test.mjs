@@ -8,7 +8,8 @@ const result = await build({
     import ProjectEditor from './src/components/admin/ProjectEditorModal';
     import TagInput from './src/components/admin/TagInput';
     const noop = () => {};
-    export const html = renderToStaticMarkup(React.createElement(ProjectEditor, { sortOrder: 1, onClose: noop, onSaved: noop }));
+    const project = { id: 'test', title: '', description: '', shortDesc: '', image: '', category: 'personal', stack: [], overview: '', goal: '', difficulties: [], outputs: ['first.png', 'second.png'], sections: [], caseStudy: {}, isPublished: true };
+    export const html = renderToStaticMarkup(React.createElement(ProjectEditor, { project, sortOrder: 1, onClose: noop, onSaved: noop }));
     export const tags = renderToStaticMarkup(React.createElement(TagInput, { label: '스택', hashtags: true, value: ['React', '#TypeScript'], onChange: noop }));
   ` },
   bundle: true, write: false, format: 'esm', platform: 'node', jsx: 'automatic',
@@ -41,4 +42,9 @@ test('project editor exposes the publication toggle beside the close action', ()
   assert.match(html, /aria-label="프로젝트 비공개로 전환"/);
   assert.match(html, /aria-pressed="true"/);
   assert.match(html, />공개<\/button>/);
+});
+test('project gallery images can be selected and dragged to reorder', () => {
+  assert.match(html, /aria-label="프로젝트 이미지 1 선택"/);
+  assert.match(html, /draggable="true"/);
+  assert.match(html, /이미지를 클릭해 선택한 뒤, 원하는 위치로 드래그해 놓으세요/);
 });

@@ -3,6 +3,7 @@ import { Eye, EyeOff, ExternalLink, ImagePlus, Loader2, Plus, Trash2 } from 'luc
 import type { PortfolioProject, ProjectCaseStudy } from '../../types/portfolio';
 import { addProjectCategory, defaultCategories, fetchProjectCategories, saveProject, uploadPortfolioImage } from '../../lib/portfolioApi';
 import { portfolioErrorMessage } from '../../lib/portfolioErrors';
+import { moveGalleryImage } from '../../lib/projectGallery';
 import EditorModal from './EditorModal';
 import TagInput from './TagInput';
 
@@ -15,6 +16,9 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
   const [initial] = useState(() => JSON.stringify(draft));
   const [categories, setCategories] = useState(defaultCategories);
   const [newCategory, setNewCategory] = useState<string | null>(null);
+  const [selectedGalleryIndex, setSelectedGalleryIndex] = useState<number | null>(null);
+  const [draggedGalleryIndex, setDraggedGalleryIndex] = useState<number | null>(null);
+  const [galleryDropIndex, setGalleryDropIndex] = useState<number | null>(null);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
   const [categoryError, setCategoryError] = useState('');
@@ -111,7 +115,72 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
         </section>
         <label className="block"><span className={heading}>프로젝트 배경과 문제</span><textarea className={`${field} min-h-32`} value={draft.overview} onChange={(event) => update('overview', event.target.value)} /></label>
         <label className="block"><span className={heading}>Goal</span><textarea className={`${field} min-h-28`} value={draft.goal} onChange={(event) => update('goal', event.target.value)} /></label>
-        <section><h3 className={heading}>Project Gallery</h3><div className="grid grid-cols-2 gap-4 sm:grid-cols-3">{(draft.outputs ?? []).map((url, index) => <div key={`${url}-${index}`} className="relative overflow-hidden rounded-lg bg-gray-100 dark:bg-slate-800"><img src={url} alt={`프로젝트 이미지 ${index + 1}`} className="h-40 w-full object-contain" /><button type="button" aria-label={`프로젝트 이미지 ${index + 1} 삭제`} className="absolute right-2 top-2 rounded-full bg-white p-2 text-red-600" onClick={() => update('outputs', draft.outputs?.filter((_, position) => position !== index))}><Trash2 className="h-4 w-4" /></button></div>)}<label className="flex min-h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-cyan-300 text-sm text-cyan-600"><ImagePlus />이미지 여러 장 추가<input type="file" multiple accept="image/*" aria-label="프로젝트 이미지 여러 장 선택" className="sr-only" onChange={(event) => void upload(event, false)} /></label></div></section>
+        <section>
+          <h3 className={heading}>Project Gallery</h3>
+          <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">이미지를 클릭해 선택한 뒤, 원하는 위치로 드래그해 놓으세요.</p>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {(draft.outputs ?? []).map((url, index) => {
+              const selected = selectedGalleryIndex === index;
+              const isDragged = draggedGalleryIndex === index;
+              const isDropTarget = galleryDropIndex === index && draggedGalleryIndex !== index;
+              return (
+                <div
+                  key={`${url}-${index}`}
+                  draggable
+                  onDragStart={(event) => {
+                    setSelectedGalleryIndex(index);
+                    setDraggedGalleryIndex(index);
+                    event.dataTransfer.effectAllowed = 'move';
+                    event.dataTransfer.setData('text/plain', String(index));
+                  }}
+                  onDragOver={(event) => {
+                    event.preventDefault();
+                    event.dataTransfer.dropEffect = 'move';
+                    setGalleryDropIndex(index);
+                  }}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    const from = Number(event.dataTransfer.getData('text/plain'));
+                    if (Number.isInteger(from) && from !== index) {
+                      update('outputs', moveGalleryImage(draft.outputs ?? [], from, index));
+                      setSelectedGalleryIndex(index);
+                    }
+                    setDraggedGalleryIndex(null);
+                    setGalleryDropIndex(null);
+                  }}
+                  onDragEnd={() => {
+                    setDraggedGalleryIndex(null);
+                    setGalleryDropIndex(null);
+                  }}
+                  className={`relative overflow-hidden rounded-lg bg-gray-100 transition dark:bg-slate-800 ${selected ? 'ring-4 ring-cyan-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900' : ''} ${isDropTarget ? 'outline outline-4 outline-dashed outline-amber-400' : ''} ${isDragged ? 'cursor-grabbing opacity-40' : 'cursor-grab'}`}
+                >
+                  <button
+                    type="button"
+                    aria-label={`프로젝트 이미지 ${index + 1}${selected ? ' 선택됨' : ' 선택'}`}
+                    aria-pressed={selected}
+                    className="block w-full"
+                    onClick={() => setSelectedGalleryIndex(index)}
+                  >
+                    <img draggable={false} src={url} alt={`프로젝트 이미지 ${index + 1}`} className="h-40 w-full object-contain" />
+                  </button>
+                  {selected && <span className="absolute bottom-2 left-2 rounded-full bg-cyan-600 px-2 py-1 text-xs font-semibold text-white">선택됨 · {index + 1}번째</span>}
+                  <div className="absolute right-2 top-2">
+                    <button
+                      type="button"
+                      aria-label={`프로젝트 이미지 ${index + 1} 삭제`}
+                      className="rounded-full bg-white p-2 text-red-600 shadow"
+                      onClick={() => {
+                        update('outputs', draft.outputs?.filter((_, position) => position !== index));
+                        setSelectedGalleryIndex(null);
+                      }}
+                    ><Trash2 className="h-4 w-4" /></button>
+                  </div>
+                </div>
+              );
+            })}
+            <label className="flex min-h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-cyan-300 text-sm text-cyan-600"><ImagePlus />이미지 여러 장 추가<input type="file" multiple accept="image/*" aria-label="프로젝트 이미지 여러 장 선택" className="sr-only" onChange={(event) => void upload(event, false)} /></label>
+          </div>
+        </section>
         <section><h3 className={heading}>Tech Stack</h3><TagInput label="스택" hashtags value={draft.stack} onChange={(items) => update('stack', items)} placeholder="#React #TypeScript 입력 후 Enter" /></section>
         <section className="space-y-5">{(draft.sections ?? []).map((section, index) => <div key={section.id} className="space-y-3"><input aria-label={`중주제 ${index + 1} 제목`} className={`${field} text-2xl font-bold`} placeholder="중주제 제목" value={section.title} onChange={(event) => update('sections', draft.sections?.map((item) => item.id === section.id ? { ...item, title: event.target.value } : item))} /><textarea aria-label={`중주제 ${index + 1} 내용`} className={`${field} min-h-28`} placeholder="내용" value={section.content} onChange={(event) => update('sections', draft.sections?.map((item) => item.id === section.id ? { ...item, content: event.target.value } : item))} /><button type="button" className="text-sm text-red-500" onClick={() => update('sections', draft.sections?.filter((item) => item.id !== section.id))}>중주제 삭제</button></div>)}<button type="button" className="w-full rounded-xl border border-dashed border-cyan-400 py-4 text-cyan-600" onClick={() => update('sections', [...(draft.sections ?? []), { id: crypto.randomUUID(), title: '', content: '' }])}>＋ 중주제 추가하기</button></section>
         {Boolean(draft.difficulties.length) && <label className="block"><span className={heading}>Challenges & Solutions</span><textarea className={`${field} min-h-28`} value={draft.difficulties.join('\n')} onChange={(event) => update('difficulties', event.target.value.split('\n'))} /></label>}
