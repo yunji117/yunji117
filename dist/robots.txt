@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yunji117.github.io/yunji117/sitemap.xml

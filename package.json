@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "seo:generate": "node scripts/generate-seo.mjs",
+    "predev": "npm run seo:generate",
     "dev": "vite --base=/yunji117/",
+    "prebuild": "npm run seo:generate",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
