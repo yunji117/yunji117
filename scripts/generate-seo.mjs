@@ -50,6 +50,7 @@ const seoBlock = `${startMarker}
     <meta property="og:title" content="${escapeHtml(siteConfig.title)}" />
     <meta property="og:description" content="${escapeHtml(siteConfig.description)}" />
     <meta property="og:image" content="${imageUrl}" />
+    <meta property="og:image:type" content="${siteConfig.imageType}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="${escapeHtml(siteConfig.imageAlt)}" />
