@@ -35,7 +35,7 @@ export const defaultSiteContent: SiteContent = {
     { label: 'Email', value: 'yunw0117@gmail.com', url: 'mailto:yunw0117@gmail.com' },
     { label: 'Github', value: 'yunji117', url: 'https://github.com/yunji117' },
   ],
-  thankYouText: 'Thank you for visiting.',
+  thankYouText: 'Thank you for visiting. •͜•',
 };
 
 export const defaultSkillGroups: SkillGroup[] = [

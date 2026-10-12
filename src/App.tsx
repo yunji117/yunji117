@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useThemeStore } from './store/themeStore';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -6,11 +6,13 @@ import About from './components/About';
 import Skill from './components/Skill';
 import ProjectSection from './components/ProjectSection';
 import Contact from './components/Contact';
-import SectionEditorModal, { type EditableSection } from './components/admin/SectionEditorModal';
-import AdminLogin from './components/admin/AdminLogin';
-import AdminAccess from './components/admin/AdminAccess';
+import type { EditableSection } from './components/admin/SectionEditorModal';
 import { initialAuthState, observePortfolioAuth } from './lib/portfolioAuth';
 import { supabase } from './lib/supabase';
+
+const SectionEditorModal = lazy(() => import('./components/admin/SectionEditorModal'));
+const AdminLogin = lazy(() => import('./components/admin/AdminLogin'));
+const AdminAccess = lazy(() => import('./components/admin/AdminAccess'));
 
 function App() {
   const { theme } = useThemeStore();
@@ -98,18 +100,20 @@ function App() {
           onOpenAdmin={() => setIsAdminLoginOpen(true)}
         />
       </main>
-      {canEdit && editingSection && <SectionEditorModal section={editingSection} onClose={() => setEditingSection(null)} onSaved={() => { setEditingSection(null); setContentRevision((value) => value + 1); }} />}
-      {isAdminLoginOpen && (auth.phase === 'signed-out'
-        ? <AdminLogin onClose={() => setIsAdminLoginOpen(false)} />
-        : <AdminAccess
-            auth={auth}
-            onClose={() => setIsAdminLoginOpen(false)}
-            onRetry={() => authController.current?.retry()}
-            onOpenAdmin={() => { setIsAdminLoginOpen(false); setIsAdminView(true); }}
-            onSignOut={handleSignOut}
-            signOutError={signOutError}
-            signingOut={signingOut}
-          />)}
+      <Suspense fallback={null}>
+        {canEdit && editingSection && <SectionEditorModal section={editingSection} onClose={() => setEditingSection(null)} onSaved={() => { setEditingSection(null); setContentRevision((value) => value + 1); }} />}
+        {isAdminLoginOpen && (auth.phase === 'signed-out'
+          ? <AdminLogin onClose={() => setIsAdminLoginOpen(false)} />
+          : <AdminAccess
+              auth={auth}
+              onClose={() => setIsAdminLoginOpen(false)}
+              onRetry={() => authController.current?.retry()}
+              onOpenAdmin={() => { setIsAdminLoginOpen(false); setIsAdminView(true); }}
+              onSignOut={handleSignOut}
+              signOutError={signOutError}
+              signingOut={signingOut}
+            />)}
+      </Suspense>
     </div>
   );
 }

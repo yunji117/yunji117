@@ -1,18 +1,32 @@
-import ProjectEditorModal from './admin/ProjectEditorModal';
 import EditButton from './admin/EditButton';
 import { useProjectDrag } from './admin/useProjectDrag';
 import { sortProjects, moveProject } from '../lib/projectOrder';
 import { portfolioErrorMessage } from '../lib/portfolioErrors';
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { X, ExternalLink, Github, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
 import { fetchPublishedProjects, fetchAdminProjects, fetchProjectCategories, defaultCategories, fetchProjectOrder, saveProjectOrder } from '../lib/portfolioApi';
 import type { PortfolioProject, ProjectCaseStudy, ProjectCategory, ProjectFilter } from '../types/portfolio';
+import ProgressiveImage from './ProgressiveImage';
+
+const ProjectEditorModal = lazy(() => import('./admin/ProjectEditorModal'));
 
 // 이미지 경로 helper
 const getImagePath = (imageName: string) => {
   return new URL(`../assets/img/${imageName}`, import.meta.url).href;
+};
+
+const externalCoverThumbnail = getImagePath('thumb-external-cover.webp');
+
+// 공개 Supabase 원본 URL은 그대로 보존하고 카드에서만 경량 썸네일을 사용합니다.
+// eslint-disable-next-line react-refresh/only-export-components
+export const getProjectThumbnail = (project: PortfolioProject) => {
+  if (project.thumbnailUrl) return project.thumbnailUrl;
+  if (project.image.includes('1790564461692------2026-09-28-120052.png')) {
+    return externalCoverThumbnail;
+  }
+  return project.image;
 };
 
 const cuckooBidetDetailImage = getImagePath("Dogi Nojeul Jadong Bangsu Bide.png");
@@ -85,6 +99,7 @@ export const fallbackProjects: PortfolioProject[] = [
     shortDesc: '게임 벤픽 과정을 실제처럼 체험할 수 있는 모의 벤픽 웹앱',
     description: '리그오브레전드의 챔피언 선택 과정을 실제처럼 체험할 수 있는 모의 벤픽 웹앱',
     image: getImagePath("banpick.png"),
+    thumbnailUrl: getImagePath("thumb-banpick.webp"),
     category: 'team',
     stack: ['React', 'Vite', 'Tailwind CSS', 'Node.js', 'Express', 'SQLite3', 'Figma'],
     overview:
@@ -102,6 +117,7 @@ export const fallbackProjects: PortfolioProject[] = [
     shortDesc: '짧은 시간에 의미있는 시간을 보내는 웹 플랫폼',
     description: '퀴즈, 커뮤니티 등 다양한 콘텐츠로 짧은 시간을 알차게 보낼 수 있는 웹 플랫폼',
     image: getImagePath("Pooptime.svg"),
+    thumbnailUrl: getImagePath("thumb-pooptime.webp"),
     category: 'team',
     stack: ['React', 'Vite', 'Tailwind CSS', 'Node.js', 'Express', 'MySQL', 'TypeScript'],
     overview:
@@ -124,6 +140,7 @@ export const fallbackProjects: PortfolioProject[] = [
     shortDesc: '주식 초보자도 쉽게 가상 투자 경험을 쌓을 수 있는 모의투자 웹앱',
     description: '실제 주식 시장과 유사한 환경에서 가상으로 주식 매매를 연습할 수 있는 모의투자 웹 플랫폼',
     image: getImagePath("Motoshoot.svg"),
+    thumbnailUrl: getImagePath("thumb-motoshoot.webp"),
     category: 'team',
     stack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'NestJS', 'PostgreSQL', 'Supabase', 'Docker'],
     overview:
@@ -207,6 +224,7 @@ export const fallbackProjects: PortfolioProject[] = [
     shortDesc: '장애물을 피하며 달리는 2D 러너 게임 웹앱',
     description: '키보드 또는 터치 조작으로 캐릭터를 움직이며 장애물을 피하고 점수를 쌓는 2D 러너 게임 웹앱입니다.',
     image: getImagePath("Runnergame.svg"), 
+    thumbnailUrl: getImagePath("thumb-runner-game.webp"),
     category: 'personal',
     stack: ['React', 'TypeScript', 'Vite', 'Canvas API', 'Git', 'GitHub', 'VS Code', 'Figma', 'AWS'],
     overview: 'Runner Game은 사용자가 키보드(또는 터치)로 캐릭터를 조작하여 장애물을 피하며 최대한 멀리 달리는 간단한 2D 러너 게임입니다. 실시간 게임 로직과 Canvas API 기반 애니메이션을 React 환경에서 직접 구현하며, 웹 프론트엔드에서 인터랙티브한 콘텐츠 제작 경험을 쌓았습니다.',
@@ -237,6 +255,7 @@ export const fallbackProjects: PortfolioProject[] = [
     shortDesc: '논산 지역 중심의 부동산 매물 조회 및 상담 웹서비스',
     description: '논산 지역을 중심으로 원룸, 투룸, 아파트, 빌라, 상가, 토지 등 다양한 매물을 탐색하고 상담 문의까지 연결할 수 있는 부동산 웹 플랫폼입니다.',
     image: getImagePath("01-home-page.svg"),
+    thumbnailUrl: getImagePath("thumb-real-estate.webp"),
     category: 'personal',
     stack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Supabase', 'Solapi', 'Git', 'GitHub', 'VS Code','Figma', 'aws', 'solapi'],
     overview: '논산 부동산 매물 플랫폼은 사용자가 다양한 부동산 매물을 조건별로 검색하고, 상세 정보를 확인한 뒤 바로 상담 문의까지 남길 수 있도록 만든 웹서비스입니다. 메인 매물 목록, 카테고리별 페이지, 상세 페이지, 최근 본 매물, 관심 매물, 관리자 등록/수정 기능까지 포함해 실제 운영을 고려한 흐름으로 구현했습니다.',
@@ -280,6 +299,7 @@ export const fallbackProjects: PortfolioProject[] = [
     shortDesc: '매매, 전세, 월세의 예상 중개 수수료와 VAT를 빠르게 계산해주는 운영형 웹앱',
     description: '한국 부동산 거래에서 자주 헷갈리는 중개보수 상한 요율을 기준으로 예상 수수료를 계산해주는 개인 프로젝트입니다.',
     image: getImagePath("brokerage-calculator.svg"),
+    thumbnailUrl: getImagePath("thumb-brokerage-calculator.webp"),
     category: 'personal',
     stack: ['Next.js 16', 'React 19', 'TypeScript', 'CSS Modules', 'Next API Routes', 'next-sitemap', 'SEO', 'Resend'],
     overview: '부동산 중개보수 계산기는 한국 부동산 거래에서 사용자가 자주 헷갈리는 복비를 빠르게 확인할 수 있도록 만든 실용형 웹앱입니다. 단순 계산기에서 끝나지 않고, 부동산 유형과 거래 유형에 따라 법정 상한 요율을 적용하고, 협의 보수율과 VAT 안내, 문의 페이지, 개인정보처리방침, SEO 구조화 데이터까지 포함해 실제 공개 서비스 형태로 운영 중입니다.',
@@ -309,6 +329,7 @@ export const fallbackProjects: PortfolioProject[] = [
     shortDesc: 'AI와 Figma를 활용해 126개 제품의 판매 흐름을 설계한 상세페이지 디자인 작업',
     description: '쿠쿠, 힘펠, 하츠 제품 판매를 위한 상세페이지 기획 및 디자인 포트폴리오입니다.',
     image: cuckooBidetDetailImage,
+    thumbnailUrl: getImagePath("thumb-commerce-design.webp"),
     thumbnailFit: 'cover',
     thumbnailPosition: 'center 6.5%',
     category: 'design',
@@ -558,9 +579,20 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
     };
   }, [isAdmin, reload]);
 
-  const mergedProjects = databaseProjects
+  const mergedProjects = (databaseProjects
     ? [...fallbackProjects.filter((item) => !databaseProjects.some((saved) => saved.id === item.id)), ...databaseProjects]
-    : fallbackProjects;
+    : fallbackProjects).map((project) => {
+      // thumbnailUrl은 운영 DB 스키마를 바꾸지 않는 화면 전용 값입니다.
+      // 관리자에서 기존 프로젝트를 수정해도 번들 썸네일을 다시 연결합니다.
+      const bundledProject = fallbackProjects.find(
+        (item) => item.id === project.id || item.title === project.title,
+      );
+      const projectWithBundledThumbnail = {
+        ...project,
+        thumbnailUrl: project.thumbnailUrl ?? bundledProject?.thumbnailUrl,
+      };
+      return { ...projectWithBundledThumbnail, thumbnailUrl: getProjectThumbnail(projectWithBundledThumbnail) };
+    });
   const visibleProjects = sortProjects(mergedProjects, order);
   const persistOrder = async (ids: string[]) => {
     const previous = order; setOrder(ids); setOrderSaving(true); setOrderError('');
@@ -768,15 +800,18 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                     className="group flex h-full w-full flex-col text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-cyan-500"
                   >
                   {/* 프로젝트 이미지 */}
-                  <div className="relative h-56 w-full overflow-hidden bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
+                  <div className="relative aspect-[8/5] w-full overflow-hidden bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
                     {project.image && (
-                      <img
+                      <ProgressiveImage
                         draggable={false}
                         loading="lazy"
                         decoding="async"
-                        src={project.image}
+                        src={getProjectThumbnail(project)}
                         alt={`${project.title} 프로젝트 대표 화면`}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        width={800}
+                        height={500}
+                        wrapperClassName="h-full w-full"
+                        className="h-full w-full object-cover group-hover:scale-110"
                         style={{
                           objectFit: project.thumbnailFit ?? 'cover',
                           objectPosition: project.thumbnailPosition ?? 'center',
@@ -852,13 +887,15 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
         </motion.div>
       </div>
 
-      {isAdmin && editor && <ProjectEditorModal
-        project={editor === 'new' ? undefined : editor}
-        category={activeCategory === 'all' ? 'personal' : activeCategory}
-        sortOrder={Math.max(0, ...visibleProjects.map((item) => item.sortOrder ?? (Number(item.id) || 0))) + 1}
-        onClose={() => setEditor(null)}
-        onSaved={(project) => { setDatabaseProjects((items) => [...(items ?? []).filter((item) => item.id !== project.id), project]); setEditor(null); setReload((value) => value + 1); }}
-      />}
+      <Suspense fallback={null}>
+        {isAdmin && editor && <ProjectEditorModal
+          project={editor === 'new' ? undefined : editor}
+          category={activeCategory === 'all' ? 'personal' : activeCategory}
+          sortOrder={Math.max(0, ...visibleProjects.map((item) => item.sortOrder ?? (Number(item.id) || 0))) + 1}
+          onClose={() => setEditor(null)}
+          onSaved={(project) => { setDatabaseProjects((items) => [...(items ?? []).filter((item) => item.id !== project.id), project]); setEditor(null); setReload((value) => value + 1); }}
+        />}
+      </Suspense>
       {/* 프로젝트 상세 모달 */}
       <AnimatePresence>
         {selectedProject && (
@@ -901,6 +938,10 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                   <img
                     src={selectedProject.image}
                     alt={selectedProject.title}
+                    width={1600}
+                    height={1000}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-64 object-cover rounded-xl mb-6 cursor-zoom-in"
                     style={{
                       objectFit: selectedProject.thumbnailFit ?? 'cover',
@@ -1028,7 +1069,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
                         {selectedProject.challengeImages.map((img, idx) => (
                           <button key={img} type="button" className="overflow-hidden rounded-lg bg-gray-100 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:bg-gray-800 dark:hover:shadow-cyan-500/30" onClick={() => openImageViewer(img)}>
-                            <img src={img} alt={`문제 해결 과정 ${idx + 1}`} className="h-48 w-full object-contain p-2" />
+                            <img src={img} alt={`문제 해결 과정 ${idx + 1}`} width={800} height={500} loading="lazy" decoding="async" className="h-48 w-full object-contain p-2" />
                           </button>
                         ))}
                       </div>
@@ -1061,7 +1102,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                           const isLongPage = isFullPageImage(selectedProject, img);
                           return (
                             <button key={img} type="button" className={`overflow-hidden rounded-lg bg-gray-100 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:bg-gray-800 dark:hover:shadow-cyan-500/30 ${isLongPage ? 'col-span-2 md:col-span-1' : ''}`} onClick={() => openImageViewer(img)}>
-                              <img src={img} alt={`${selectedProject.title} 화면 ${idx + 1}`} className={`w-full ${isLongPage ? 'h-48 object-cover object-top' : 'h-48 object-contain p-2'}`} style={isLongPage ? { objectPosition: selectedProject.thumbnailPosition ?? 'top center' } : undefined} />
+                              <img src={img} alt={`${selectedProject.title} 화면 ${idx + 1}`} width={800} height={500} loading="lazy" decoding="async" className={`w-full ${isLongPage ? 'h-48 object-cover object-top' : 'h-48 object-contain p-2'}`} style={isLongPage ? { objectPosition: selectedProject.thumbnailPosition ?? 'top center' } : undefined} />
                             </button>
                           );
                         })}
@@ -1073,7 +1114,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                           const isLongPage = isFullPageImage(selectedProject, img);
                           return (
                             <button key={img} type="button" className="overflow-hidden rounded-lg bg-gray-100 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:bg-gray-800 dark:hover:shadow-cyan-500/30" onClick={() => openImageViewer(img)}>
-                              <img src={img} alt={`${selectedProject.title} 상세 화면 ${idx + 1}`} className={`w-full ${isLongPage ? 'h-72 object-cover object-top' : 'h-56 object-contain p-2'}`} style={isLongPage ? { objectPosition: selectedProject.thumbnailPosition ?? 'top center' } : undefined} />
+                              <img src={img} alt={`${selectedProject.title} 상세 화면 ${idx + 1}`} width={800} height={500} loading="lazy" decoding="async" className={`w-full ${isLongPage ? 'h-72 object-cover object-top' : 'h-56 object-contain p-2'}`} style={isLongPage ? { objectPosition: selectedProject.thumbnailPosition ?? 'top center' } : undefined} />
                             </button>
                           );
                         })}
@@ -1186,6 +1227,9 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
               <img
                 src={selectedImage}
                 alt={`${selectedProject?.title ?? '프로젝트'} 확대 이미지`}
+                width={1600}
+                height={1000}
+                decoding="async"
                 className="mx-auto h-auto w-full rounded-xl bg-gray-900 object-contain"
               />
             </motion.div>

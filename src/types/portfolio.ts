@@ -31,6 +31,8 @@ export interface PortfolioProject {
   description: string;
   shortDesc: string;
   image: string;
+  /** 카드 전용 경량 이미지. 없으면 기존 image를 그대로 사용합니다. */
+  thumbnailUrl?: string;
   thumbnailFit?: ThumbnailFit;
   thumbnailPosition?: string;
   category: ProjectCategory;

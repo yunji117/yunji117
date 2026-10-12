@@ -39,7 +39,11 @@ const Contact = ({ isAuthenticated, onOpenAdmin, onEdit, revision = 0 }: Contact
     .map((definition) => ({ ...definition, url: getResumeUrl(content.contactItems, definition.role) }))
     .filter((item): item is typeof item & { url: string } => Boolean(item.url));
   const title = content.contactTitle === 'KIM YUNJI Contact' || !content.contactTitle.trim() ? 'LET’S WORK TOGETHER' : content.contactTitle;
-  const closing = content.thankYouText === 'Thank You •͜•' || !content.thankYouText.trim() ? 'Thank you for visiting. •͜•' : content.thankYouText;
+  const closing = content.thankYouText === 'Thank You •͜•'
+    || content.thankYouText === 'Thank you for visiting.'
+    || !content.thankYouText.trim()
+    ? 'Thank you for visiting. •͜•'
+    : content.thankYouText;
 
   const copyEmail = async () => {
     if (!email) return;

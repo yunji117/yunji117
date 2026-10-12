@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { ChevronDown, Download, ExternalLink, Github } from 'lucide-react';
 import EditButton from './admin/EditButton';
-import yunjiAvatar from '../assets/img/3Dcharacter.png';
+import yunjiAvatar from '../assets/img/hero-character.webp';
 import { defaultSiteContent } from '../lib/defaultPortfolio';
 import { fetchPublishedProjects, fetchSiteContent } from '../lib/portfolioApi';
 import type { PortfolioProject } from '../types/portfolio';
-import { fallbackProjects } from './ProjectSection';
+import { fallbackProjects, getProjectThumbnail } from './ProjectSection';
 import { getResumeUrl } from '../lib/contactLinks';
+import ProgressiveImage from './ProgressiveImage';
 
 type Language = 'en' | 'ko';
 type CareerRole = 'frontend' | 'designer' | 'fullstack';
@@ -273,7 +274,16 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
             (fallbackProject) => !databaseProjects.some((project) => project.id === fallbackProject.id),
           ),
           ...databaseProjects,
-        ]);
+        ].map((project) => {
+          const bundledProject = fallbackProjects.find(
+            (item) => item.id === project.id || item.title === project.title,
+          );
+          const projectWithBundledThumbnail = {
+            ...project,
+            thumbnailUrl: project.thumbnailUrl ?? bundledProject?.thumbnailUrl,
+          };
+          return { ...projectWithBundledThumbnail, thumbnailUrl: getProjectThumbnail(projectWithBundledThumbnail) };
+        }));
       })
       .catch(() => {
         // Keep the bundled projects visible when the remote portfolio is unavailable.
@@ -440,17 +450,18 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
             </div>
           </div>
 
-          <motion.div
-            variants={itemVariants}
-            className="relative mx-auto flex w-full max-w-[31rem] items-end justify-center self-end lg:col-start-2 lg:row-span-2 lg:row-start-1"
-          >
+          <div className="relative mx-auto flex w-full max-w-[31rem] items-end justify-center self-end lg:col-start-2 lg:row-span-2 lg:row-start-1">
             <div className="absolute bottom-[8%] h-[68%] w-[86%] rounded-full bg-gradient-to-br from-violet-400/15 via-fuchsia-400/20 to-purple-600/35 blur-2xl dark:from-violet-500/10 dark:to-purple-500/25" />
             <img
               src={content.heroAvatarUrl || yunjiAvatar}
               alt="Kim Yun Ji 3D character"
+              width={522}
+              height={627}
+              decoding="async"
+              fetchPriority="high"
               className="relative z-10 max-h-[43rem] w-full object-contain object-bottom drop-shadow-[0_24px_42px_rgba(79,42,112,0.32)]"
             />
-          </motion.div>
+          </div>
 
           <motion.div
             variants={itemVariants}
@@ -573,14 +584,17 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
                         className="flex flex-1 flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-500"
                         aria-label={`${project.title} 상세 내용 보기`}
                       >
-                        <div className="relative h-40 w-full shrink-0 overflow-hidden bg-gradient-to-br from-blue-500/10 to-violet-500/15">
+                        <div className="relative aspect-[8/5] w-full shrink-0 overflow-hidden bg-gradient-to-br from-blue-500/10 to-violet-500/15">
                           {project.image && (
-                            <img
-                              src={project.image}
-                              alt=""
+                            <ProgressiveImage
+                              src={getProjectThumbnail(project)}
+                              alt={`${project.title} 프로젝트 대표 화면`}
+                              width={800}
+                              height={500}
                               loading="lazy"
                               decoding="async"
-                              className="h-full w-full transition-transform duration-300 group-hover:scale-105"
+                              wrapperClassName="h-full w-full"
+                              className="h-full w-full group-hover:scale-105"
                               style={{
                                 objectFit: project.thumbnailFit ?? 'cover',
                                 objectPosition: project.thumbnailPosition ?? 'center',
