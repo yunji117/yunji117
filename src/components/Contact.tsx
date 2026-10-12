@@ -71,10 +71,7 @@ const Contact = ({ isAuthenticated, onOpenAdmin, onEdit, revision = 0 }: Contact
             디자인과 개발을 연결해
             <span className="hero-name-gradient block pb-1">더 나은 웹 경험을 만들겠습니다.</span>
           </h2>
-          <p className="mt-6 text-base leading-7 text-gray-600 dark:text-gray-300 sm:text-lg">
-            새로운 프로젝트와 채용 기회에 열려 있습니다.<br className="hidden sm:block" />
-            함께 이야기하고 싶은 내용이 있다면 편하게 연락해 주세요.
-          </p>
+          
         </div>
 
         <div className={`mt-12 grid gap-5 ${resumeLinks.length ? 'lg:grid-cols-3' : 'md:grid-cols-2'}`}>
