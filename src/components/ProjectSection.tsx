@@ -452,6 +452,10 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<ProjectFilter>('all');
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const modalCloseRef = useRef<HTMLButtonElement>(null);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
+  const projectTriggerRefs = useRef(new Map<string, HTMLButtonElement>());
   const { ref, inView } = useInView({
     // On mobile the single-column project list is much taller than the viewport.
     // A percentage threshold can therefore be impossible to reach and leave the
@@ -478,12 +482,43 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
   useEffect(() => {
     const openProject = (event: Event) => {
       const project = (event as CustomEvent<PortfolioProject>).detail;
-      if (project) setSelectedProject(project);
+      if (project) {
+        lastFocusedRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        setSelectedProject(project);
+      }
     };
 
     window.addEventListener('portfolio:open-project', openProject);
     return () => window.removeEventListener('portfolio:open-project', openProject);
   }, []);
+
+  useEffect(() => {
+    if (!selectedProject) return;
+    if (!selectedImage) window.requestAnimationFrame(() => modalCloseRef.current?.focus());
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (selectedImage) {
+          setSelectedImage(null);
+          window.requestAnimationFrame(() => modalCloseRef.current?.focus());
+        } else {
+          setSelectedProject(null);
+          window.requestAnimationFrame(() => lastFocusedRef.current?.focus());
+        }
+        return;
+      }
+      if (event.key !== 'Tab' || !modalRef.current || selectedImage) return;
+      const focusable = Array.from(modalRef.current.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+      if (!focusable.length) { event.preventDefault(); modalRef.current.focus(); return; }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selectedProject, selectedImage]);
 
   useEffect(() => {
     let isMounted = true;
@@ -546,6 +581,16 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
 
   const openImageViewer = (image: string) => {
     setSelectedImage(image);
+  };
+
+  const openProjectDetails = (project: PortfolioProject, trigger?: HTMLElement) => {
+    lastFocusedRef.current = trigger ?? (document.activeElement instanceof HTMLElement ? document.activeElement : projectTriggerRefs.current.get(project.id) ?? null);
+    setSelectedProject(project);
+  };
+
+  const closeProjectDetails = () => {
+    setSelectedProject(null);
+    window.requestAnimationFrame(() => lastFocusedRef.current?.focus());
   };
 
   const isFullPageImage = (project: PortfolioProject, image: string) => {
@@ -617,7 +662,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
     touchStartRef.current = null;
 
     if (startedNearLeftEdge && isRightSwipe && isMostlyHorizontal) {
-      setSelectedProject(null);
+      closeProjectDetails();
     }
   };
 
@@ -701,8 +746,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                   onPointerCancel={drag.onPointerCancel}
                   onContextMenu={(event) => { if (isAdmin) event.preventDefault(); }}
                   style={{ outline: drag.dragged === project.id ? '3px solid #06b6d4' : undefined }}
-                  onClick={() => { if (drag.suppressClick.current) { drag.suppressClick.current = false; return; } setSelectedProject(project); }}
-                  className="relative cursor-pointer glass rounded-2xl overflow-hidden bg-white/85 border border-slate-200/80 shadow-lg shadow-slate-200/60 hover:shadow-2xl dark:bg-transparent dark:border-white/10 dark:shadow-none dark:hover:shadow-cyan-500/30 transition-all duration-300"
+                  className="relative glass rounded-2xl overflow-hidden bg-white/85 border border-slate-200/80 shadow-lg shadow-slate-200/60 hover:shadow-2xl dark:bg-transparent dark:border-white/10 dark:shadow-none dark:hover:shadow-cyan-500/30 transition-all duration-300"
                 >
                   {isAdmin && <>
                     <EditButton label={project.title} onClick={() => setEditor(project)} />
@@ -716,15 +760,22 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                       })}
                     </div>}
                   </>}
+                  <button
+                    ref={(element) => { if (element) projectTriggerRefs.current.set(project.id, element); else projectTriggerRefs.current.delete(project.id); }}
+                    type="button"
+                    aria-label={`${project.title} 프로젝트 상세 보기`}
+                    onClick={(event) => { if (drag.suppressClick.current) { drag.suppressClick.current = false; return; } openProjectDetails(project, event.currentTarget); }}
+                    className="group flex h-full w-full flex-col text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-cyan-500"
+                  >
                   {/* 프로젝트 이미지 */}
-                  <div className="relative h-56 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 overflow-hidden group">
+                  <div className="relative h-56 w-full overflow-hidden bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
                     {project.image && (
                       <img
                         draggable={false}
                         loading="lazy"
                         decoding="async"
                         src={project.image}
-                        alt={project.title}
+                        alt={`${project.title} 프로젝트 대표 화면`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         style={{
                           objectFit: project.thumbnailFit ?? 'cover',
@@ -732,7 +783,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                         }}
                       />
                     )}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <div className="absolute inset-0 hidden items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 md:flex">
                       <span className="text-white font-semibold text-sm">View Details</span>
                     </div>
                   </div>
@@ -775,7 +826,11 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                         </span>
                       )}
                     </div>
+                    <span className="mt-5 inline-flex min-h-11 items-center text-sm font-extrabold text-violet-600 dark:text-violet-300">
+                      프로젝트 상세 보기 →
+                    </span>
                   </div>
+                  </button>
                 </motion.div>
               ))}
               {isAdmin && (
@@ -811,10 +866,15 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setSelectedProject(null)}
+            onClick={closeProjectDetails}
             className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 backdrop-blur-sm"
           >
             <motion.div
+              ref={modalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="project-modal-title"
+              tabIndex={-1}
               variants={modalVariants}
               initial="hidden"
               animate="visible"
@@ -822,12 +882,15 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
               onClick={(e) => e.stopPropagation()}
               onTouchStart={handleModalTouchStart}
               onTouchEnd={handleModalTouchEnd}
-              className="max-w-3xl w-full max-h-[90vh] overflow-y-auto rounded-2xl p-8 backdrop-blur-xl bg-[rgba(255,253,248,0.75)] border border-[rgba(222,206,182,0.85)] shadow-[0_28px_80px_rgba(94,72,47,0.20)] dark:bg-slate-900/30 dark:border-white/10 dark:shadow-none"
+              className="relative max-w-3xl w-full max-h-[90vh] overflow-y-auto rounded-2xl p-8 backdrop-blur-xl bg-[rgba(255,253,248,0.75)] border border-[rgba(222,206,182,0.85)] shadow-[0_28px_80px_rgba(94,72,47,0.20)] dark:bg-slate-900/30 dark:border-white/10 dark:shadow-none"
             >
               {/* 닫기 버튼 */}
               <button
-                onClick={() => setSelectedProject(null)}
-                className="absolute top-6 right-6 p-2 hover:bg-white/20 dark:hover:bg-white/10 rounded-lg transition-colors"
+                ref={modalCloseRef}
+                type="button"
+                aria-label="프로젝트 상세 닫기"
+                onClick={closeProjectDetails}
+                className="absolute right-6 top-6 flex h-11 w-11 items-center justify-center rounded-lg transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 dark:hover:bg-white/10"
               >
                 <X className="w-6 h-6 text-gray-900 dark:text-white" />
               </button>
@@ -847,7 +910,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                   />
                 )}
                 <div className="flex flex-col items-start gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
-                  <h2 className="text-4xl font-bold text-gray-900 dark:text-white">
+                  <h2 id="project-modal-title" className="text-4xl font-bold text-gray-900 dark:text-white">
                     {selectedProject.title}
                   </h2>
                   <span
@@ -1103,6 +1166,9 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
             onClick={() => setSelectedImage(null)}
           >
             <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label="프로젝트 이미지 확대 보기"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
@@ -1110,14 +1176,16 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
               className="relative max-w-5xl w-full max-h-[88vh] overflow-y-auto rounded-2xl bg-gray-950 p-3 shadow-2xl"
             >
               <button
-                className="sticky top-0 z-10 ml-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg hover:bg-white"
+                type="button"
+                aria-label="확대 이미지 닫기"
+                className="sticky top-0 z-10 ml-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
                 onClick={() => setSelectedImage(null)}
               >
                 <X className="w-6 h-6" />
               </button>
               <img
                 src={selectedImage}
-                alt="Selected"
+                alt={`${selectedProject?.title ?? '프로젝트'} 확대 이미지`}
                 className="mx-auto h-auto w-full rounded-xl bg-gray-900 object-contain"
               />
             </motion.div>

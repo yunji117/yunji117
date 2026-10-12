@@ -119,7 +119,7 @@ const Contact = ({ isAuthenticated, onOpenAdmin, onEdit, revision = 0 }: Contact
         </div>
       </div>
 
-      {copied && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-gray-950 px-5 py-3 text-sm font-semibold text-white shadow-2xl" role="status">이메일 주소가 복사되었습니다.</div>}
+      {copied && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-gray-950 px-5 py-3 text-sm font-semibold text-white shadow-2xl" role="status" aria-live="polite">이메일 주소가 복사되었습니다.</div>}
       <button type="button" onClick={onOpenAdmin} aria-label={isAuthenticated ? '관리자 메뉴' : '관리자 로그인'} className="absolute bottom-6 right-6 h-11 w-11 rounded-full border border-transparent transition-colors duration-300 hover:border-gray-400 focus-visible:border-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"><span className="sr-only">{isAuthenticated ? '관리자 메뉴' : '관리자 로그인'}</span></button>
     </section>
   );

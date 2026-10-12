@@ -49,6 +49,11 @@ a {
   transition: all 0.3s ease;
 }
 
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid #06b6d4;
+  outline-offset: 3px;
+}
+
 /* 애니메이션 */
 @keyframes fadeInUpBlur {
   0% {

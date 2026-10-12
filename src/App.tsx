@@ -76,13 +76,16 @@ function App() {
 
   return (
     <div className="w-full min-h-screen bg-white dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <a href="#main-content" className="sr-only z-[100] rounded-lg bg-gray-950 px-5 py-3 font-bold text-white focus:fixed focus:left-4 focus:top-4 focus:not-sr-only">
+        본문 바로가기
+      </a>
       <Header
         isAdmin={isAdmin}
         onOpenAdmin={() => {
           setIsAdminView(true);
         }}
       />
-      <main className="pt-20">
+      <main id="main-content" tabIndex={-1} className="pt-20 focus:outline-none">
         {canEdit && <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-xl bg-cyan-50 px-6 py-3 text-sm text-cyan-800 dark:bg-cyan-950 dark:text-cyan-200"><span>관리자 모드 · 연필로 수정하고 프로젝트를 길게 눌러 순서를 바꾸세요.</span><button onClick={() => setIsAdminView(false)} className="underline">방문자 화면 보기</button></div>}
         <Hero revision={contentRevision} onEdit={canEdit ? () => setEditingSection('hero') : undefined} />
         <About revision={contentRevision} onEdit={canEdit ? () => setEditingSection('about') : undefined} />
