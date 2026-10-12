@@ -6,6 +6,6 @@ export const siteConfig = {
   siteName: 'Yunify Studio',
   locale: 'ko_KR',
   imagePath: '/og-image.webp',
-  imageAlt: 'KIM YUN JI — Frontend Developer · Web Designer',
+  imageAlt: '아이디어를 시각적인 경험으로 만드는 김윤지의 포트폴리오 메인 화면',
   githubUrl: 'https://github.com/yunji117',
 };
