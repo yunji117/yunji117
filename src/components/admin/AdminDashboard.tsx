@@ -109,6 +109,9 @@ const AdminDashboard = ({ onExit, startWithNewProject = false }: AdminDashboardP
   const [loadAttempt, setLoadAttempt] = useState(0);
   const [uploadingTarget, setUploadingTarget] = useState('');
   const [savingTarget, setSavingTarget] = useState('');
+  const [projectImageError, setProjectImageError] = useState(false);
+
+  useEffect(() => setProjectImageError(false), [projectDraft.image]);
 
   useEffect(() => {
     const loadAdminData = async () => {
@@ -544,6 +547,22 @@ const AdminDashboard = ({ onExit, startWithNewProject = false }: AdminDashboardP
                     />
                   </label>
                   <div className="md:col-span-2">
+                    <span className={labelClass}>대표 이미지 미리보기</span>
+                    {projectDraft.image && !projectImageError ? (
+                      <img
+                        src={projectDraft.image}
+                        alt="대표 이미지 미리보기"
+                        onError={() => setProjectImageError(true)}
+                        className="h-64 w-full rounded-xl bg-slate-100"
+                        style={{ objectFit: projectDraft.thumbnailFit ?? 'cover', objectPosition: projectDraft.thumbnailPosition ?? 'center' }}
+                      />
+                    ) : (
+                      <div className="flex h-40 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 text-center text-sm text-gray-500 dark:border-white/20 dark:bg-white/5 dark:text-gray-400">
+                        {projectImageError ? '이미지를 불러오지 못했습니다. URL을 확인하거나 다시 업로드해 주세요.' : '대표 이미지를 선택하면 여기에 미리보기가 표시됩니다.'}
+                      </div>
+                    )}
+                  </div>
+                  <div className="md:col-span-2">
                     <span className={labelClass}>대표 이미지 업로드</span>
                     <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-cyan-300 bg-cyan-50 px-4 py-4 text-sm font-semibold text-cyan-700 dark:border-cyan-500/40 dark:bg-cyan-500/10 dark:text-cyan-200">
                       {uploadingTarget === 'project-cover' ? (
@@ -558,7 +577,7 @@ const AdminDashboard = ({ onExit, startWithNewProject = false }: AdminDashboardP
                         className="hidden"
                         onChange={(event) =>
                           void handleImageUpload(event, 'project-cover', ([url]) => {
-                            if (url) updateProjectDraft('image', url);
+                            if (url) setProjectDraft((current) => ({ ...current, image: url, thumbnailUrl: undefined }));
                           })
                         }
                       />

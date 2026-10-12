@@ -10,6 +10,7 @@ import { fetchPublishedProjects, fetchAdminProjects, fetchProjectCategories, def
 import type { PortfolioProject, ProjectCaseStudy, ProjectCategory, ProjectFilter } from '../types/portfolio';
 import ProgressiveImage from './ProgressiveImage';
 import { useLanguageStore } from '../store/languageStore';
+import { resolveProjectThumbnail } from '../lib/projectThumbnail';
 
 const ProjectEditorModal = lazy(() => import('./admin/ProjectEditorModal'));
 
@@ -622,13 +623,18 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
     ? [...fallbackProjects.filter((item) => !databaseProjects.some((saved) => saved.id === item.id)), ...databaseProjects]
     : fallbackProjects).map((project) => {
       // thumbnailUrl은 운영 DB 스키마를 바꾸지 않는 화면 전용 값입니다.
-      // 관리자에서 기존 프로젝트를 수정해도 번들 썸네일을 다시 연결합니다.
+      // 대표 이미지가 번들 원본과 같을 때만 경량 썸네일을 다시 연결합니다.
       const bundledProject = fallbackProjects.find(
         (item) => item.id === project.id || item.title === project.title,
       );
       const projectWithBundledThumbnail = {
         ...project,
-        thumbnailUrl: project.thumbnailUrl ?? bundledProject?.thumbnailUrl,
+        thumbnailUrl: resolveProjectThumbnail(
+          project.image,
+          project.thumbnailUrl,
+          bundledProject?.image,
+          bundledProject?.thumbnailUrl,
+        ),
       };
       return { ...projectWithBundledThumbnail, thumbnailUrl: getProjectThumbnail(projectWithBundledThumbnail) };
     });

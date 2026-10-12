@@ -10,6 +10,7 @@ const result = await build({
     const noop = () => {};
     const project = { id: 'test', title: '', description: '', shortDesc: '', image: '', category: 'personal', stack: [], overview: '', goal: '', difficulties: [], outputs: ['first.png', 'second.png'], sections: [], caseStudy: {}, isPublished: true };
     export const html = renderToStaticMarkup(React.createElement(ProjectEditor, { project, sortOrder: 1, onClose: noop, onSaved: noop }));
+    export const editHtml = renderToStaticMarkup(React.createElement(ProjectEditor, { project: { id: 'saved', title: 'Saved project', description: '', shortDesc: '', image: 'https://example.com/cover.webp', category: 'personal', stack: [], overview: '', goal: '', difficulties: [], outputs: [] }, sortOrder: 1, onClose: noop, onSaved: noop }));
     export const tags = renderToStaticMarkup(React.createElement(TagInput, { label: '스택', hashtags: true, value: ['React', '#TypeScript'], onChange: noop }));
   ` },
   bundle: true, write: false, format: 'esm', platform: 'node', jsx: 'automatic',
@@ -19,7 +20,7 @@ const result = await build({
     builder.onLoad({ filter: /.*/, namespace: 'mock' }, () => ({ contents: `export const defaultCategories = [{value:'personal',label:'개인 프로젝트'}]; export const fetchProjectCategories = async () => defaultCategories; export const addProjectCategory = async () => {}; export const saveProject = async () => {}; export const uploadPortfolioImage = async () => {};` }));
   } }],
 });
-const { html, tags } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`).catch((error) => { throw new Error(error.message); });
+const { html, editHtml, tags } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`).catch((error) => { throw new Error(error.message); });
 test('editor follows the requested detail-view content order', () => {
   const labels = ['대표 이미지 한 장 선택', '프로젝트 이름', '프로젝트 간단 소개', 'Case Study Summary', '프로젝트 배경과 문제', 'Goal', 'Project Gallery', 'Tech Stack', '중주제 추가하기', '프로젝트 URL'];
   const positions = labels.map((label) => html.indexOf(label));
@@ -31,6 +32,10 @@ test('cover input accepts one file and gallery accepts multiple files', () => {
   assert.equal(inputs.length, 2);
   assert.doesNotMatch(inputs[0], /multiple/);
   assert.match(inputs[1], /multiple/);
+});
+test('an existing project renders its saved cover in the editor preview', () => {
+  assert.match(editHtml, /src="https:\/\/example\.com\/cover\.webp"/);
+  assert.match(editHtml, /alt="대표 이미지 미리보기"/);
 });
 test('empty project URL has no Visit Project preview and hashtag is hidden on tags', () => {
   assert.doesNotMatch(html, /Visit Project/);

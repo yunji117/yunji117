@@ -13,6 +13,8 @@ const blank = (category: string, sortOrder: number): PortfolioProject => ({ id: 
 
 export default function ProjectEditorModal({ project, category = 'personal', sortOrder, onClose, onSaved }: { project?: PortfolioProject; category?: string; sortOrder: number; onClose: () => void; onSaved: (project: PortfolioProject) => void }) {
   const [draft, setDraft] = useState(() => project ? { ...structuredClone(project), outputs: [...new Set([...(project.outputs ?? []), ...(project.detailImages ?? [])])], detailImages: [] } : blank(category, sortOrder));
+  const [coverPreview, setCoverPreview] = useState('');
+  const [coverLoadError, setCoverLoadError] = useState(false);
   const [initial] = useState(() => JSON.stringify(draft));
   const [categories, setCategories] = useState(defaultCategories);
   const [newCategory, setNewCategory] = useState<string | null>(null);
@@ -28,6 +30,12 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
     fetchProjectCategories().then((items) => { if (active) { setCategories(items); setCategoryError(''); } }).catch((reason) => { if (active) setCategoryError(portfolioErrorMessage(reason, '대주제를 불러오지 못했습니다.')); });
     return () => { active = false; };
   }, [categoryAttempt]);
+  useEffect(() => {
+    setCoverLoadError(false);
+  }, [coverPreview, draft.image]);
+  useEffect(() => () => {
+    if (coverPreview.startsWith('blob:')) URL.revokeObjectURL(coverPreview);
+  }, [coverPreview]);
   const update = <K extends keyof PortfolioProject>(key: K, value: PortfolioProject[K]) => setDraft((current) => ({ ...current, [key]: value }));
   const updateCaseStudy = <K extends keyof ProjectCaseStudy>(key: K, value: ProjectCaseStudy[K]) =>
     setDraft((current) => ({ ...current, caseStudy: { ...current.caseStudy, [key]: value } }));
@@ -37,15 +45,16 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
     if (!files.length) return;
     if (cover && files.length !== 1) { setError('대표 이미지는 한 장만 선택해 주세요.'); return; }
     if (files.some((file) => !file.type.startsWith('image/') || file.size > 10 * 1024 * 1024)) { setError('이미지는 한 장당 10MB 이하로 선택해 주세요.'); return; }
+    if (cover) setCoverPreview(URL.createObjectURL(files[0]));
     setBusy(cover ? 'cover' : 'gallery'); setError('');
     try {
       // Apply each successful upload immediately so a later failure cannot lose it.
       for (const file of files) {
         const url = await uploadPortfolioImage(file, cover ? 'project-cover' : 'project-gallery');
-        setDraft((current) => cover ? { ...current, image: url } : { ...current, outputs: [...(current.outputs ?? []), url] });
+        setDraft((current) => cover ? { ...current, image: url, thumbnailUrl: undefined } : { ...current, outputs: [...(current.outputs ?? []), url] });
       }
     } catch (reason) { setError(portfolioErrorMessage(reason, '이미지를 업로드하지 못했습니다.')); }
-    finally { setBusy(''); }
+    finally { if (cover) setCoverPreview(''); setBusy(''); }
   };
   const submit = async (event: FormEvent) => {
     event.preventDefault(); if (busy) return;
@@ -60,6 +69,7 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
     finally { setBusy(''); }
   };
   const isPublished = draft.isPublished ?? true;
+  const coverSource = coverPreview || draft.image;
   const publicationToggle = <button type="button" onClick={() => update('isPublished', !isPublished)} disabled={Boolean(busy)} aria-label={isPublished ? '프로젝트 비공개로 전환' : '프로젝트 공개로 전환'} aria-pressed={isPublished} className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold transition-colors ${isPublished ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300' : 'bg-slate-200 text-slate-600 dark:bg-white/10 dark:text-slate-300'}`}>
     {isPublished ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
     {isPublished ? '공개' : '비공개'}
@@ -69,11 +79,11 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
       <fieldset disabled={Boolean(busy)} className="space-y-8 disabled:opacity-70">
         <div>
           <label className="relative flex min-h-56 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-cyan-300 bg-cyan-50/30">
-            {draft.image ? <img src={draft.image} alt="대표 이미지 미리보기" className="h-64 w-full" style={{ objectFit: draft.thumbnailFit ?? 'cover', objectPosition: draft.thumbnailPosition ?? 'center' }} /> : <><ImagePlus className="mb-3 h-9 w-9 text-cyan-600" /><span>대표 이미지 추가 · 한 장</span></>}
-            {draft.image && <span className="absolute bottom-3 rounded-full bg-black/65 px-4 py-2 text-sm text-white">대표 이미지 교체</span>}
+            {coverSource && !coverLoadError ? <img src={coverSource} onError={() => setCoverLoadError(true)} alt="대표 이미지 미리보기" className="h-64 w-full" style={{ objectFit: draft.thumbnailFit ?? 'cover', objectPosition: draft.thumbnailPosition ?? 'center' }} /> : <><ImagePlus className="mb-3 h-9 w-9 text-cyan-600" /><span>{coverLoadError ? '이미지를 불러오지 못했습니다 · 다시 선택해 주세요' : '대표 이미지 추가 · 한 장'}</span></>}
+            {coverSource && !coverLoadError && <span className="absolute bottom-3 rounded-full bg-black/65 px-4 py-2 text-sm text-white">{coverPreview ? '이미지 업로드 중…' : '대표 이미지 교체'}</span>}
             <input type="file" accept="image/*" aria-label="대표 이미지 한 장 선택" className="sr-only" onChange={(event) => void upload(event, true)} />
           </label>
-          {draft.image && <button type="button" onClick={() => update('image', '')} className="mt-2 text-sm text-gray-500">대표 이미지 삭제</button>}
+          {draft.image && <button type="button" onClick={() => { update('image', ''); update('thumbnailUrl', undefined); }} className="mt-2 text-sm text-gray-500">대표 이미지 삭제</button>}
         </div>
         <label className="block"><span className="sr-only">프로젝트 이름</span><input required aria-label="프로젝트 이름" value={draft.title} onChange={(event) => update('title', event.target.value)} placeholder="프로젝트 이름" className={`${field} text-3xl font-bold sm:text-4xl`} /></label>
         <div>
