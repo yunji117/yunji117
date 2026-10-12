@@ -204,13 +204,12 @@ values (
   ]'::jsonb,
   '디자인과 개발을 연결해 아이디어를 실제 서비스로 완성합니다.',
   '많은 기술을 알고 있다는 것보다, 어떤 기술로 무엇을 만들었는지를 보여드립니다.',
-  'KIM YUNJI Contact',
+  'LET’S WORK TOGETHER',
   '[
     {"label":"Email","value":"yunw0117@gmail.com","url":"mailto:yunw0117@gmail.com"},
-    {"label":"Instagram","value":""},
     {"label":"Github","value":"yunji117","url":"https://github.com/yunji117"}
   ]'::jsonb,
-  'Thank You •͜•'
+  'Thank you for visiting.'
 )
 on conflict (id) do nothing;
 

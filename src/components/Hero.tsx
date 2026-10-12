@@ -7,6 +7,7 @@ import { defaultSiteContent } from '../lib/defaultPortfolio';
 import { fetchPublishedProjects, fetchSiteContent } from '../lib/portfolioApi';
 import type { PortfolioProject } from '../types/portfolio';
 import { fallbackProjects } from './ProjectSection';
+import { getResumeUrl } from '../lib/contactLinks';
 
 type Language = 'en' | 'ko';
 type CareerRole = 'frontend' | 'designer' | 'fullstack';
@@ -314,6 +315,7 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
   const leadEnd = introEnd + selectedCopy.lead.length;
   const highlightEnd = leadEnd + selectedCopy.highlight.length;
   const selectedCareer = careerProfiles[careerRole];
+  const selectedResumeUrl = getResumeUrl(content.contactItems, careerRole) ?? selectedCareer.resumeHref;
   const featuredProjects = useMemo(
     () => selectFeaturedProjects(portfolioProjects, careerRole, selectedCareer.projects),
     [portfolioProjects, careerRole, selectedCareer.projects],
@@ -623,26 +625,17 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
             </div>
 
             <div className="mt-8 flex flex-col gap-3 border-t border-slate-200/80 pt-6 dark:border-white/10 sm:flex-row sm:flex-wrap">
-              {selectedCareer.resumeHref ? (
+              {selectedResumeUrl && (
                 <a
-                  href={selectedCareer.resumeHref}
+                  href={selectedResumeUrl}
                   download
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 px-5 py-3 font-bold text-white transition-colors hover:bg-violet-700"
                 >
                   <Download className="h-4 w-4" />
                   {selectedCareer.resumeLabel}
                 </a>
-              ) : (
-                <button
-                  type="button"
-                  disabled
-                  title="이력서 PDF 등록 예정"
-                  className="inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-gray-200 px-5 py-3 font-bold text-gray-500 dark:bg-white/10 dark:text-gray-400"
-                >
-                  <Download className="h-4 w-4" />
-                  {selectedCareer.resumeLabel}
-                  <span className="text-xs">준비 중</span>
-                </button>
               )}
               <button
                 type="button"

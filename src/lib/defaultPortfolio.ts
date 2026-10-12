@@ -30,13 +30,12 @@ export const defaultSiteContent: SiteContent = {
   ],
   aboutCtaText: '디자인과 개발을 연결해 아이디어를 실제 서비스로 완성합니다.',
   skillsFooter: '많은 기술을 알고 있다는 것보다, 어떤 기술로 무엇을 만들었는지를 보여드립니다.',
-  contactTitle: 'KIM YUNJI Contact',
+  contactTitle: 'LET’S WORK TOGETHER',
   contactItems: [
     { label: 'Email', value: 'yunw0117@gmail.com', url: 'mailto:yunw0117@gmail.com' },
-    { label: 'Instagram', value: '' },
     { label: 'Github', value: 'yunji117', url: 'https://github.com/yunji117' },
   ],
-  thankYouText: 'Thank You •͜•',
+  thankYouText: 'Thank you for visiting.',
 };
 
 export const defaultSkillGroups: SkillGroup[] = [
