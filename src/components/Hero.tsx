@@ -499,8 +499,9 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, ease: 'easeOut' }}
-            className="mt-2 rounded-3xl border border-violet-200/70 bg-white/75 p-5 shadow-xl shadow-violet-200/20 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/55 dark:shadow-none sm:p-8 lg:col-span-2 lg:mt-10 lg:p-10"
+            className="relative mt-3 overflow-hidden rounded-3xl border border-violet-200/90 bg-white/90 p-5 shadow-[0_24px_70px_rgba(124,58,237,0.13)] ring-1 ring-white/80 backdrop-blur-2xl dark:border-violet-300/20 dark:bg-white/[0.08] dark:ring-white/10 sm:p-8 lg:col-span-2 lg:mt-6 lg:p-10"
           >
+            <div aria-hidden="true" className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-violet-400/80 to-transparent" />
             <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
               <div>
                 <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-violet-600 dark:text-violet-300">
