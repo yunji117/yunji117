@@ -36,6 +36,8 @@ test('cover input accepts one file and gallery accepts multiple files', () => {
 test('an existing project renders its saved cover in the editor preview', () => {
   assert.match(editHtml, /src="https:\/\/example\.com\/cover\.webp"/);
   assert.match(editHtml, /alt="대표 이미지 미리보기"/);
+  assert.match(editHtml, /대표 이미지 교체/);
+  assert.match(editHtml, />대표 이미지 위치 조정<\/button>/);
 });
 test('empty project URL has no Visit Project preview and hashtag is hidden on tags', () => {
   assert.doesNotMatch(html, /Visit Project/);
