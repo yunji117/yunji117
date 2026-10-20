@@ -1001,6 +1001,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
           category={activeCategory === 'all' ? 'personal' : activeCategory}
           sortOrder={Math.max(0, ...visibleProjects.map((item) => item.sortOrder ?? (Number(item.id) || 0))) + 1}
           onClose={() => setEditor(null)}
+          onPersisted={(project) => setDatabaseProjects((items) => [...(items ?? []).filter((item) => item.id !== project.id), project])}
           onSaved={(project) => { setDatabaseProjects((items) => [...(items ?? []).filter((item) => item.id !== project.id), project]); setEditor(null); setReload((value) => value + 1); }}
         />}
       </Suspense>

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { BarChart3, Eye, EyeOff, ExternalLink, Image as ImageIcon, ImagePlus, Loader2, Move, Plus, Trash2 } from 'lucide-react';
 import type { PortfolioProject, ProjectCaseStudy } from '../../types/portfolio';
 import { addProjectCategory, defaultCategories, fetchProjectCategories, saveProject, uploadPortfolioImage } from '../../lib/portfolioApi';
@@ -31,12 +31,12 @@ const coverPositionFrom = (project: PortfolioProject): CoverCropValue => ({
   scale: Math.min(3, Math.max(1, project.thumbnailScale ?? 1)),
 });
 
-export default function ProjectEditorModal({ project, category = 'personal', sortOrder, onClose, onSaved }: { project?: PortfolioProject; category?: string; sortOrder: number; onClose: () => void; onSaved: (project: PortfolioProject) => void }) {
+export default function ProjectEditorModal({ project, category = 'personal', sortOrder, onClose, onSaved, onPersisted }: { project?: PortfolioProject; category?: string; sortOrder: number; onClose: () => void; onSaved: (project: PortfolioProject) => void; onPersisted?: (project: PortfolioProject) => void }) {
   const [draft, setDraft] = useState(() => project ? { ...structuredClone(project), outputs: [...new Set([...(project.outputs ?? []), ...(project.detailImages ?? [])])], detailImages: [] } : blank(category, sortOrder));
   const [coverPreview, setCoverPreview] = useState('');
   const [coverLoadError, setCoverLoadError] = useState(false);
   const [coverPosition, setCoverPosition] = useState<CoverCropValue | null>(null);
-  const [initial] = useState(() => JSON.stringify(draft));
+  const initial = useRef(JSON.stringify(draft));
   const [categories, setCategories] = useState(defaultCategories);
   const [newCategory, setNewCategory] = useState<string | null>(null);
   const [selectedGalleryIndex, setSelectedGalleryIndex] = useState<number | null>(null);
@@ -60,7 +60,7 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
   const update = <K extends keyof PortfolioProject>(key: K, value: PortfolioProject[K]) => setDraft((current) => ({ ...current, [key]: value }));
   const updateCaseStudy = <K extends keyof ProjectCaseStudy>(key: K, value: ProjectCaseStudy[K]) =>
     setDraft((current) => ({ ...current, caseStudy: { ...current.caseStudy, [key]: value } }));
-  const close = () => { if (!busy && (initial === JSON.stringify(draft) || window.confirm('작성 중인 내용을 저장하지 않고 닫을까요?'))) onClose(); };
+  const close = () => { if (!busy && (initial.current === JSON.stringify(draft) || window.confirm('작성 중인 내용을 저장하지 않고 닫을까요?'))) onClose(); };
   const upload = async (event: ChangeEvent<HTMLInputElement>, cover: boolean) => {
     const files = Array.from(event.target.files ?? []); event.target.value = '';
     if (!files.length) return;
@@ -95,6 +95,25 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
     catch (reason) { setError(portfolioErrorMessage(reason, '프로젝트를 저장하지 못했습니다.')); }
     finally { setBusy(''); }
   };
+  const saveCoverPosition = async (value: CoverCropValue) => {
+    if (!draft.title.trim()) { setError('대표 이미지를 바로 저장하려면 프로젝트 이름을 먼저 입력해 주세요.'); return; }
+    const next: PortfolioProject = {
+      ...draft,
+      title: draft.title.trim(),
+      thumbnailFit: 'cover',
+      thumbnailPosition: `${value.x}% ${value.y}%`,
+      thumbnailScale: value.scale,
+    };
+    setBusy('cover-save'); setError('');
+    try {
+      await saveProject(next);
+      setDraft(next);
+      initial.current = JSON.stringify(next);
+      onPersisted?.(next);
+      setCoverPosition(null);
+    } catch (reason) { setError(portfolioErrorMessage(reason, '대표 이미지 수정을 저장하지 못했습니다.')); }
+    finally { setBusy(''); }
+  };
   const isPublished = draft.isPublished ?? true;
   const visualType = draft.visualType ?? 'image';
   const coverSource = coverPreview || draft.image;
@@ -124,10 +143,7 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
               {coverSource && !coverLoadError && <button type="button" onClick={() => setCoverPosition(coverPositionFrom(draft))} className="inline-flex items-center gap-2 rounded-full bg-black/70 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-black/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"><Move className="h-4 w-4" />대표 이미지 위치 조정</button>}
             </div>
           </div>
-          {coverPosition && coverSource && <CoverImageCropper src={coverSource} initial={coverPosition} onCancel={() => setCoverPosition(null)} onSave={(value) => {
-            setDraft((current) => ({ ...current, thumbnailFit: 'cover', thumbnailPosition: `${value.x}% ${value.y}%`, thumbnailScale: value.scale }));
-            setCoverPosition(null);
-          }} />}
+          {coverPosition && coverSource && <CoverImageCropper src={coverSource} initial={coverPosition} saving={busy === 'cover-save'} onCancel={() => setCoverPosition(null)} onSave={saveCoverPosition} />}
           {draft.image && <button type="button" onClick={() => { update('image', ''); update('thumbnailUrl', undefined); setCoverPosition(null); }} className="text-sm text-gray-500">대표 이미지 삭제</button>}
         </div> : <section className="space-y-5 rounded-2xl border border-cyan-200 bg-cyan-50/40 p-4 dark:border-cyan-400/20 dark:bg-cyan-500/5 sm:p-5">
           <div className="flex items-center justify-between gap-3"><div><h3 className="font-bold">그래프 미리보기</h3><p className="mt-1 text-sm text-gray-500">입력한 순서대로 값이 하나의 선으로 연결됩니다.</p></div><button type="button" onClick={() => update('chartPoints', [...(draft.chartPoints ?? []), { name: '', value: 0 }])} className="inline-flex shrink-0 items-center gap-1 rounded-xl bg-cyan-500 px-4 py-2 text-sm font-semibold text-white"><Plus className="h-4 w-4" />이름 추가</button></div>
@@ -253,7 +269,7 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
       </fieldset>
       <footer className="sticky bottom-0 space-y-3 border-t border-slate-200 bg-[#fffdf8]/95 py-4 dark:border-white/10 dark:bg-slate-900/95">
         {error && <p role="alert" className="text-sm text-red-500">{error}</p>}
-        {busy && <p role="status" className="flex items-center gap-2 text-sm"><Loader2 className="h-4 w-4 animate-spin" />{busy === 'save' ? '프로젝트 저장 중…' : '업로드 및 저장 중…'}</p>}
+        {busy && <p role="status" className="flex items-center gap-2 text-sm"><Loader2 className="h-4 w-4 animate-spin" />{busy === 'save' ? '프로젝트 저장 중…' : busy === 'cover-save' ? '대표 이미지 수정 저장 중…' : '업로드 및 저장 중…'}</p>}
         <div className="flex justify-end gap-3"><button type="button" onClick={close} disabled={Boolean(busy)} className="rounded-lg border px-5 py-3 disabled:opacity-50">취소</button><button type="submit" disabled={Boolean(busy) || Boolean(categoryError)} className="rounded-lg bg-cyan-500 px-5 py-3 font-semibold text-white disabled:opacity-50">{project ? '수정 저장' : '프로젝트 등록'}</button></div>
       </footer>
     </form>

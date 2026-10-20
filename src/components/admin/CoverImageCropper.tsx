@@ -11,13 +11,15 @@ const distance = (points: { x: number; y: number }[]) => Math.hypot(points[0].x 
 export default function CoverImageCropper({
   src,
   initial,
+  saving = false,
   onCancel,
   onSave,
 }: {
   src: string;
   initial: CoverCropValue;
+  saving?: boolean;
   onCancel: () => void;
-  onSave: (value: CoverCropValue) => void;
+  onSave: (value: CoverCropValue) => void | Promise<void>;
 }) {
   const [crop, setCrop] = useState(initial);
   const [dragging, setDragging] = useState(false);
@@ -109,8 +111,8 @@ export default function CoverImageCropper({
       </label>
 
       <div className="grid gap-2 sm:grid-cols-[auto_1fr]">
-        <button type="button" onClick={onCancel} className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm dark:border-white/15 dark:bg-white/5">취소</button>
-        <button type="button" onClick={() => onSave(crop)} className="rounded-xl bg-cyan-500 px-5 py-3 font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:bg-cyan-600">대표 이미지 수정 저장</button>
+        <button type="button" disabled={saving} onClick={onCancel} className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm disabled:opacity-50 dark:border-white/15 dark:bg-white/5">취소</button>
+        <button type="button" disabled={saving} onClick={() => void onSave(crop)} className="rounded-xl bg-cyan-500 px-5 py-3 font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:bg-cyan-600 disabled:cursor-wait disabled:opacity-60">{saving ? '대표 이미지 저장 중…' : '대표 이미지 수정 저장'}</button>
       </div>
     </section>
   );
