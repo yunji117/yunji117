@@ -11,7 +11,7 @@ import type { PortfolioProject, ProjectCaseStudy, ProjectCategory, ProjectFilter
 import ProgressiveImage from './ProgressiveImage';
 import { useLanguageStore } from '../store/languageStore';
 import { mergePortfolioProjects } from '../lib/projectCollection';
-import { moveImageViewer } from '../lib/imageViewer';
+import { getImageSwipeAction, moveImageViewer } from '../lib/imageViewer';
 
 const ProjectEditorModal = lazy(() => import('./admin/ProjectEditorModal'));
 
@@ -516,6 +516,8 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
   const [viewerMessage, setViewerMessage] = useState('');
   const [activeCategory, setActiveCategory] = useState<ProjectFilter>('all');
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const viewerTouchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const viewerSwipeHandledUntilRef = useRef(0);
   const modalRef = useRef<HTMLDivElement>(null);
   const modalCloseRef = useRef<HTMLButtonElement>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
@@ -761,17 +763,30 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
     if (!touchStartRef.current) return;
 
     const touch = event.changedTouches[0];
-    const deltaX = touch.clientX - touchStartRef.current.x;
-    const deltaY = touch.clientY - touchStartRef.current.y;
-    const startedNearLeftEdge = touchStartRef.current.x <= 80;
-    const isRightSwipe = deltaX > 90;
-    const isMostlyHorizontal = Math.abs(deltaX) > Math.abs(deltaY) * 1.5;
+    const action = getImageSwipeAction(touchStartRef.current, { x: touch.clientX, y: touch.clientY }, window.innerWidth);
 
     touchStartRef.current = null;
 
-    if (startedNearLeftEdge && isRightSwipe && isMostlyHorizontal) {
+    if (action === 'exit') closeProjectDetails();
+  };
+
+  const handleViewerTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (event.touches.length !== 1) { viewerTouchStartRef.current = null; return; }
+    const touch = event.changedTouches[0];
+    viewerTouchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleViewerTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!viewerTouchStartRef.current) return;
+    const touch = event.changedTouches[0];
+    const action = getImageSwipeAction(viewerTouchStartRef.current, { x: touch.clientX, y: touch.clientY }, window.innerWidth);
+    viewerTouchStartRef.current = null;
+    if (action) viewerSwipeHandledUntilRef.current = Date.now() + 500;
+    if (action === 'exit') {
+      setSelectedImage(null);
       closeProjectDetails();
-    }
+    } else if (action === 'previous') moveViewer(-1);
+    else if (action === 'next') moveViewer(1);
   };
 
   const selectedCaseStudy = selectedProject ? getCaseStudy(selectedProject) : undefined;
@@ -1297,7 +1312,11 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6"
-            onClick={() => setSelectedImage(null)}
+            style={{ touchAction: 'pan-y' }}
+            onTouchStart={handleViewerTouchStart}
+            onTouchEnd={handleViewerTouchEnd}
+            onTouchCancel={() => { viewerTouchStartRef.current = null; }}
+            onClick={() => { if (Date.now() >= viewerSwipeHandledUntilRef.current) setSelectedImage(null); }}
           >
             <button
               type="button"
