@@ -106,6 +106,7 @@ interface ProjectRow {
   image_url: string | null;
   thumbnail_fit: string | null;
   thumbnail_position: string | null;
+  thumbnail_scale: number | null;
   category: string | null;
   stack: string[] | null;
   overview: string | null;
@@ -160,6 +161,7 @@ const rowToProject = (row: ProjectRow): PortfolioProject => ({
   image: decodeProjectImage(row.image_url ?? ''),
   thumbnailFit: toThumbnailFit(row.thumbnail_fit),
   thumbnailPosition: row.thumbnail_position ?? undefined,
+  thumbnailScale: typeof row.thumbnail_scale === 'number' ? Math.min(3, Math.max(1, row.thumbnail_scale)) : 1,
   category: toProjectCategory(row.category),
   stack: row.stack ?? [],
   overview: row.overview ?? '',
@@ -186,6 +188,7 @@ const projectToRow = (project: PortfolioProject) => ({
   image_url: encodeProjectImage(project.image),
   thumbnail_fit: project.thumbnailFit ?? 'cover',
   thumbnail_position: project.thumbnailPosition ?? 'center',
+  thumbnail_scale: Math.min(3, Math.max(1, project.thumbnailScale ?? 1)),
   category: project.category,
   stack: project.stack,
   overview: project.overview,

@@ -72,6 +72,7 @@ const makeBlankProject = (): PortfolioProject => ({
   image: '',
   thumbnailFit: 'cover',
   thumbnailPosition: 'center',
+  thumbnailScale: 1,
   category: 'personal',
   stack: [],
   overview: '',
@@ -558,7 +559,7 @@ const AdminDashboard = ({ onExit, startWithNewProject = false }: AdminDashboardP
                         alt="대표 이미지 미리보기"
                         onError={() => setProjectImageError(true)}
                         className="h-64 w-full rounded-xl bg-slate-100"
-                        style={{ objectFit: projectDraft.thumbnailFit ?? 'cover', objectPosition: projectDraft.thumbnailPosition ?? 'center' }}
+                        style={{ objectFit: projectDraft.thumbnailFit ?? 'cover', objectPosition: projectDraft.thumbnailPosition ?? 'center', transform: `scale(${projectDraft.thumbnailScale ?? 1})`, transformOrigin: 'center' }}
                       />
                     ) : (
                       <div className="flex h-40 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 text-center text-sm text-gray-500 dark:border-white/20 dark:bg-white/5 dark:text-gray-400">

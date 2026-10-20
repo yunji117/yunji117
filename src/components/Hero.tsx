@@ -658,6 +658,8 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
                               style={{
                                 objectFit: project.thumbnailFit ?? 'cover',
                                 objectPosition: project.thumbnailPosition ?? 'center',
+                                transform: `scale(${project.thumbnailScale ?? 1})`,
+                                transformOrigin: 'center',
                               }}
                             />
                           )}

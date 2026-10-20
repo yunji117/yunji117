@@ -6,12 +6,14 @@ const result = await build({
     import React from 'react';
     import { renderToStaticMarkup } from 'react-dom/server';
     import ProjectEditor from './src/components/admin/ProjectEditorModal';
+    import CoverImageCropper from './src/components/admin/CoverImageCropper';
     import TagInput from './src/components/admin/TagInput';
     const noop = () => {};
     const project = { id: 'test', title: '', description: '', shortDesc: '', image: '', category: 'personal', stack: [], overview: '', goal: '', difficulties: [], outputs: ['first.png', 'second.png'], sections: [], caseStudy: {}, isPublished: true };
     export const html = renderToStaticMarkup(React.createElement(ProjectEditor, { project, sortOrder: 1, onClose: noop, onSaved: noop }));
     export const editHtml = renderToStaticMarkup(React.createElement(ProjectEditor, { project: { id: 'saved', title: 'Saved project', description: '', shortDesc: '', image: 'https://example.com/cover.webp', category: 'personal', stack: [], overview: '', goal: '', difficulties: [], outputs: [] }, sortOrder: 1, onClose: noop, onSaved: noop }));
     export const tags = renderToStaticMarkup(React.createElement(TagInput, { label: '스택', hashtags: true, value: ['React', '#TypeScript'], onChange: noop }));
+    export const cropper = renderToStaticMarkup(React.createElement(CoverImageCropper, { src: 'cover.webp', initial: { x: 50, y: 50, scale: 1 }, onCancel: noop, onSave: noop }));
   ` },
   bundle: true, write: false, format: 'esm', platform: 'node', jsx: 'automatic',
   banner: { js: "import { createRequire } from 'node:module'; const require = createRequire(process.cwd() + '/package.json');" },
@@ -20,7 +22,7 @@ const result = await build({
     builder.onLoad({ filter: /.*/, namespace: 'mock' }, () => ({ contents: `export const defaultCategories = [{value:'personal',label:'개인 프로젝트'}]; export const fetchProjectCategories = async () => defaultCategories; export const addProjectCategory = async () => {}; export const saveProject = async () => {}; export const uploadPortfolioImage = async () => {};` }));
   } }],
 });
-const { html, editHtml, tags } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`).catch((error) => { throw new Error(error.message); });
+const { html, editHtml, tags, cropper } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`).catch((error) => { throw new Error(error.message); });
 test('editor follows the requested detail-view content order', () => {
   const labels = ['대표 이미지 한 장 선택', '프로젝트 이름', '프로젝트 간단 소개', 'Case Study Summary', '프로젝트 배경과 문제', 'Goal', 'Project Gallery', 'Tech Stack', '중주제 추가하기', '프로젝트 URL'];
   const positions = labels.map((label) => html.indexOf(label));
@@ -54,4 +56,11 @@ test('project gallery images can be selected and dragged to reorder', () => {
   assert.match(html, /aria-label="프로젝트 이미지 1 선택"/);
   assert.match(html, /draggable="true"/);
   assert.match(html, /이미지를 클릭해 선택한 뒤, 원하는 위치로 드래그해 놓으세요/);
+});
+test('cover cropper explains direct gestures and exposes an explicit save action', () => {
+  assert.match(cropper, /대표 이미지 드래그 및 확대·축소 영역/);
+  assert.match(cropper, /Ctrl \+ 마우스 휠/);
+  assert.match(cropper, /두 손가락 벌리기·모으기/);
+  assert.match(cropper, /대표 이미지 수정 저장/);
+  assert.match(cropper, /type="range"/);
 });

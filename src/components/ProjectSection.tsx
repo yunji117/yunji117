@@ -902,6 +902,8 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                         style={{
                           objectFit: project.thumbnailFit ?? 'cover',
                           objectPosition: project.thumbnailPosition ?? 'center',
+                          transform: `scale(${project.thumbnailScale ?? 1})`,
+                          transformOrigin: 'center',
                         }}
                       />
                     )}
@@ -1023,20 +1025,23 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
               {/* 모달 헤더 */}
               <div className="mb-8">
                 {selectedProject.image && (
-                  <img
-                    src={selectedProject.image}
-                    alt={selectedProject.title}
-                    width={1600}
-                    height={1000}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-64 object-cover rounded-xl mb-6 cursor-zoom-in"
-                    style={{
-                      objectFit: selectedProject.thumbnailFit ?? 'cover',
-                      objectPosition: selectedProject.thumbnailPosition ?? 'center',
-                    }}
-                    onClick={() => openImageViewer(selectedProject.image)}
-                  />
+                  <button type="button" aria-label={`${selectedProject.title} 대표 이미지 확대 보기`} className="mb-6 block h-64 w-full overflow-hidden rounded-xl" onClick={() => openImageViewer(selectedProject.image)}>
+                    <img
+                      src={selectedProject.image}
+                      alt={selectedProject.title}
+                      width={1600}
+                      height={1000}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full cursor-zoom-in object-cover"
+                      style={{
+                        objectFit: selectedProject.thumbnailFit ?? 'cover',
+                        objectPosition: selectedProject.thumbnailPosition ?? 'center',
+                        transform: `scale(${selectedProject.thumbnailScale ?? 1})`,
+                        transformOrigin: 'center',
+                      }}
+                    />
+                  </button>
                 )}
                 <div className="flex flex-col items-start gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
                   <h2 id="project-modal-title" className="text-4xl font-bold text-gray-900 dark:text-white">

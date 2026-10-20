@@ -35,6 +35,7 @@ export interface PortfolioProject {
   thumbnailUrl?: string;
   thumbnailFit?: ThumbnailFit;
   thumbnailPosition?: string;
+  thumbnailScale?: number;
   category: ProjectCategory;
   stack: string[];
   overview: string;

@@ -30,6 +30,7 @@ create table if not exists public.projects (
   image_url text not null default '',
   thumbnail_fit text not null default 'cover' check (thumbnail_fit in ('cover', 'contain')),
   thumbnail_position text not null default 'center',
+  thumbnail_scale numeric not null default 1 check (thumbnail_scale between 1 and 3),
   category text not null default 'personal' check (category in ('personal', 'team', 'design')),
   stack text[] not null default '{}',
   overview text not null default '',
