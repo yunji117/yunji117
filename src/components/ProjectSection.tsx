@@ -2,15 +2,16 @@ import EditButton from './admin/EditButton';
 import { useProjectDrag } from './admin/useProjectDrag';
 import { sortProjects, moveProject } from '../lib/projectOrder';
 import { portfolioErrorMessage } from '../lib/portfolioErrors';
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { X, ExternalLink, Github, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
+import { X, ExternalLink, Github, GripVertical, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 import { fetchPublishedProjects, fetchAdminProjects, fetchProjectCategories, defaultCategories, fetchProjectOrder, saveProjectOrder } from '../lib/portfolioApi';
 import type { PortfolioProject, ProjectCaseStudy, ProjectCategory, ProjectFilter } from '../types/portfolio';
 import ProgressiveImage from './ProgressiveImage';
 import { useLanguageStore } from '../store/languageStore';
 import { mergePortfolioProjects } from '../lib/projectCollection';
+import { moveImageViewer } from '../lib/imageViewer';
 
 const ProjectEditorModal = lazy(() => import('./admin/ProjectEditorModal'));
 
@@ -511,12 +512,15 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
   const [databaseProjects, setDatabaseProjects] = useState<PortfolioProject[] | null>(null);
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [viewerImages, setViewerImages] = useState<string[]>([]);
+  const [viewerMessage, setViewerMessage] = useState('');
   const [activeCategory, setActiveCategory] = useState<ProjectFilter>('all');
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const modalCloseRef = useRef<HTMLButtonElement>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
   const projectTriggerRefs = useRef(new Map<string, HTMLButtonElement>());
+  const viewerMessageTimerRef = useRef<number | null>(null);
   const { ref, inView } = useInView({
     // On mobile the single-column project list is much taller than the viewport.
     // A percentage threshold can therefore be impossible to reach and leave the
@@ -539,6 +543,32 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
       body.style.overflow = previousOverflow;
     };
   }, [selectedProject, selectedImage]);
+
+  const showViewerMessage = useCallback((message: string) => {
+    if (viewerMessageTimerRef.current !== null) window.clearTimeout(viewerMessageTimerRef.current);
+    setViewerMessage(message);
+    viewerMessageTimerRef.current = window.setTimeout(() => {
+      setViewerMessage('');
+      viewerMessageTimerRef.current = null;
+    }, 1400);
+  }, []);
+
+  const moveViewer = useCallback((direction: -1 | 1) => {
+    if (!selectedImage) return;
+    const result = moveImageViewer(viewerImages.length ? viewerImages : [selectedImage], selectedImage, direction);
+    if (result.boundary) {
+      showViewerMessage(result.boundary === 'first'
+        ? (language === 'ko' ? '맨 처음 이미지입니다.' : 'This is the first image.')
+        : (language === 'ko' ? '마지막 이미지입니다.' : 'This is the last image.'));
+      return;
+    }
+    setViewerMessage('');
+    setSelectedImage(result.image);
+  }, [language, selectedImage, showViewerMessage, viewerImages]);
+
+  useEffect(() => () => {
+    if (viewerMessageTimerRef.current !== null) window.clearTimeout(viewerMessageTimerRef.current);
+  }, []);
 
   useEffect(() => {
     const openProject = (event: Event) => {
@@ -568,6 +598,11 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
         }
         return;
       }
+      if (selectedImage && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+        event.preventDefault();
+        moveViewer(event.key === 'ArrowLeft' ? -1 : 1);
+        return;
+      }
       if (event.key !== 'Tab' || !modalRef.current || selectedImage) return;
       const focusable = Array.from(modalRef.current.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'));
       if (!focusable.length) { event.preventDefault(); modalRef.current.focus(); return; }
@@ -579,7 +614,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [selectedProject, selectedImage]);
+  }, [moveViewer, selectedProject, selectedImage]);
 
   useEffect(() => {
     let isMounted = true;
@@ -650,7 +685,9 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
     return categoryMeta[category].label;
   };
 
-  const openImageViewer = (image: string) => {
+  const openImageViewer = (image: string, images: string[] = [image]) => {
+    setViewerImages(images.length ? images : [image]);
+    setViewerMessage('');
     setSelectedImage(image);
   };
 
@@ -756,6 +793,9 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
         challenge: selectedProject.difficulties[index * 2],
         solution: selectedProject.difficulties[index * 2 + 1],
       }))
+    : [];
+  const projectGalleryImages = selectedProject
+    ? [...new Set([...(selectedProject.outputs ?? []), ...(selectedProject.detailImages ?? [])])]
     : [];
 
   return (
@@ -1149,7 +1189,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                         {selectedProject.outputs.map((img, idx) => {
                           const isLongPage = isFullPageImage(selectedProject, img);
                           return (
-                            <button key={img} type="button" className={`overflow-hidden rounded-lg bg-gray-100 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:bg-gray-800 dark:hover:shadow-cyan-500/30 ${isLongPage ? 'col-span-2 md:col-span-1' : ''}`} onClick={() => openImageViewer(img)}>
+                            <button key={img} type="button" className={`overflow-hidden rounded-lg bg-gray-100 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:bg-gray-800 dark:hover:shadow-cyan-500/30 ${isLongPage ? 'col-span-2 md:col-span-1' : ''}`} onClick={() => openImageViewer(img, projectGalleryImages)}>
                               <img src={img} alt={`${selectedProject.title} 화면 ${idx + 1}`} width={800} height={500} loading="lazy" decoding="async" className={`w-full ${isLongPage ? 'h-48 object-cover object-top' : 'h-48 object-contain p-2'}`} style={isLongPage ? { objectPosition: selectedProject.thumbnailPosition ?? 'top center' } : undefined} />
                             </button>
                           );
@@ -1161,7 +1201,7 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                         {selectedProject.detailImages.map((img, idx) => {
                           const isLongPage = isFullPageImage(selectedProject, img);
                           return (
-                            <button key={img} type="button" className="overflow-hidden rounded-lg bg-gray-100 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:bg-gray-800 dark:hover:shadow-cyan-500/30" onClick={() => openImageViewer(img)}>
+                            <button key={img} type="button" className="overflow-hidden rounded-lg bg-gray-100 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:bg-gray-800 dark:hover:shadow-cyan-500/30" onClick={() => openImageViewer(img, projectGalleryImages)}>
                               <img src={img} alt={`${selectedProject.title} 상세 화면 ${idx + 1}`} width={800} height={500} loading="lazy" decoding="async" className={`w-full ${isLongPage ? 'h-72 object-cover object-top' : 'h-56 object-contain p-2'}`} style={isLongPage ? { objectPosition: selectedProject.thumbnailPosition ?? 'top center' } : undefined} />
                             </button>
                           );
@@ -1254,6 +1294,22 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
             className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6"
             onClick={() => setSelectedImage(null)}
           >
+            <button
+              type="button"
+              aria-label={language === 'ko' ? '이전 이미지' : 'Previous image'}
+              className="fixed left-3 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-xl transition hover:scale-105 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 sm:left-6 sm:h-14 sm:w-14"
+              onClick={(event) => { event.stopPropagation(); moveViewer(-1); }}
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </button>
+            <button
+              type="button"
+              aria-label={language === 'ko' ? '다음 이미지' : 'Next image'}
+              className="fixed right-3 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-xl transition hover:scale-105 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 sm:right-6 sm:h-14 sm:w-14"
+              onClick={(event) => { event.stopPropagation(); moveViewer(1); }}
+            >
+              <ArrowRight className="h-6 w-6" />
+            </button>
             <motion.div
               role="dialog"
               aria-modal="true"
@@ -1281,6 +1337,20 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                 className="mx-auto h-auto w-full rounded-xl bg-gray-900 object-contain"
               />
             </motion.div>
+            <AnimatePresence>
+              {viewerMessage && (
+                <motion.p
+                  role="status"
+                  aria-live="polite"
+                  initial={{ opacity: 0, scale: 0.95, x: '-50%', y: '-50%' }}
+                  animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
+                  exit={{ opacity: 0, scale: 0.95, x: '-50%', y: '-50%' }}
+                  className="pointer-events-none fixed left-1/2 top-1/2 z-30 whitespace-nowrap rounded-full bg-black/80 px-5 py-3 text-sm font-semibold text-white shadow-2xl sm:text-base"
+                >
+                  {viewerMessage}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
