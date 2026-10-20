@@ -12,6 +12,7 @@ const result = await build({
     const project = { id: 'test', title: '', description: '', shortDesc: '', image: '', category: 'personal', stack: [], overview: '', goal: '', difficulties: [], outputs: ['first.png', 'second.png'], sections: [], caseStudy: {}, isPublished: true };
     export const html = renderToStaticMarkup(React.createElement(ProjectEditor, { project, sortOrder: 1, onClose: noop, onSaved: noop }));
     export const editHtml = renderToStaticMarkup(React.createElement(ProjectEditor, { project: { id: 'saved', title: 'Saved project', description: '', shortDesc: '', image: 'https://example.com/cover.webp', category: 'personal', stack: [], overview: '', goal: '', difficulties: [], outputs: [] }, sortOrder: 1, onClose: noop, onSaved: noop }));
+    export const chartHtml = renderToStaticMarkup(React.createElement(ProjectEditor, { project: { id: 'chart', title: 'Chart project', description: '', shortDesc: '', image: '', visualType: 'chart', chartPoints: [{ name: '기획', value: 20 }, { name: '완성', value: 90 }], category: 'personal', stack: [], overview: '', goal: '', difficulties: [], outputs: [] }, sortOrder: 1, onClose: noop, onSaved: noop }));
     export const tags = renderToStaticMarkup(React.createElement(TagInput, { label: '스택', hashtags: true, value: ['React', '#TypeScript'], onChange: noop }));
     export const cropper = renderToStaticMarkup(React.createElement(CoverImageCropper, { src: 'cover.webp', initial: { x: 50, y: 50, scale: 1 }, onCancel: noop, onSave: noop }));
   ` },
@@ -22,7 +23,7 @@ const result = await build({
     builder.onLoad({ filter: /.*/, namespace: 'mock' }, () => ({ contents: `export const defaultCategories = [{value:'personal',label:'개인 프로젝트'}]; export const fetchProjectCategories = async () => defaultCategories; export const addProjectCategory = async () => {}; export const saveProject = async () => {}; export const uploadPortfolioImage = async () => {};` }));
   } }],
 });
-const { html, editHtml, tags, cropper } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`).catch((error) => { throw new Error(error.message); });
+const { html, editHtml, chartHtml, tags, cropper } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`).catch((error) => { throw new Error(error.message); });
 test('editor follows the requested detail-view content order', () => {
   const labels = ['대표 이미지 한 장 선택', '프로젝트 이름', '프로젝트 간단 소개', 'Case Study Summary', '프로젝트 배경과 문제', 'Goal', 'Project Gallery', 'Tech Stack', '중주제 추가하기', '프로젝트 URL'];
   const positions = labels.map((label) => html.indexOf(label));
@@ -63,4 +64,13 @@ test('cover cropper explains direct gestures and exposes an explicit save action
   assert.match(cropper, /두 손가락 벌리기·모으기/);
   assert.match(cropper, /대표 이미지 수정 저장/);
   assert.match(cropper, /type="range"/);
+});
+test('editor offers image and chart representative-content options', () => {
+  assert.match(html, /대표 이미지 등록/);
+  assert.match(html, /그래프 등록/);
+  assert.match(chartHtml, /그래프 미리보기/);
+  assert.match(chartHtml, /이름 추가/);
+  assert.match(chartHtml, /그래프 항목 1 이름/);
+  assert.match(chartHtml, />기획</);
+  assert.match(chartHtml, />완성</);
 });

@@ -9,6 +9,7 @@ import type { PortfolioProject } from '../types/portfolio';
 import { fallbackProjects, getProjectCardText, getProjectThumbnail } from './ProjectSection';
 import { getResumeUrl } from '../lib/contactLinks';
 import ProgressiveImage from './ProgressiveImage';
+import ProjectLineChart from './ProjectLineChart';
 import { useLanguageStore, type Language } from '../store/languageStore';
 
 type CareerRole = 'frontend' | 'designer' | 'fullstack';
@@ -645,7 +646,9 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
                         aria-label={`${projectCopy.title} ${language === 'ko' ? '상세 내용 보기' : 'view details'}`}
                       >
                         <div className="relative aspect-[8/5] w-full shrink-0 overflow-hidden bg-gradient-to-br from-blue-500/10 to-violet-500/15">
-                          {project.image && (
+                          {project.visualType === 'chart' && (project.chartPoints?.length ?? 0) > 0 ? (
+                            <ProjectLineChart points={project.chartPoints ?? []} className="rounded-none" />
+                          ) : project.image && (
                             <ProgressiveImage
                               src={getProjectThumbnail(project)}
                               alt={`${projectCopy.title} ${language === 'ko' ? '프로젝트 대표 화면' : 'project cover'}`}

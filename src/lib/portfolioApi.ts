@@ -6,6 +6,7 @@ import type {
   ProjectSectionContent,
   ContactItem,
   PortfolioProject,
+  ProjectChartPoint,
   ProjectCategory,
   ProjectLink,
   ProjectCaseStudy,
@@ -33,6 +34,17 @@ const asProjectLinks = (value: unknown): ProjectLink[] => {
 
 const asStringList = (value: unknown) =>
   Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string' && Boolean(item.trim())) : [];
+
+const asProjectChartPoints = (value: unknown): ProjectChartPoint[] => {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    if (!item || typeof item !== 'object') return [];
+    const point = item as Record<string, unknown>;
+    const numericValue = typeof point.value === 'number' ? point.value : Number(point.value);
+    if (typeof point.name !== 'string' || !point.name.trim() || !Number.isFinite(numericValue)) return [];
+    return [{ name: point.name.trim(), value: numericValue }];
+  });
+};
 
 const asProjectCaseStudy = (value: unknown): ProjectCaseStudy | undefined => {
   if (!value || typeof value !== 'object') return undefined;
@@ -107,6 +119,8 @@ interface ProjectRow {
   thumbnail_fit: string | null;
   thumbnail_position: string | null;
   thumbnail_scale: number | null;
+  visual_type: string | null;
+  chart_points: unknown;
   category: string | null;
   stack: string[] | null;
   overview: string | null;
@@ -162,6 +176,8 @@ const rowToProject = (row: ProjectRow): PortfolioProject => ({
   thumbnailFit: toThumbnailFit(row.thumbnail_fit),
   thumbnailPosition: row.thumbnail_position ?? undefined,
   thumbnailScale: typeof row.thumbnail_scale === 'number' ? Math.min(3, Math.max(1, row.thumbnail_scale)) : 1,
+  visualType: row.visual_type === 'chart' ? 'chart' : 'image',
+  chartPoints: asProjectChartPoints(row.chart_points),
   category: toProjectCategory(row.category),
   stack: row.stack ?? [],
   overview: row.overview ?? '',
@@ -189,6 +205,8 @@ const projectToRow = (project: PortfolioProject) => ({
   thumbnail_fit: project.thumbnailFit ?? 'cover',
   thumbnail_position: project.thumbnailPosition ?? 'center',
   thumbnail_scale: Math.min(3, Math.max(1, project.thumbnailScale ?? 1)),
+  visual_type: project.visualType ?? 'image',
+  chart_points: project.chartPoints ?? [],
   category: project.category,
   stack: project.stack,
   overview: project.overview,

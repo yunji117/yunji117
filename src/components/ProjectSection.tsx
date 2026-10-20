@@ -9,6 +9,7 @@ import { X, ExternalLink, Github, GripVertical, ArrowUp, ArrowDown, ArrowLeft, A
 import { fetchPublishedProjects, fetchAdminProjects, fetchProjectCategories, defaultCategories, fetchProjectOrder, saveProjectOrder } from '../lib/portfolioApi';
 import type { PortfolioProject, ProjectCaseStudy, ProjectCategory, ProjectFilter } from '../types/portfolio';
 import ProgressiveImage from './ProgressiveImage';
+import ProjectLineChart from './ProjectLineChart';
 import { useLanguageStore } from '../store/languageStore';
 import { mergePortfolioProjects } from '../lib/projectCollection';
 import { getImageSwipeAction, moveImageViewer } from '../lib/imageViewer';
@@ -903,7 +904,9 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
                   >
                   {/* 프로젝트 이미지 */}
                   <div className="relative aspect-[8/5] w-full overflow-hidden bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
-                    {project.image && (
+                    {project.visualType === 'chart' && (project.chartPoints?.length ?? 0) > 0 ? (
+                      <ProjectLineChart points={project.chartPoints ?? []} className="rounded-none" />
+                    ) : project.image && (
                       <ProgressiveImage
                         draggable={false}
                         loading="lazy"
@@ -1039,7 +1042,11 @@ const ProjectSection = ({ isAdmin }: ProjectSectionProps) => {
 
               {/* 모달 헤더 */}
               <div className="mb-8">
-                {selectedProject.image && (
+                {selectedProject.visualType === 'chart' && (selectedProject.chartPoints?.length ?? 0) > 0 ? (
+                  <div className="mb-6 h-72 w-full overflow-hidden rounded-xl border border-cyan-200/70 bg-white/70 p-2 dark:border-cyan-400/15 dark:bg-slate-950/40">
+                    <ProjectLineChart key={selectedProject.id} points={selectedProject.chartPoints ?? []} animated />
+                  </div>
+                ) : selectedProject.image && (
                   <button type="button" aria-label={`${selectedProject.title} 대표 이미지 확대 보기`} className="mb-6 block h-64 w-full overflow-hidden rounded-xl" onClick={() => openImageViewer(selectedProject.image)}>
                     <img
                       src={selectedProject.image}

@@ -1,16 +1,17 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Eye, EyeOff, ExternalLink, ImagePlus, Loader2, Move, Plus, Trash2 } from 'lucide-react';
+import { BarChart3, Eye, EyeOff, ExternalLink, Image as ImageIcon, ImagePlus, Loader2, Move, Plus, Trash2 } from 'lucide-react';
 import type { PortfolioProject, ProjectCaseStudy } from '../../types/portfolio';
 import { addProjectCategory, defaultCategories, fetchProjectCategories, saveProject, uploadPortfolioImage } from '../../lib/portfolioApi';
 import { portfolioErrorMessage } from '../../lib/portfolioErrors';
 import { moveGalleryImage } from '../../lib/projectGallery';
 import EditorModal from './EditorModal';
 import CoverImageCropper, { type CoverCropValue } from './CoverImageCropper';
+import ProjectLineChart from '../ProjectLineChart';
 import TagInput from './TagInput';
 
 const field = 'w-full rounded-xl border border-slate-200 bg-white/70 px-4 py-3 text-gray-900 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-white/15 dark:bg-white/5 dark:text-white dark:focus:ring-cyan-500/20';
 const heading = 'mb-3 block text-2xl font-bold';
-const blank = (category: string, sortOrder: number): PortfolioProject => ({ id: crypto.randomUUID(), title: '', description: '', shortDesc: '', image: '', category, stack: [], overview: '', goal: '', difficulties: [], outputs: [], sections: [], caseStudy: {}, link: '', isPublished: true, sortOrder });
+const blank = (category: string, sortOrder: number): PortfolioProject => ({ id: crypto.randomUUID(), title: '', description: '', shortDesc: '', image: '', visualType: 'image', chartPoints: [], category, stack: [], overview: '', goal: '', difficulties: [], outputs: [], sections: [], caseStudy: {}, link: '', isPublished: true, sortOrder });
 
 const positionValue = (value: string | undefined, axis: 'x' | 'y') => {
   const tokens = (value?.trim() || 'center').split(/\s+/);
@@ -81,17 +82,21 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
   };
   const submit = async (event: FormEvent) => {
     event.preventDefault(); if (busy) return;
-    if (!draft.image || !draft.title.trim()) { setError('대표 이미지 한 장과 프로젝트 이름을 입력해 주세요.'); return; }
+    const visualType = draft.visualType ?? 'image';
+    if (!draft.title.trim()) { setError('프로젝트 이름을 입력해 주세요.'); return; }
+    if (visualType === 'image' && !draft.image) { setError('대표 이미지 한 장을 입력해 주세요.'); return; }
+    if (visualType === 'chart' && ((draft.chartPoints?.length ?? 0) < 2 || draft.chartPoints?.some((point) => !point.name.trim() || !Number.isFinite(point.value)))) { setError('그래프는 이름과 값을 입력한 항목이 두 개 이상 필요합니다.'); return; }
     const link = draft.link?.trim() ?? '';
     if (link && !/^https?:\/\//i.test(link)) { setError('URL은 https:// 또는 http://로 시작해야 합니다.'); return; }
     if ((draft.sections ?? []).some((item) => !item.title.trim() || !item.content.trim())) { setError('중주제의 제목과 내용을 모두 입력하거나 빈 중주제를 삭제해 주세요.'); return; }
-    const next = { ...draft, title: draft.title.trim(), description: draft.description.trim(), shortDesc: draft.description.trim(), link };
+    const next = { ...draft, title: draft.title.trim(), description: draft.description.trim(), shortDesc: draft.description.trim(), link, visualType, chartPoints: (draft.chartPoints ?? []).map((point) => ({ ...point, name: point.name.trim() })) };
     setBusy('save'); setError('');
     try { await saveProject(next); onSaved(next); }
     catch (reason) { setError(portfolioErrorMessage(reason, '프로젝트를 저장하지 못했습니다.')); }
     finally { setBusy(''); }
   };
   const isPublished = draft.isPublished ?? true;
+  const visualType = draft.visualType ?? 'image';
   const coverSource = coverPreview || draft.image;
   const publicationToggle = <button type="button" onClick={() => update('isPublished', !isPublished)} disabled={Boolean(busy)} aria-label={isPublished ? '프로젝트 비공개로 전환' : '프로젝트 공개로 전환'} aria-pressed={isPublished} className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold transition-colors ${isPublished ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300' : 'bg-slate-200 text-slate-600 dark:bg-white/10 dark:text-slate-300'}`}>
     {isPublished ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
@@ -100,7 +105,14 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
   return <EditorModal title={project ? '프로젝트 수정' : '프로젝트 추가'} headerActions={publicationToggle} onClose={close}>
     <form onSubmit={submit} className="space-y-8">
       <fieldset disabled={Boolean(busy)} className="space-y-8 disabled:opacity-70">
-        <div className="space-y-3">
+        <section className="space-y-3">
+          <div><h3 className="font-bold">대표 콘텐츠 등록</h3><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">프로젝트 카드 상단에 표시할 대표 이미지 또는 선 그래프를 선택하세요.</p></div>
+          <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-2 dark:bg-white/5" role="group" aria-label="대표 콘텐츠 유형">
+            <button type="button" aria-pressed={visualType === 'image'} onClick={() => update('visualType', 'image')} className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold transition ${visualType === 'image' ? 'bg-white text-cyan-700 shadow dark:bg-cyan-500 dark:text-white' : 'text-gray-500 dark:text-gray-300'}`}><ImageIcon className="h-5 w-5" />대표 이미지 등록</button>
+            <button type="button" aria-pressed={visualType === 'chart'} onClick={() => setDraft((current) => ({ ...current, visualType: 'chart', chartPoints: current.chartPoints?.length ? current.chartPoints : [{ name: '', value: 0 }, { name: '', value: 0 }] }))} className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold transition ${visualType === 'chart' ? 'bg-white text-cyan-700 shadow dark:bg-cyan-500 dark:text-white' : 'text-gray-500 dark:text-gray-300'}`}><BarChart3 className="h-5 w-5" />그래프 등록</button>
+          </div>
+        </section>
+        {visualType === 'image' ? <div className="space-y-3">
           <div className="relative flex min-h-56 flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-cyan-300 bg-cyan-50/30">
             {coverSource && !coverLoadError ? <img src={coverSource} onError={() => setCoverLoadError(true)} alt="대표 이미지 미리보기" className="h-64 w-full" style={{ objectFit: draft.thumbnailFit ?? 'cover', objectPosition: draft.thumbnailPosition ?? 'center', transform: `scale(${draft.thumbnailScale ?? 1})`, transformOrigin: 'center' }} /> : <><ImagePlus className="mb-3 h-9 w-9 text-cyan-600" /><span>{coverLoadError ? '이미지를 불러오지 못했습니다 · 다시 선택해 주세요' : '대표 이미지 추가 · 한 장'}</span></>}
             <div className="absolute bottom-3 flex flex-wrap justify-center gap-2 px-3">
@@ -117,7 +129,17 @@ export default function ProjectEditorModal({ project, category = 'personal', sor
             setCoverPosition(null);
           }} />}
           {draft.image && <button type="button" onClick={() => { update('image', ''); update('thumbnailUrl', undefined); setCoverPosition(null); }} className="text-sm text-gray-500">대표 이미지 삭제</button>}
-        </div>
+        </div> : <section className="space-y-5 rounded-2xl border border-cyan-200 bg-cyan-50/40 p-4 dark:border-cyan-400/20 dark:bg-cyan-500/5 sm:p-5">
+          <div className="flex items-center justify-between gap-3"><div><h3 className="font-bold">그래프 미리보기</h3><p className="mt-1 text-sm text-gray-500">입력한 순서대로 값이 하나의 선으로 연결됩니다.</p></div><button type="button" onClick={() => update('chartPoints', [...(draft.chartPoints ?? []), { name: '', value: 0 }])} className="inline-flex shrink-0 items-center gap-1 rounded-xl bg-cyan-500 px-4 py-2 text-sm font-semibold text-white"><Plus className="h-4 w-4" />이름 추가</button></div>
+          <div className="aspect-[8/5] overflow-hidden rounded-xl border-2 border-dashed border-cyan-300 bg-white/70 dark:bg-slate-900/60"><ProjectLineChart points={draft.chartPoints ?? []} /></div>
+          <div className="space-y-3">
+            {(draft.chartPoints ?? []).map((point, index) => <div key={index} className="grid grid-cols-[minmax(0,1fr)_minmax(7rem,0.45fr)_auto] gap-2">
+              <label><span className="sr-only">그래프 항목 {index + 1} 이름</span><input aria-label={`그래프 항목 ${index + 1} 이름`} value={point.name} onChange={(event) => update('chartPoints', draft.chartPoints?.map((item, position) => position === index ? { ...item, name: event.target.value } : item))} placeholder={`이름 ${index + 1}`} className={field} /></label>
+              <label><span className="sr-only">그래프 항목 {index + 1} 값</span><input type="number" step="any" aria-label={`그래프 항목 ${index + 1} 값`} value={point.value} onChange={(event) => update('chartPoints', draft.chartPoints?.map((item, position) => position === index ? { ...item, value: Number(event.target.value) } : item))} className={field} /></label>
+              <button type="button" aria-label={`그래프 항목 ${index + 1} 삭제`} onClick={() => update('chartPoints', draft.chartPoints?.filter((_, position) => position !== index))} className="rounded-xl border border-red-200 px-3 text-red-500 hover:bg-red-50 dark:border-red-400/20 dark:hover:bg-red-500/10"><Trash2 className="h-4 w-4" /></button>
+            </div>)}
+          </div>
+        </section>}
         <label className="block"><span className="sr-only">프로젝트 이름</span><input required aria-label="프로젝트 이름" value={draft.title} onChange={(event) => update('title', event.target.value)} placeholder="프로젝트 이름" className={`${field} text-3xl font-bold sm:text-4xl`} /></label>
         <div>
           <div className="flex gap-2"><select aria-label="대주제" value={draft.category} onChange={(event) => update('category', event.target.value)} className={`${field} max-w-xs`}>{categories.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select><button type="button" aria-label="대주제 추가" onClick={() => setNewCategory(newCategory === null ? '' : null)} className="rounded-xl border border-cyan-300 px-3"><Plus /></button></div>

@@ -4,6 +4,12 @@ export interface ProjectSectionContent { id: string; title: string; content: str
 export type ProjectFilter = 'all' | ProjectCategory;
 
 export type ThumbnailFit = 'cover' | 'contain';
+export type ProjectVisualType = 'image' | 'chart';
+
+export interface ProjectChartPoint {
+  name: string;
+  value: number;
+}
 
 export interface ProjectLink {
   title: string;
@@ -36,6 +42,8 @@ export interface PortfolioProject {
   thumbnailFit?: ThumbnailFit;
   thumbnailPosition?: string;
   thumbnailScale?: number;
+  visualType?: ProjectVisualType;
+  chartPoints?: ProjectChartPoint[];
   category: ProjectCategory;
   stack: string[];
   overview: string;
