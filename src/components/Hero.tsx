@@ -530,7 +530,7 @@ const Hero = ({
               fetchPriority="high"
               className={`relative z-10 object-contain object-bottom drop-shadow-[0_24px_42px_rgba(79,42,112,0.32)] ${
                 useRealProfile
-                  ? 'max-h-[27rem] w-auto max-w-[60%] rounded-b-[3.5rem] sm:max-h-[29rem] sm:max-w-[58%] lg:max-h-[31rem] lg:max-w-[62%]'
+                  ? 'max-h-[27rem] w-auto max-w-[60%] sm:max-h-[29rem] sm:max-w-[58%] lg:max-h-[31rem] lg:max-w-[62%]'
                   : 'max-h-[43rem] w-full'
               }`}
             />
