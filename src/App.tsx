@@ -9,6 +9,7 @@ import Contact from './components/Contact';
 import type { EditableSection } from './components/admin/SectionEditorModal';
 import { initialAuthState, observePortfolioAuth } from './lib/portfolioAuth';
 import { supabase } from './lib/supabase';
+import { isRealProfilePath } from './lib/portfolioVariant';
 
 const SectionEditorModal = lazy(() => import('./components/admin/SectionEditorModal'));
 const AdminLogin = lazy(() => import('./components/admin/AdminLogin'));
@@ -26,6 +27,7 @@ function App() {
   const [signingOut, setSigningOut] = useState(false);
   const isAdmin = auth.phase === 'admin';
   const canEdit = isAdmin && isAdminView;
+  const useRealProfile = isRealProfilePath(window.location.pathname);
 
   const handleSignOut = async () => {
     if (!supabase) return;
@@ -89,7 +91,11 @@ function App() {
       />
       <main id="main-content" tabIndex={-1} className="pt-20 focus:outline-none">
         {canEdit && <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-xl bg-cyan-50 px-6 py-3 text-sm text-cyan-800 dark:bg-cyan-950 dark:text-cyan-200"><span>관리자 모드 · 연필로 수정하고 프로젝트를 길게 눌러 순서를 바꾸세요.</span><button onClick={() => setIsAdminView(false)} className="underline">방문자 화면 보기</button></div>}
-        <Hero revision={contentRevision} onEdit={canEdit ? () => setEditingSection('hero') : undefined} />
+        <Hero
+          revision={contentRevision}
+          useRealProfile={useRealProfile}
+          onEdit={canEdit ? () => setEditingSection('hero') : undefined}
+        />
         <About revision={contentRevision} onEdit={canEdit ? () => setEditingSection('about') : undefined} />
         <Skill revision={contentRevision} onEdit={canEdit ? () => setEditingSection('skills') : undefined} />
         <ProjectSection isAdmin={canEdit} />

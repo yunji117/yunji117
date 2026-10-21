@@ -9,6 +9,7 @@
     "dev": "vite --base=/yunji117/",
     "prebuild": "npm run seo:generate",
     "build": "tsc -b && vite build",
+    "postbuild": "node scripts/prepare-pages.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },

@@ -3,6 +3,7 @@ import { motion, type Variants } from 'framer-motion';
 import { ChevronDown, Download, ExternalLink, Github } from 'lucide-react';
 import EditButton from './admin/EditButton';
 import yunjiAvatar from '../assets/img/hero-character.webp';
+import realYunjiAvatar from '../assets/img/real-yunji-profile.webp';
 import { defaultSiteContent } from '../lib/defaultPortfolio';
 import { fetchPublishedProjects, fetchSiteContent } from '../lib/portfolioApi';
 import type { PortfolioProject } from '../types/portfolio';
@@ -301,7 +302,15 @@ const sliceCopy = (copy: HeroCopy, visibleCharacters: number): HeroCopy => {
   };
 };
 
-const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number }) => {
+const Hero = ({
+  onEdit,
+  revision = 0,
+  useRealProfile = false,
+}: {
+  onEdit?: () => void;
+  revision?: number;
+  useRealProfile?: boolean;
+}) => {
   const [content, setContent] = useState(defaultSiteContent);
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>(fallbackProjects);
   const { language, setLanguage } = useLanguageStore();
@@ -513,10 +522,10 @@ const Hero = ({ onEdit, revision = 0 }: { onEdit?: () => void; revision?: number
           <div className="relative mx-auto flex w-full max-w-[31rem] items-end justify-center self-end lg:col-start-2 lg:row-span-2 lg:row-start-1">
             <div className="absolute bottom-[8%] h-[68%] w-[86%] rounded-full bg-gradient-to-br from-violet-400/15 via-fuchsia-400/20 to-purple-600/35 blur-2xl dark:from-violet-500/10 dark:to-purple-500/25" />
             <img
-              src={content.heroAvatarUrl || yunjiAvatar}
-              alt="Kim Yun Ji 3D character"
-              width={522}
-              height={627}
+              src={useRealProfile ? realYunjiAvatar : content.heroAvatarUrl || yunjiAvatar}
+              alt={useRealProfile ? 'Kim Yun Ji profile portrait' : 'Kim Yun Ji 3D character'}
+              width={useRealProfile ? 724 : 522}
+              height={useRealProfile ? 1012 : 627}
               decoding="async"
               fetchPriority="high"
               className="relative z-10 max-h-[43rem] w-full object-contain object-bottom drop-shadow-[0_24px_42px_rgba(79,42,112,0.32)]"
