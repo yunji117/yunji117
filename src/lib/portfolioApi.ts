@@ -470,14 +470,45 @@ export const addProjectCategory = async (name: string): Promise<CategoryOption> 
   return { value: data.id, label: data.name };
 };
 
+const isMissingProjectOrderSchema = (error: { code?: string; message?: string } | null) => {
+  if (!error) return false;
+  return error.code === 'PGRST202'
+    || error.code === 'PGRST205'
+    || Boolean(error.message?.includes('project_order'))
+    || Boolean(error.message?.includes('save_project_order'));
+};
+
 export const fetchProjectOrder = async (): Promise<string[]> => {
   if (!supabase) return [];
   const { data, error } = await supabase.from('project_order').select('project_id').order('position');
-  if (error) throw error;
-  return (data ?? []).map((row) => row.project_id);
+  if (!error) return (data ?? []).map((row) => row.project_id);
+  if (!isMissingProjectOrderSchema(error)) throw error;
+
+  // Older deployments predate project_order. All current projects also have a
+  // sort_order column, so keep reordering usable until the migration is applied.
+  const { data: projects, error: projectError } = await supabase
+    .from('projects')
+    .select('id, sort_order')
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: false });
+  if (projectError) throw projectError;
+
+  const rows = projects ?? [];
+  const hasSavedOrder = new Set(rows.map((row) => row.sort_order)).size > 1;
+  return hasSavedOrder ? rows.map((row) => row.id) : [];
 };
 export const saveProjectOrder = async (ids: string[]) => {
   if (!supabase) throw new Error('Supabase 연결이 필요합니다.');
-  const { error } = await supabase.rpc('save_project_order', { project_ids: ids });
-  if (error) throw error;
+  const client = supabase;
+  const { error } = await client.rpc('save_project_order', { project_ids: ids });
+  if (!error) return;
+  if (!isMissingProjectOrderSchema(error)) throw error;
+
+  // Compatibility path for an existing production database where the
+  // project_order migration has not yet been installed.
+  const results = await Promise.all(
+    ids.map((id, sortOrder) => client.from('projects').update({ sort_order: sortOrder }).eq('id', id)),
+  );
+  const updateError = results.find((result) => result.error)?.error;
+  if (updateError) throw updateError;
 };
